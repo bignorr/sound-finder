@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sound Finder</title>
+<meta name="description" content="Six questions with the customer. One media room setup, a price range, a talk track, and the gear to pull.">
+<meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f1f2f4" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sound Finder">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one centered column (max 680px) on a full-bleed dark ground, like a lights-down media room; questions are big tap targets, the result reads like a floor sheet. */
+:root {
+  --bg: #15171c;
+  --surface: #1e2127;
+  --surface-2: #272b33;
+  --line: #353a44;
+  --fg: #ebe9e3;
+  --muted: #a1a5ae;
+  --accent: #e3a84b;
+  --accent-ink: #1a1306;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f1f2f4; --surface: #ffffff; --surface-2: #e8eaee; --line: #d2d5db;
+    --fg: #1a1c21; --muted: #5d626b; --accent: #a4660f; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px 8px; border-bottom: 1px solid var(--line); }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; color: var(--fg); background: none; border: none; padding: 0; cursor: pointer; }
+.brand b { color: var(--accent); font-weight: 700; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(40px, 9vw, 60px); font-weight: 700; letter-spacing: -.01em; }
+h2 { font-size: clamp(30px, 7vw, 42px); font-weight: 700; }
+h3 { font-size: 24px; font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+section { display: flex; flex-direction: column; gap: 20px; padding-block: 28px 0; }
+.hero { gap: 18px; padding-block: 40px 0; }
+.hero p { max-width: 36ch; font-size: 19px; }
+.btn { font: inherit; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 12px 18px; cursor: pointer; min-height: 48px; text-decoration: none; display: inline-flex; align-items: center; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.link { background: none; border: none; color: var(--muted); padding: 8px 0; min-height: 0; text-decoration: underline; text-underline-offset: 3px; }
+.btn.link:hover { color: var(--fg); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn:focus-visible, .opt:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.progress { display: flex; flex-direction: column; gap: 8px; }
+.bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s ease; }
+.opts { display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0; margin: 0; }
+.opt { display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%; font: inherit; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; cursor: pointer; min-height: 56px; }
+.opt:hover { border-color: var(--accent); background: var(--surface-2); }
+.opt b { font-weight: 600; font-size: 18px; }
+.opt span { color: var(--muted); font-size: 15px; }
+.spec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+@media (min-width: 560px) { .spec { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.spec div { background: var(--surface); padding: 12px 14px; min-width: 0; }
+.spec small { display: block; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.spec strong { font-family: var(--font-display); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card.alt { border-style: dashed; }
+ul.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+ul.checks li { padding-left: 26px; position: relative; }
+ul.checks li::before { content: ""; position: absolute; left: 0; top: .5em; width: 14px; height: 8px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+.gear { display: grid; gap: 10px; }
+.gear div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; align-items: baseline; border-top: 1px solid var(--line); padding-top: 10px; }
+.gear small { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.form { display: flex; flex-direction: column; gap: 14px; }
+label, .field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; color: var(--muted); }
+input, textarea { font: inherit; font-size: 17px; color: var(--fg); background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; width: 100%; min-width: 0; }
+textarea { min-height: 88px; resize: vertical; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { font: inherit; font-size: 15px; font-weight: 600; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.grid2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 520px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 600; font-size: 15px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; }
+.lead { display: flex; flex-direction: column; gap: 6px; }
+.lead .name { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 10px; }
+.sel { user-select: all; -webkit-user-select: all; }
+.offscreen { position: absolute; left: -9999px; top: 0; width: 1px; height: 1px; opacity: 0; }
+footer { padding-block: 32px 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+@media (prefers-reduced-motion: reduce) { .bar i, .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <button class="brand" id="brandLink" type="button">Sound <b>Finder</b></button>
+    <div class="row">
+      <button class="btn" id="leadsBtn" type="button">Leads <span id="leadCount" class="muted small"></span></button>
+    </div>
+  </header>
+
+  <section id="intro" class="hero">
+    <p class="eyebrow">Soundbars · AVR systems · Media rooms</p>
+    <h1>Six questions. One setup to walk them to.</h1>
+    <p>Ask the customer about the room, the screen and the budget. You get the setup, a price range, a talk track, and the gear to pull from the floor.</p>
+    <div class="row">
+      <button class="btn primary" id="startBtn" type="button">Start</button>
+      <span class="muted small">About 60 seconds</span>
+    </div>
+  </section>
+
+  <section id="quiz" hidden>
+    <div class="progress">
+      <span class="eyebrow" id="progressLabel">Question 1 of 6</span>
+      <div class="bar"><i id="progressFill"></i></div>
+    </div>
+    <h2 id="qText"></h2>
+    <p class="muted" id="qHint"></p>
+    <ul class="opts" id="qOpts"></ul>
+    <div class="row"><button class="btn link" id="backBtn" type="button">Back</button></div>
+  </section>
+
+  <section id="result" hidden>
+    <p class="eyebrow">Recommended setup</p>
+    <h2 id="rHead"></h2>
+    <div class="spec" id="rSpec"></div>
+    <div>
+      <p class="eyebrow">Talk track</p>
+      <p id="rWhy"></p>
+    </div>
+
+    <div class="card">
+      <h3>What to check before you quote</h3>
+      <ul class="checks" id="rChecks"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Gear to pull</h3>
+      <p class="muted small">Best Buy brands that fit this tier. Lines, not SKUs; exact models change with the season.</p>
+      <div class="gear" id="rGear"></div>
+    </div>
+
+    <div class="card alt" id="rAlt"></div>
+
+    <div class="card">
+      <h3>Save this customer</h3>
+      <p class="muted">Leads save on this phone. Copy summary puts their answers and the setup on your clipboard for a quote or a follow-up text.</p>
+      <form id="leadForm" class="form" novalidate>
+        <div class="grid2">
+          <label>Name <input id="leadName" name="name" autocomplete="off" required></label>
+          <label>Phone <input id="leadPhone" name="phone" type="tel" autocomplete="off" inputmode="tel"></label>
+        </div>
+        <label>Email <input id="leadEmail" name="email" type="email" autocomplete="off" inputmode="email"></label>
+        <div class="field" role="group" aria-labelledby="contactLbl">
+          <span id="contactLbl">Best way to reach them</span>
+          <div class="seg" id="contactSeg">
+            <button type="button" data-v="Text" aria-pressed="true">Text</button>
+            <button type="button" data-v="Call" aria-pressed="false">Call</button>
+            <button type="button" data-v="Email" aria-pressed="false">Email</button>
+          </div>
+        </div>
+        <div class="field" role="group" aria-labelledby="timeLbl">
+          <span id="timeLbl">When are they buying?</span>
+          <div class="seg" id="timeSeg">
+            <button type="button" data-v="Today" aria-pressed="false">Today</button>
+            <button type="button" data-v="This week" aria-pressed="false">This week</button>
+            <button type="button" data-v="This month" aria-pressed="true">This month</button>
+            <button type="button" data-v="Just looking" aria-pressed="false">Just looking</button>
+          </div>
+        </div>
+        <label>Notes <textarea id="leadNotes" name="notes" placeholder="Existing gear, TV model, ceiling height, install needs"></textarea></label>
+        <div class="row">
+          <button class="btn primary" type="submit" id="saveBtn">Save lead</button>
+          <button class="btn" type="button" id="copyBtn">Copy summary</button>
+        </div>
+        <p class="small" id="leadErr" style="color:var(--accent)" hidden></p>
+      </form>
+    </div>
+
+    <div class="row"><button class="btn link" id="restartBtn" type="button">Start over</button></div>
+  </section>
+
+  <section id="leads" hidden>
+    <div class="row" style="justify-content:space-between">
+      <h2>Saved leads</h2>
+      <button class="btn" id="leadsBack" type="button">Back</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="exportBtn" type="button">Export CSV</button>
+      <button class="btn" id="copyAllBtn" type="button">Copy all as text</button>
+    </div>
+    <p class="muted small">Saved on this phone only. Export before you switch phones or clear Safari data.</p>
+    <div id="leadsList" style="display:flex;flex-direction:column;gap:12px"></div>
+  </section>
+
+  <footer>Price ranges are typical retail for equipment only. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
+</div>
+<textarea class="offscreen" id="clip" aria-hidden="true" tabindex="-1"></textarea>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  const Q = [
+    { key: "room", q: "What kind of room is it?", hint: "Open rooms and closed rooms need different things.", opts: [
+      ["small", "Bedroom or small den", "Under about 150 sq ft"],
+      ["dedicated", "Dedicated media room", "A closed room, roughly 150 to 350 sq ft"],
+      ["open", "Open-concept living area", "Opens into a kitchen or dining space"] ] },
+    { key: "tv", q: "How big is the screen?", hint: "Bar width and bass need to scale with it.", opts: [
+      ["t1", "55 to 65 in"], ["t2", "65 to 77 in"], ["t3", "83 in or larger, or a projector"] ] },
+    { key: "seats", q: "How many people usually watch?", hint: "More seats means more of the room needs clear dialog.", opts: [
+      ["s1", "1 or 2"], ["s3", "3 to 5"], ["s6", "6 or more"] ] },
+    { key: "use", q: "What gets watched the most?", hint: "", opts: [
+      ["movies", "Movies and gaming"], ["sports", "Sports and everyday TV"], ["music", "Music"] ] },
+    { key: "wiring", q: "How do they feel about wires?", hint: "This one decides more than anything else.", opts: [
+      ["nowires", "No wires, keep it clean", "One bar under the TV and a sub in the corner"],
+      ["some", "A few runs are fine", "Rear or height speakers with cables tucked away"],
+      ["install", "Open to in-wall and in-ceiling", "A built-in look, done by an installer"] ] },
+    { key: "budget", q: "What is the budget for sound?", hint: "Equipment only. Mounting, wiring and install are separate.", opts: [
+      ["b1", "Under $1,000"], ["b2", "$1,000 to 2,500"], ["b3", "$2,500 to 6,000"], ["b4", "$6,000 and up"] ] },
+  ];
+  const LABEL = {};
+  Q.forEach(function (q) { q.opts.forEach(function (o) { LABEL[q.key + ":" + o[0]] = o[1]; }); });
+
+  const TIERS = {
+    "bar-entry": { approach: "Soundbar", install: "Plug in", range: "$400 to 900",
+      head: "A soundbar with a real subwoofer",
+      gear: [["Bar + sub", "Samsung Q-series bar with sub, Sony Bravia Theater Bar 6 or 8 with sub, Polk MagniFi or Signa with sub, JBL Bar 500-class, or Sonos Beam with Sub Mini"],
+             ["Add later", "Wireless rears from the same system: Samsung, Sony, JBL, or a pair of Sonos Era 100"]] },
+    "bar-flagship": { approach: "Soundbar", install: "Plug in", range: "$1,000 to 2,200",
+      head: "A flagship soundbar system with rears",
+      gear: [["Bar", "Samsung Q990-series, Sony Bravia Theater Bar 9, Sonos Arc Ultra, JBL Bar 1300-class, or Klipsch Flexus Core 300"],
+             ["Sub", "Samsung and Sony include theirs; Sonos Sub; Klipsch Flexus Sub"],
+             ["Rears", "Wireless rears from the same system; Sonos Era 300 pair if they want Atmos from the back row"]] },
+    "avr-core": { approach: "AVR + speakers", install: "Light", range: "$1,200 to 2,500",
+      head: "An AVR with real speakers",
+      gear: [["Receiver", "Denon AVR-S or X1800-class, Yamaha RX-V, Onkyo TX-NR, or Sony STR-AN 7-channel"],
+             ["Fronts + center", "Klipsch Reference or Reference Premiere bookshelves, Polk Signature Elite or Reserve, KEF Q, or DALI Oberon, with the matching center"],
+             ["Sub", "One 10 to 12 in powered sub: Klipsch R-series, Polk, or SVS SB-1000 / PB-1000"],
+             ["Heights", "Klipsch or Polk Atmos modules on the fronts, or a pair of Klipsch, Polk or Definitive Technology in-ceilings"]] },
+    "avr-performance": { approach: "AVR + speakers", install: "Pro", range: "$2,500 to 6,000",
+      head: "A full AVR theater",
+      gear: [["Receiver", "Denon X3800-class, Marantz Cinema 50 or 60, Yamaha RX-A, or Onkyo TX-RZ 9-channel with room correction"],
+             ["Fronts + center", "Klipsch Reference Premiere, MartinLogan Motion, KEF Q or R, Polk Reserve, or DALI Oberon towers, with the matching center"],
+             ["Subs", "Two subs for even bass across the seats: SVS 1000 or 2000-class, MartinLogan Dynamo, or REL T-series"],
+             ["Surround + heights", "In-wall surrounds and in-ceiling heights from Klipsch, Polk, MartinLogan or Definitive Technology, or matching bookshelves on Sanus stands"]] },
+    "avr-reference": { approach: "AVR + speakers", install: "Pro", range: "$6,000 to 12,000+",
+      head: "A reference-grade theater",
+      gear: [["Receiver", "Marantz Cinema 40, Denon X4800 to X6800-class, or Yamaha RX-A8A; add a separate power amp for the fronts if the room is large"],
+             ["Fronts + center", "MartinLogan Motion XT or ESL hybrids, KEF R series, Bowers & Wilkins 700 series, or DALI Opticon or Rubikore, with the matching center"],
+             ["Subs", "Two SVS 3000-class, REL S-series, or MartinLogan BalancedForce, placed and calibrated for the room"],
+             ["Surround + heights", "In-ceiling heights and in-wall surrounds from MartinLogan, Bowers & Wilkins or Definitive Technology, plus a few acoustic panels at the first reflection points"]] },
+  };
+
+  function recommend(a) {
+    const b = ["b1", "b2", "b3", "b4"].indexOf(a.budget);
+    let score = 0;
+    score += a.wiring === "install" ? 2 : a.wiring === "some" ? 1 : -2;
+    if (a.room === "open" || a.room === "dedicated") score += 1;
+    if (a.seats === "s6") score += 1;
+    if (a.use === "music") score += 1;
+    if (a.tv === "t3") score += 1;
+    score += b - 1;
+    const path = b === 0 ? "bar" : (score >= 2 ? "avr" : "bar");
+    const subs = (a.room === "open" || a.seats === "s6" || a.tv === "t3") ? 2 : 1;
+    let tier, config;
+    if (path === "bar") {
+      tier = b === 0 ? "bar-entry" : "bar-flagship";
+      config = tier === "bar-entry" ? (a.room === "small" ? "3.1" : "5.1") : "7.1.4";
+    } else {
+      tier = b === 1 ? "avr-core" : b === 2 ? "avr-performance" : "avr-reference";
+      const wide = (a.seats === "s6" || a.room === "open" || a.tv === "t3");
+      config = tier === "avr-core" ? "5." + subs + ".2" : (tier === "avr-reference" || wide) ? "7." + subs + ".4" : "5." + subs + ".4";
+    }
+    const altTier = path === "bar" ? (b <= 1 ? "avr-core" : b === 2 ? "avr-performance" : "avr-reference") : "bar-flagship";
+    return { path: path, tier: tier, config: config, subs: subs, altTier: altTier, b: b };
+  }
+
+  function whyText(a, r) {
+    const s = [];
+    if (r.path === "bar") {
+      s.push(a.wiring === "nowires"
+        ? "You want a clean install with nothing running across the room, and today's flagship bars get surprisingly close to a component system."
+        : "At this budget a bar and subwoofer gets you the most sound per dollar, and you can add rears later.");
+      if (a.room === "open") s.push("Open rooms swallow bass and dialog, so the subwoofer is the piece that matters most here.");
+      if (a.seats === "s6") s.push("With six or more seats, wireless rears are what carry the sound to the back row.");
+      if (a.use === "music") s.push("For music, pick a bar from a brand with a strong multi-room app so it doubles as your everyday system.");
+      if (r.b >= 2) s.push("Your budget would also cover a proper receiver and speakers; it's worth hearing both before you decide.");
+    } else {
+      s.push(a.wiring === "install"
+        ? "You're open to in-wall and in-ceiling speakers, which is where a receiver-based system looks as clean as a bar and sounds like a theater."
+        : "You're fine with a few cable runs, and that opens up a real speaker system you can upgrade one piece at a time.");
+      if (a.room === "open") s.push("Open-concept rooms need two subwoofers and a wide center channel; that's the difference between hearing dialog at the island and not.");
+      if (a.room === "dedicated") s.push("A closed media room is the easiest room to make sound great, so the money goes into speakers rather than fighting the space.");
+      if (a.seats === "s6") s.push("Six or more seats means a 7-channel layout so side and rear surrounds reach every row.");
+      if (a.use === "music") s.push("Music-first listening rewards a great front pair more than extra surround channels, so the plan weights the towers.");
+      if (a.use === "movies") s.push("For movies and gaming, four height channels and a receiver with HDMI 2.1 make the biggest difference.");
+      if (a.tv === "t3") s.push("A screen that size needs speakers with real scale behind it; small satellites will sound thin against the picture.");
+    }
+    return s.join(" ");
+  }
+
+  function checks(a, r) {
+    const c = [];
+    if (r.path === "bar") {
+      c.push("A separate wireless subwoofer in the box, not a bar on its own");
+      c.push("Dolby Atmos with up-firing drivers if the ceiling is flat and under 12 ft");
+      c.push("eARC on the TV so the bar gets full-quality audio from apps and consoles");
+      if (a.use === "movies") c.push("HDMI passthrough with 4K at 120 Hz if a current game console is in the mix");
+      if (a.seats !== "s1" || a.room === "open") c.push("Wireless rears available for that system; the bar alone will not reach the back row");
+      c.push("Bar width close to the TV width; a 65 in TV and a 48 in bar look right together");
+    } else {
+      c.push("At least 7 amplified channels so they can add heights; 5.1.2 is the floor for Atmos");
+      c.push("Room correction built in (Audyssey, Dirac Live or YPAO); it matters more than any single speaker upgrade");
+      c.push("A center channel from the same series as the fronts so voices match from every seat");
+      if (a.use === "movies") c.push("HDMI 2.1 inputs with 4K at 120 Hz and VRR for a console");
+      if (r.subs === 2) c.push("Two subwoofers; a second sub evens out bass across the seats more than one bigger sub");
+      if (a.wiring === "install") c.push("In-ceiling heights and in-wall surrounds that disappear into the room");
+      if (a.use === "music") c.push("Spend the biggest share on the front pair; a 2.1 that sounds great for music grows into a theater later");
+    }
+    return c;
+  }
+
+  function altText(a, r) {
+    const t = TIERS[r.altTier];
+    if (r.path === "bar") {
+      return { title: "If a couple of cable runs are OK: " + t.head.toLowerCase(),
+        body: t.approach + ", about " + t.range + ". They trade the plug-and-play install for clearer dialog, deeper bass, and upgrades one piece at a time instead of replacing the whole bar." };
+    }
+    return { title: "If they want zero wires: a flagship soundbar system",
+      body: "About " + t.range + " for the bar, sub and rears. It covers most of what a system does, but dialog clarity and bass in a room like theirs will not match separate speakers, and it cannot be upgraded piece by piece." };
+  }
+
+  // ---------- state ----------
+  let state = { step: 0, answers: {}, contact: "Text", timeframe: "This month" };
+  let rec = null;
+  const $ = function (id) { return document.getElementById(id); };
+  const sections = ["intro", "quiz", "result", "leads"];
+  function show(id) { sections.forEach(function (s) { $(s).hidden = s !== id; }); window.scrollTo({ top: 0 }); }
+  function persist() { try { localStorage.setItem("sf-state", JSON.stringify(state)); } catch (e) {} }
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
+
+  // ---------- leads (on-device) ----------
+  function loadLeads() { try { const v = JSON.parse(localStorage.getItem("sf-leads") || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function storeLeads(list) { try { localStorage.setItem("sf-leads", JSON.stringify(list)); return true; } catch (e) { return false; } }
+  function updateCount() { const n = loadLeads().length; $("leadCount").textContent = n ? "(" + n + ")" : ""; }
+
+  // ---------- quiz ----------
+  function renderQuestion() {
+    const i = state.step;
+    const q = Q[i];
+    $("progressLabel").textContent = "Question " + (i + 1) + " of " + Q.length;
+    $("progressFill").style.width = (i / Q.length * 100) + "%";
+    $("qText").textContent = q.q;
+    $("qHint").textContent = q.hint || "";
+    $("qHint").hidden = !q.hint;
+    const ul = $("qOpts"); ul.innerHTML = "";
+    q.opts.forEach(function (o) {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "opt";
+      btn.innerHTML = "<b>" + esc(o[1]) + "</b>" + (o[2] ? "<span>" + esc(o[2]) + "</span>" : "");
+      btn.addEventListener("click", function () { choose(q.key, o[0]); });
+      li.appendChild(btn); ul.appendChild(li);
+    });
+    $("backBtn").textContent = i === 0 ? "Back to start" : "Back";
+    show("quiz");
+  }
+
+  function choose(key, val) {
+    state.answers[key] = val;
+    state.step += 1;
+    persist();
+    if (state.step >= Q.length) renderResult(); else renderQuestion();
+  }
+
+  function renderResult() {
+    const a = state.answers;
+    rec = recommend(a);
+    const t = TIERS[rec.tier];
+    $("rHead").textContent = t.head + (rec.path === "avr" ? ", " + rec.config : "");
+    $("rSpec").innerHTML =
+      "<div><small>Setup</small><strong>" + esc(rec.config) + "</strong></div>" +
+      "<div><small>Est. gear</small><strong>" + esc(t.range) + "</strong></div>" +
+      "<div><small>Approach</small><strong>" + esc(t.approach) + "</strong></div>" +
+      "<div><small>Install</small><strong>" + esc(t.install) + "</strong></div>";
+    $("rWhy").textContent = whyText(a, rec);
+    $("rChecks").innerHTML = checks(a, rec).map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("");
+    $("rGear").innerHTML = t.gear.map(function (g) { return "<div><small>" + esc(g[0]) + "</small><span>" + esc(g[1]) + "</span></div>"; }).join("");
+    const alt = altText(a, rec);
+    $("rAlt").innerHTML = "<p class='eyebrow'>The other way to go</p><h3>" + esc(alt.title) + "</h3><p>" + esc(alt.body) + "</p>";
+    $("leadErr").hidden = true;
+    show("result");
+  }
+
+  function summaryLines(answers) {
+    return Q.map(function (q) { return q.q.replace(/\?$/, "") + ": " + (answers[q.key] || ""); });
+  }
+  function labelAnswers(a) { const o = {}; Q.forEach(function (q) { o[q.key] = LABEL[q.key + ":" + a[q.key]] || ""; }); return o; }
+
+  function leadText(lead) {
+    const lines = [];
+    lines.push(lead.name || "Customer");
+    const reach = [];
+    if (lead.phone) reach.push(lead.phone);
+    if (lead.email) reach.push(lead.email);
+    lines.push("Reach by: " + lead.contact + (reach.length ? " (" + reach.join(", ") + ")" : ""));
+    lines.push("Buying: " + lead.timeframe);
+    lines.push("Setup: " + lead.rec.headline + " (" + lead.rec.config + "), est. " + lead.rec.range);
+    lines.push(summaryLines(lead.answers).join("\n"));
+    if (lead.notes) lines.push("Notes: " + lead.notes);
+    return lines.join("\n");
+  }
+
+  function readLead() {
+    const t = TIERS[rec.tier];
+    return {
+      name: $("leadName").value.trim(),
+      phone: $("leadPhone").value.trim(),
+      email: $("leadEmail").value.trim(),
+      contact: state.contact,
+      timeframe: state.timeframe,
+      notes: $("leadNotes").value.trim(),
+      answers: labelAnswers(state.answers),
+      rec: { headline: t.head, config: rec.config, range: t.range, approach: t.approach },
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  function copyText(text, okMsg) {
+    const done = function () { toast(okMsg || "Copied"); };
+    const fallback = function () {
+      const ta = $("clip"); ta.value = text; ta.classList.remove("offscreen"); ta.focus(); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("Select the text and copy"); }
+      setTimeout(function () { ta.classList.add("offscreen"); }, 50);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  }
+
+  function segInit(id, key) {
+    const seg = $(id);
+    Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.v === state[key]));
+      b.addEventListener("click", function () {
+        state[key] = b.dataset.v;
+        Array.prototype.forEach.call(seg.querySelectorAll("button"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        persist();
+      });
+    });
+  }
+
+  $("leadForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const lead = readLead();
+    const err = $("leadErr");
+    if (!lead.name) { err.textContent = "Add the customer's name."; err.hidden = false; $("leadName").focus(); return; }
+    err.hidden = true;
+    const list = loadLeads();
+    lead.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    list.unshift(lead);
+    if (storeLeads(list)) {
+      toast("Lead saved");
+      $("leadName").value = ""; $("leadPhone").value = ""; $("leadEmail").value = ""; $("leadNotes").value = "";
+      updateCount();
+    } else {
+      err.textContent = "Could not save on this phone (storage is off or full). Copy the summary instead."; err.hidden = false;
+    }
+  });
+
+  $("copyBtn").addEventListener("click", function () { copyText(leadText(readLead()), "Summary copied"); });
+
+  // ---------- leads page ----------
+  function renderLeads() {
+    const list = loadLeads();
+    const el = $("leadsList");
+    if (!list.length) {
+      el.innerHTML = "<div class='card'><p>No saved leads yet.</p><p class='muted'>Run a customer through the finder and tap Save lead.</p></div>";
+      return;
+    }
+    el.innerHTML = list.map(function (x) {
+      const when = x.createdAt ? new Date(x.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
+      const ans = x.answers ? Object.keys(x.answers).map(function (k) { return x.answers[k]; }).filter(Boolean).join(" · ") : "";
+      const r = x.rec || {};
+      return "<div class='card lead' data-id='" + esc(x.id) + "'>" +
+        "<div class='row' style='justify-content:space-between'><span class='name'>" + esc(x.name) + "</span><span class='muted small'>" + esc(when) + "</span></div>" +
+        "<div class='row'><span class='chip'>" + esc(x.timeframe || "") + "</span><span class='muted small'>Prefers " + esc((x.contact || "").toLowerCase()) + "</span></div>" +
+        (x.phone ? "<p class='sel'>" + esc(x.phone) + "</p>" : "") +
+        (x.email ? "<p class='sel'>" + esc(x.email) + "</p>" : "") +
+        "<p><b>" + esc(r.headline || "") + (r.config ? " (" + esc(r.config) + ")" : "") + "</b> · " + esc(r.range || "") + "</p>" +
+        "<p class='muted small'>" + esc(ans) + "</p>" +
+        (x.notes ? "<p>" + esc(x.notes) + "</p>" : "") +
+        "<div class='row'><button class='btn link copy1' type='button'>Copy</button><button class='btn link del' type='button'>Delete</button></div>" +
+        "</div>";
+    }).join("");
+  }
+
+  $("leadsList").addEventListener("click", function (e) {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const card = btn.closest(".lead");
+    const list = loadLeads();
+    const lead = list.find(function (x) { return x.id === card.dataset.id; });
+    if (!lead) return;
+    if (btn.classList.contains("copy1")) { copyText(leadText(lead)); return; }
+    if (btn.classList.contains("del")) {
+      if (btn.dataset.armed !== "1") { btn.dataset.armed = "1"; btn.textContent = "Tap again to delete"; setTimeout(function () { btn.dataset.armed = ""; btn.textContent = "Delete"; }, 3000); return; }
+      storeLeads(list.filter(function (x) { return x.id !== lead.id; }));
+      updateCount(); renderLeads(); toast("Deleted");
+    }
+  });
+
+  function csvCell(v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  $("exportBtn").addEventListener("click", function () {
+    const list = loadLeads();
+    if (!list.length) { toast("Nothing to export yet"); return; }
+    const head = ["Saved", "Name", "Phone", "Email", "Reach by", "Buying", "Setup", "Config", "Est. gear"].concat(Q.map(function (q) { return q.q.replace(/\?$/, ""); })).concat(["Notes"]);
+    const rows = list.map(function (x) {
+      const r = x.rec || {};
+      return [x.createdAt, x.name, x.phone, x.email, x.contact, x.timeframe, r.headline, r.config, r.range]
+        .concat(Q.map(function (q) { return x.answers ? x.answers[q.key] : ""; })).concat([x.notes]).map(csvCell).join(",");
+    });
+    const blob = new Blob([head.map(csvCell).join(",") + "\n" + rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "sound-finder-leads.csv"; document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  });
+  $("copyAllBtn").addEventListener("click", function () {
+    const list = loadLeads();
+    if (!list.length) { toast("Nothing to copy yet"); return; }
+    copyText(list.map(leadText).join("\n\n---\n\n"), "All leads copied");
+  });
+
+  // ---------- navigation ----------
+  $("startBtn").addEventListener("click", function () { state.step = 0; state.answers = {}; persist(); renderQuestion(); });
+  $("backBtn").addEventListener("click", function () {
+    if (state.step === 0) { show("intro"); return; }
+    state.step -= 1; delete state.answers[Q[state.step].key]; persist(); renderQuestion();
+  });
+  $("restartBtn").addEventListener("click", function () { state.step = 0; state.answers = {}; persist(); show("intro"); });
+  $("brandLink").addEventListener("click", function () { if (state.step >= Q.length) show("result"); else show("intro"); });
+  $("leadsBtn").addEventListener("click", function () { renderLeads(); show("leads"); });
+  $("leadsBack").addEventListener("click", function () { if (state.step >= Q.length) show("result"); else show("intro"); });
+  segInit("contactSeg", "contact");
+  segInit("timeSeg", "timeframe");
+
+  (function start() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem("sf-state") || "null"); } catch (e) {}
+    if (saved && typeof saved === "object") {
+      state.step = Number(saved.step) || 0;
+      state.answers = saved.answers && typeof saved.answers === "object" ? saved.answers : {};
+      if (saved.contact) state.contact = saved.contact;
+      if (saved.timeframe) state.timeframe = saved.timeframe;
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".seg"), function (seg) {
+      const key = seg.id === "contactSeg" ? "contact" : "timeframe";
+      Array.prototype.forEach.call(seg.querySelectorAll("button"), function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === state[key])); });
+    });
+    updateCount();
+    const complete = Q.every(function (q) { return state.answers[q.key]; });
+    if (complete && state.step >= Q.length) renderResult();
+    else if (state.step > 0 && state.step < Q.length) renderQuestion();
+    else show("intro");
+  })();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
