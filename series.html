@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Series Guide</title>
+<meta name="description" content="Every speaker family in the builder, ranked, with the driver materials and tech that make each one stand out.">
+<meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f1f2f4" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sound Finder">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+<style>
+.rank { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 6px 14px; padding-block: 16px; border-top: 1px solid var(--line); }
+.rank:first-child { border-top: none; }
+.rank .n { font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.rank .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.rank .head b { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+.rank .body { grid-column: 2; display: flex; flex-direction: column; gap: 6px; }
+.rank dl { margin: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 4px 10px; }
+.rank dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.rank dd { margin: 0; min-width: 0; }
+.rank .price { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="index.html">Sound <b>Finder</b></a>
+    <div class="row">
+      <a class="btn" href="family.html">Family</a>
+      <a class="btn" href="index.html">Finder</a>
+    </div>
+  </header>
+
+  <section>
+    <p class="eyebrow">Series guide</p>
+    <h2>Every family in the builder, ranked.</h2>
+    <p class="muted">Ranked on sound quality and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Tower pair price is approximate list.</p>
+    <div class="legend"><span>Premium</span><span>Mid</span><span>Value</span><span>· Pitch = one line to say on the floor</span></div>
+  </section>
+
+  <section>
+    <div class="card" id="list"></div>
+  </section>
+
+  <footer>Driver and material details are from each maker's published specs for the current series; a few parts differ between the small and large models within a series.</footer>
+</div>
+
+<script>
+(function () {
+  const S = [
+    { brand: "Bowers & Wilkins", series: "700 S3", tier: "Premium", price: "$5,000 towers",
+      tech: "Carbon Dome tweeter in a solid-body pod on top of the cabinet (703, 705), Continuum woven-composite midrange, Aerofoil-profile bass cones. All three came down from the 800 Series.",
+      sound: "The most refined and detailed set on the floor. Vocals and strings sound like the real thing. Wants a good receiver or a power amp.",
+      pitch: "This is the studio-monitor brand; Abbey Road mixes on the big brothers of these." },
+    { brand: "KEF", series: "R Series Meta", tier: "Premium", price: "$5,000 towers",
+      tech: "12th-generation Uni-Q: the tweeter sits in the center of the midrange so sound comes from one point. Metamaterial Absorption Technology soaks up 99% of the tweeter's rear energy. Aluminum cones.",
+      sound: "Imaging you can point at, and it holds up off-axis, so every seat on a wide sectional gets the same mix.",
+      pitch: "Sit anywhere on the couch and the center of the picture stays in the center." },
+    { brand: "MartinLogan", series: "Motion XT", tier: "Premium", price: "$4,000 towers",
+      tech: "Folded Motion XT tweeter: a pleated film that squeezes air out like an accordion, 40% larger than the standard version. Aluminum-cone woofers. Same DNA as their electrostatic panels.",
+      sound: "Fast, airy, effortless detail at high volume. Big, open rooms are where it shines.",
+      pitch: "That tweeter moves air ten times faster than a dome; you hear it in cymbals and dialogue." },
+    { brand: "DALI", series: "Opticon Mk2", tier: "Premium", price: "$4,000 towers",
+      tech: "Soft Magnetic Compound magnet system that cuts the distortion normal iron magnets add. Wood-fibre cones. Hybrid tweeter on the 6 and 8: a soft dome plus a ribbon for the top octave.",
+      sound: "Warm, big and easy to drive. More musical than clinical. Made in Denmark.",
+      pitch: "Danish-built, and you hear the wood-fibre cone in how natural voices sound." },
+    { brand: "SVS", series: "Ultra Evolution", tier: "Premium", price: "$3,600 towers",
+      tech: "Diamond-coated aluminum dome tweeter, time-aligned sloped baffle so every driver's sound reaches you at the same instant, glass-fiber cones, and deep cabinets from a company that lives on subwoofers.",
+      sound: "Dynamics and bass weight above its price. Pairs with SVS subs in the same voice.",
+      pitch: "Built by the subwoofer company, so even the towers hit like they have a sub inside." },
+    { brand: "KEF", series: "Q Series Meta", tier: "Mid", price: "$2,000 towers",
+      tech: "The same Uni-Q point-source driver and Metamaterial absorber as the R Series, with aluminum cones and simpler cabinets. Q8 Meta doubles as a surround or an Atmos height.",
+      sound: "Most of the R Series imaging for less than half the money. The mid-tier pick for wide seating.",
+      pitch: "Same tweeter technology as the $5,000 KEFs, and you can hear it from any seat." },
+    { brand: "Bowers & Wilkins", series: "600 S3", tier: "Mid", price: "$2,500 towers",
+      tech: "Titanium Dome tweeter borrowed from the 700 S3. The 603 tower uses a Continuum-cone FST midrange and paper/Kevlar bass drivers.",
+      sound: "Smooth and refined in the mid tier, strongest with music. Prefers a solid receiver.",
+      pitch: "The entry to the brand that voices studio monitors, with the 700 Series tweeter." },
+    { brand: "MartinLogan", series: "Motion Foundation", tier: "Mid", price: "$2,400 towers",
+      tech: "Folded Motion tweeter in a value cabinet. Same pleated-film concept as the XT, smaller radiating area.",
+      sound: "The MartinLogan detail and speed at a price that fits a 5.1.2 build.",
+      pitch: "The cheapest way into the tweeter that made MartinLogan famous." },
+    { brand: "Klipsch", series: "Reference Premiere II", tier: "Mid", price: "$2,400 towers",
+      tech: "Tractrix horn around a 1-inch titanium tweeter with a vented chamber, Cerametallic woofers (ceramic-coated aluminum, copper color). Around 98 dB sensitivity, so a modest receiver plays loud.",
+      sound: "Huge dynamics and punch; the movie-night speaker. Bright for some ears on music.",
+      pitch: "The horn makes it the most efficient speaker here; your receiver barely works to fill the room." },
+    { brand: "Polk Audio", series: "Reserve", tier: "Mid", price: "$2,500 towers",
+      tech: "Pinnacle ring-radiator tweeter and Turbine Cone (foam-core polypropylene with turbine ribs) from the Legend series, Power Port bass venting, X-Port resonance control.",
+      sound: "Balanced and forgiving; nothing sticks out, which makes it an easy long-session home theater speaker.",
+      pitch: "Trickle-down from Polk's $6,000 Legend line, tuned for movies first." },
+    { brand: "Definitive Technology", series: "Dymension", tier: "Mid", price: "$3,000 towers",
+      tech: "BDSS (Balanced Double Surround) drivers, aluminum dome tweeter, and on the DM70 and DM60 towers a built-in powered subwoofer with Intelligent Bass Control.",
+      sound: "Towers that make real bass on their own; a 3.0 Dymension set plays like 3.1.",
+      pitch: "Each tower has its own powered sub inside, so you may not need a separate one." },
+    { brand: "DALI", series: "Oberon", tier: "Mid", price: "$1,700 towers",
+      tech: "Soft Magnetic Compound woofer magnet trickled down from Opticon, wood-fibre cones, oversized 29 mm soft-dome tweeter for wide dispersion. Easy load on any receiver.",
+      sound: "Warm and wide; the music-first choice in the mid tier.",
+      pitch: "Danish design, and it sounds good even when you're not sitting in the sweet spot." },
+    { brand: "SVS", series: "Prime", tier: "Value", price: "$1,200 towers",
+      tech: "Aluminum dome tweeter, polypropylene cones, stiff MDF cabinets, and the Prime Elevation, a real height speaker instead of an up-firing module.",
+      sound: "Clean and neutral for the money, with the best height option in the value tier.",
+      pitch: "Same company as the subs everyone recommends, and the Elevation is a real Atmos speaker." },
+    { brand: "Klipsch", series: "Reference", tier: "Value", price: "$1,100 towers",
+      tech: "Tractrix horn around an aluminum tweeter, injection-molded graphite (IMG) woofers. High sensitivity like its big brother.",
+      sound: "Loud and lively on a budget receiver. Less refined than Premiere II.",
+      pitch: "Plays loud and clear on any receiver you pair it with." },
+    { brand: "Polk Audio", series: "Signature Elite", tier: "Value", price: "$1,000 towers",
+      tech: "Terylene (polyester) dome tweeter, Dynamic Balance polypropylene-mica cones, Power Port venting. Hi-Res certified.",
+      sound: "Smooth, safe, forgiving; a complete 5.1.2 family under $2,500.",
+      pitch: "The easiest full family to build on a budget, with matching Atmos modules." },
+    { brand: "JBL", series: "Stage 2", tier: "Value", price: "$1,200 towers",
+      tech: "1-inch aluminum dome tweeter in an HDI waveguide from JBL Synthesis cinema speakers, polycellulose woofers.",
+      sound: "Lively, forward, big soundstage. The cinema-brand story at entry pricing.",
+      pitch: "JBL is in most movie theaters; this waveguide comes from their cinema line." },
+    { brand: "Sony", series: "Core", tier: "Value", price: "$460 towers",
+      tech: "Mica-Reinforced Cellular woofers, soft-dome tweeter plus a super tweeter on the SS-CS5 bookshelf, 3-way design at the lowest price here.",
+      sound: "Well above its price, but thinner and smaller-sounding than everything above it.",
+      pitch: "A complete 5.1.2 family for less than one pair of the premium towers." },
+  ];
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
+  document.getElementById("list").innerHTML = S.map(function (s, i) {
+    return "<div class='rank'>" +
+      "<div class='n'>" + (i + 1) + "</div>" +
+      "<div class='head'><b>" + esc(s.brand) + " " + esc(s.series) + "</b><span class='chip'>" + esc(s.tier) + "</span><span class='price'>" + esc(s.price) + "</span></div>" +
+      "<div class='body'><dl>" +
+      "<dt>Stands out</dt><dd>" + esc(s.tech) + "</dd>" +
+      "<dt>Sounds like</dt><dd>" + esc(s.sound) + "</dd>" +
+      "<dt>Pitch</dt><dd>" + esc(s.pitch) + "</dd>" +
+      "</dl></div></div>";
+  }).join("");
+  if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+})();
+</script>
+</body>
+</html>

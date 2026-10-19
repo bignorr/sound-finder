@@ -1,6 +1,6 @@
 // Sound Finder service worker: caches the app shell so it opens with no signal.
-const CACHE = "sound-finder-v2";
-const SHELL = ["./", "./index.html", "./family.html", "./app.css", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
+const CACHE = "sound-finder-v3";
+const SHELL = ["./", "./index.html", "./family.html", "./series.html", "./app.css", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
