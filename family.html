@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Speaker Family Builder</title>
+<meta name="description" content="Pick a Best Buy speaker series and a build size; get the matched family, approximate pricing, and links to find each piece.">
+<meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f1f2f4" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sound Finder">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="index.html">Sound <b>Finder</b></a>
+    <div class="row">
+      <a class="btn" href="index.html">Finder</a>
+    </div>
+  </header>
+
+  <section>
+    <p class="eyebrow">Speaker family builder</p>
+    <h2>Pick the series, size the build, pull the set.</h2>
+    <p class="muted">Every piece comes from one family so the voices match. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
+  </section>
+
+  <section>
+    <div class="ctl">
+      <span>Price level</span>
+      <div class="chips" id="tierChips">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="value" aria-pressed="false">Value</button>
+        <button type="button" data-v="mid" aria-pressed="false">Mid</button>
+        <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Series</span>
+      <div class="series" id="seriesList"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ctl">
+      <span>Fronts</span>
+      <div class="chips" id="frontsChips">
+        <button type="button" data-v="tower" aria-pressed="true">Towers</button>
+        <button type="button" data-v="bookshelf" aria-pressed="false">Bookshelf</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Speakers around the room</span>
+      <div class="chips" id="aroundChips">
+        <button type="button" data-v="2" aria-pressed="false">2 (stereo)</button>
+        <button type="button" data-v="3" aria-pressed="false">3 (fronts + center)</button>
+        <button type="button" data-v="5" aria-pressed="true">5</button>
+        <button type="button" data-v="7" aria-pressed="false">7</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Height channels</span>
+      <div class="chips" id="heightsChips">
+        <button type="button" data-v="0" aria-pressed="false">None</button>
+        <button type="button" data-v="2" aria-pressed="true">2</button>
+        <button type="button" data-v="4" aria-pressed="false">4</button>
+      </div>
+    </div>
+    <div class="ctl" id="heightTypeCtl">
+      <span>Height speakers</span>
+      <div class="chips" id="heightTypeChips">
+        <button type="button" data-v="series" aria-pressed="true">Series heights</button>
+        <button type="button" data-v="inceiling" aria-pressed="false">In-ceiling</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Subwoofers</span>
+      <div class="chips" id="subsChips">
+        <button type="button" data-v="0" aria-pressed="false">None</button>
+        <button type="button" data-v="1" aria-pressed="true">1</button>
+        <button type="button" data-v="2" aria-pressed="false">2</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result">
+    <p class="eyebrow" id="buildLabel"></p>
+    <h2 id="buildHead"></h2>
+    <div class="card">
+      <div class="lines" id="lines"></div>
+      <div class="total"><span class="muted">Approx. speakers total</span><strong id="total"></strong></div>
+      <p class="muted small" id="totalNote"></p>
+    </div>
+    <div class="card" id="avrCard"></div>
+    <div class="sticky-bar">
+      <button class="btn primary" type="button" id="copyBtn">Copy list</button>
+      <button class="btn" type="button" id="bbyBtn">Open series on bestbuy.com</button>
+    </div>
+  </section>
+
+  <footer>Approximate list prices for equipment only, rounded; promos and bundles change weekly. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
+</div>
+<textarea class="offscreen" id="clip" aria-hidden="true" tabindex="-1"></textarea>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  // Prices: approximate USD list. "pair" entries are priced per pair, everything else per unit.
+  const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 800, note: "or Sonance VP66R if the install package calls for it" };
+  const SERIES = [
+    { id: "sony-core", brand: "Sony", series: "Core", tier: "value",
+      tower: { m: "SS-CS3", pair: 460 }, bookshelf: { m: "SS-CS5", pair: 180 }, center: { m: "SS-CS8", each: 150 },
+      height: { m: "SS-CSE", pair: 200, kind: "module" }, sub: { m: "SS-CS9", each: 200 } },
+    { id: "jbl-stage2", brand: "JBL", series: "Stage 2", tier: "value",
+      tower: { m: "Stage 2 280F", pair: 1200 }, bookshelf: { m: "Stage 2 250B", pair: 500 }, center: { m: "Stage 2 245C", each: 400 },
+      height: { m: "Stage 2 240H", pair: 500, kind: "module" }, sub: { m: "Stage 2 220P", each: 400 } },
+    { id: "klipsch-ref", brand: "Klipsch", series: "Reference", tier: "value",
+      tower: { m: "R-800F", pair: 1100 }, bookshelf: { m: "R-600M", pair: 450 }, center: { m: "R-50C", each: 250 },
+      height: { m: "R-40SA", pair: 300, kind: "module" }, inceiling: { m: "R-2650-C II in-ceiling", pair: 300 },
+      sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 } },
+    { id: "polk-es", brand: "Polk Audio", series: "Signature Elite", tier: "value",
+      tower: { m: "ES60", pair: 1000 }, bookshelf: { m: "ES20", pair: 400 }, center: { m: "ES35", each: 400 },
+      height: { m: "ES90", pair: 450, kind: "module" }, inceiling: { m: "RC80i in-ceiling", pair: 300 },
+      sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 } },
+    { id: "svs-prime", brand: "SVS", series: "Prime", tier: "value",
+      tower: { m: "Prime Tower", pair: 1200 }, bookshelf: { m: "Prime Bookshelf", pair: 650 }, center: { m: "Prime Center", each: 450 },
+      surround: { m: "Prime Satellite", pair: 300 }, height: { m: "Prime Elevation", pair: 500, kind: "speaker" },
+      sub: { m: "SB-1000 Pro", each: 600 }, subAlt: { m: "PB-1000 Pro", each: 700 } },
+    { id: "klipsch-rp2", brand: "Klipsch", series: "Reference Premiere II", tier: "mid",
+      tower: { m: "RP-8000F II", pair: 2400 }, towerAlt: { m: "RP-6000F II", pair: 1800 }, bookshelf: { m: "RP-600M II", pair: 750 }, center: { m: "RP-504C II", each: 1000 },
+      surround: { m: "RP-502S II", pair: 1000 }, height: { m: "RP-500SA II", pair: 700, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 800 },
+      sub: { m: "RP-1200SW", each: 1300 }, subAlt: { m: "RP-1000SW", each: 900 } },
+    { id: "polk-reserve", brand: "Polk Audio", series: "Reserve", tier: "mid",
+      tower: { m: "R700", pair: 2500 }, towerAlt: { m: "R600", pair: 1800 }, bookshelf: { m: "R200", pair: 800 }, center: { m: "R400", each: 900 },
+      height: { m: "R900", pair: 500, kind: "module" }, inceiling: { m: "V80 in-ceiling", pair: 400 },
+      sub: { m: "HTS 12", each: 500 }, subAlt: { m: "MXT12", each: 500 } },
+    { id: "kef-q", brand: "KEF", series: "Q Series Meta", tier: "mid",
+      tower: { m: "Q11 Meta", pair: 2000 }, towerAlt: { m: "Q7 Meta", pair: 1500 }, bookshelf: { m: "Q3 Meta", pair: 800 }, center: { m: "Q6 Meta", each: 700 },
+      surround: { m: "Q8 Meta", pair: 1000 }, height: { m: "Q8 Meta", pair: 1000, kind: "module" }, inceiling: { m: "Ci160QR in-ceiling", pair: 600 },
+      sub: { m: "Kube 12 MIE", each: 900 }, subAlt: { m: "Kube 10 MIE", each: 700 } },
+    { id: "dali-oberon", brand: "DALI", series: "Oberon", tier: "mid",
+      tower: { m: "Oberon 7", pair: 1700 }, towerAlt: { m: "Oberon 5", pair: 1200 }, bookshelf: { m: "Oberon 3", pair: 700 }, center: { m: "Oberon Vokal", each: 500 },
+      surround: { m: "Oberon On-Wall", pair: 700 }, height: { m: "Alteco C-1", pair: 600, kind: "module" },
+      sub: { m: "Sub E-12 F", each: 900 }, subAlt: { m: "Sub E-9 F", each: 700 } },
+    { id: "ml-foundation", brand: "MartinLogan", series: "Motion Foundation", tier: "mid",
+      tower: { m: "Motion Foundation F2", pair: 2400 }, towerAlt: { m: "Motion Foundation F1", pair: 1800 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C2", each: 900 },
+      inceiling: { m: "Motion MC6-HT in-ceiling", pair: 900 },
+      sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 } },
+    { id: "deftech-dym", brand: "Definitive Technology", series: "Dymension", tier: "mid",
+      tower: { m: "DM70", pair: 3000 }, towerAlt: { m: "DM60", pair: 2000 }, bookshelf: { m: "DM20", pair: 1000 }, center: { m: "DM30", each: 1000 },
+      surround: { m: "DM80", pair: 1000 }, height: { m: "DM90", pair: 600, kind: "module" }, inceiling: { m: "DI 6.5R in-ceiling", pair: 800 },
+      sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 } },
+    { id: "bw-600", brand: "Bowers & Wilkins", series: "600 S3", tier: "mid",
+      tower: { m: "603 S3", pair: 2500 }, bookshelf: { m: "606 S3", pair: 1200 }, center: { m: "HTM6 S3", each: 900 },
+      inceiling: { m: "CCM664 in-ceiling", pair: 700 },
+      sub: { m: "ASW610", each: 900 }, subAlt: { m: "ASW608", each: 700 } },
+    { id: "ml-xt", brand: "MartinLogan", series: "Motion XT", tier: "premium",
+      tower: { m: "Motion XT F200", pair: 4000 }, towerAlt: { m: "Motion XT F100", pair: 3000 }, bookshelf: { m: "Motion XT B100", pair: 1500 }, center: { m: "Motion XT C100", each: 1300 },
+      surround: { m: "Motion XT FX100", pair: 1700 }, inceiling: { m: "Motion MC6-HT in-ceiling", pair: 900 },
+      sub: { m: "Dynamo 1000X", each: 1300 }, subAlt: { m: "Dynamo 800X", each: 1000 } },
+    { id: "kef-r", brand: "KEF", series: "R Series Meta", tier: "premium",
+      tower: { m: "R7 Meta", pair: 5000 }, towerAlt: { m: "R5 Meta", pair: 3500 }, bookshelf: { m: "R3 Meta", pair: 2200 }, center: { m: "R6 Meta", each: 1800 },
+      height: { m: "R8 Meta", pair: 1300, kind: "module" }, inceiling: { m: "Ci200RR-THX in-ceiling", pair: 1500 },
+      sub: { m: "Kube 15 MIE", each: 1200 }, subAlt: { m: "KC62", each: 1700 } },
+    { id: "bw-700", brand: "Bowers & Wilkins", series: "700 S3", tier: "premium",
+      tower: { m: "703 S3", pair: 5000 }, towerAlt: { m: "704 S3", pair: 3600 }, bookshelf: { m: "706 S3", pair: 2200 }, center: { m: "HTM71 S3", each: 2200 },
+      inceiling: { m: "CCM7.5 S2 in-ceiling", pair: 1500 },
+      sub: { m: "DB4S", each: 2500 }, subAlt: { m: "ASW610", each: 900 } },
+    { id: "dali-opticon", brand: "DALI", series: "Opticon Mk2", tier: "premium",
+      tower: { m: "Opticon 8 Mk2", pair: 4000 }, towerAlt: { m: "Opticon 6 Mk2", pair: 2800 }, bookshelf: { m: "Opticon 2 Mk2", pair: 1500 }, center: { m: "Opticon Vokal Mk2", each: 1000 },
+      height: { m: "Alteco C-1", pair: 600, kind: "module" },
+      sub: { m: "Sub E-12 F", each: 900 } },
+    { id: "svs-ultra", brand: "SVS", series: "Ultra Evolution", tier: "premium",
+      tower: { m: "Ultra Evolution Tower", pair: 3600 }, bookshelf: { m: "Ultra Evolution Bookshelf", pair: 1600 }, center: { m: "Ultra Evolution Center", each: 1000 },
+      surround: { m: "Ultra Evolution Nano", pair: 700 }, height: { m: "Ultra Evolution Elevation", pair: 800, kind: "speaker" },
+      sub: { m: "SB-3000", each: 1100 }, subAlt: { m: "PB-3000", each: 1500 } },
+  ];
+  // Subs worth suggesting beside the series sub, by tier.
+  const SUB_PICKS = {
+    value: [{ brand: "SVS", m: "SB-1000 Pro", each: 600 }, { brand: "Polk Audio", m: "HTS 12", each: 500 }],
+    mid: [{ brand: "SVS", m: "PB-2000 Pro", each: 1000 }, { brand: "REL", m: "T/7x", each: 1100 }, { brand: "MartinLogan", m: "Dynamo 800X", each: 1000 }],
+    premium: [{ brand: "SVS", m: "PB-3000", each: 1500 }, { brand: "REL", m: "T/9x", each: 1450 }, { brand: "MartinLogan", m: "Dynamo 1000X", each: 1300 }],
+  };
+  const AVR = [
+    { ch: 5, text: "5 to 7 amplified channels", ex: "Denon AVR-S770H, Yamaha RX-V4A, Sony STR-AN1000" },
+    { ch: 7, text: "7 amplified channels", ex: "Denon AVR-S970H or X1800H, Yamaha RX-V6A, Onkyo TX-NR6100, Sony STR-AN1000" },
+    { ch: 9, text: "9 amplified channels", ex: "Denon AVR-X3800H, Marantz Cinema 50, Onkyo TX-RZ50, Yamaha RX-A6A" },
+    { ch: 11, text: "11 amplified channels", ex: "Denon AVR-X6800H, Yamaha RX-A8A, or a 9-channel AVR plus a 2-channel power amp" },
+  ];
+
+  const $ = function (id) { return document.getElementById(id); };
+  const state = { tier: "all", series: "klipsch-rp2", fronts: "tower", around: 5, heights: 2, heightType: "series", subs: 1 };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
+  function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+  function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove("show"); }, 2200); }
+  function persist() { try { localStorage.setItem("sf-family", JSON.stringify(state)); } catch (e) {} }
+
+  // Deep link from the finder: family.html?cfg=5.2.4&tier=mid
+  (function fromQuery() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem("sf-family") || "null"); } catch (e) {}
+    if (saved && typeof saved === "object") Object.assign(state, saved);
+    const q = new URLSearchParams(location.search);
+    const cfg = (q.get("cfg") || "").split(".");
+    if (cfg.length >= 2) {
+      const around = parseInt(cfg[0], 10), subs = parseInt(cfg[1], 10), heights = parseInt(cfg[2] || "0", 10);
+      if ([2, 3, 5, 7].indexOf(around) >= 0) state.around = around;
+      if ([0, 1, 2].indexOf(subs) >= 0) state.subs = subs;
+      if ([0, 2, 4].indexOf(heights) >= 0) state.heights = heights;
+    }
+    const tier = q.get("tier");
+    if (tier && ["value", "mid", "premium"].indexOf(tier) >= 0) {
+      state.tier = tier;
+      const cur = SERIES.find(function (s) { return s.id === state.series; });
+      if (!cur || cur.tier !== tier) state.series = SERIES.find(function (s) { return s.tier === tier; }).id;
+    }
+    if (q.get("fronts") === "bookshelf" || q.get("fronts") === "tower") state.fronts = q.get("fronts");
+  })();
+
+  function chips(id, key, numeric) {
+    const el = $(id);
+    const btns = el.querySelectorAll("button");
+    const sync = function () { Array.prototype.forEach.call(btns, function (b) { b.setAttribute("aria-pressed", String(String(b.dataset.v) === String(state[key]))); }); };
+    Array.prototype.forEach.call(btns, function (b) {
+      b.addEventListener("click", function () { state[key] = numeric ? parseInt(b.dataset.v, 10) : b.dataset.v; sync(); persist(); render(); });
+    });
+    sync();
+    return sync;
+  }
+  const syncTier = chips("tierChips", "tier", false);
+  const syncFronts = chips("frontsChips", "fronts", false);
+  const syncAround = chips("aroundChips", "around", true);
+  const syncHeights = chips("heightsChips", "heights", true);
+  const syncHeightType = chips("heightTypeChips", "heightType", false);
+  const syncSubs = chips("subsChips", "subs", true);
+
+  function renderSeries() {
+    const list = $("seriesList");
+    const shown = SERIES.filter(function (s) { return state.tier === "all" || s.tier === state.tier; });
+    if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
+    list.innerHTML = shown.map(function (s) {
+      return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
+        "<span class='tier'>" + esc(s.tier) + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
+        "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span></button>";
+    }).join("");
+  }
+  $("seriesList").addEventListener("click", function (e) {
+    const b = e.target.closest(".ser"); if (!b) return;
+    state.series = b.dataset.id; persist(); render();
+  });
+
+  function build() {
+    const s = SERIES.find(function (x) { return x.id === state.series; });
+    const lines = [];
+    const add = function (role, brand, model, qty, each, note) { lines.push({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "" }); };
+    // fronts
+    if (state.fronts === "tower") add("Front left + right", s.brand, s.tower.m, 2, s.tower.pair / 2, s.towerAlt ? "Smaller room: " + s.towerAlt.m + " (" + money(s.towerAlt.pair) + " pair)" : "");
+    else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Needs stands or a console; see Sanus line below");
+    // center
+    if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, "Same series as the fronts so dialog matches");
+    // surrounds
+    const sur = s.surround || s.bookshelf;
+    if (state.around >= 5) add("Surrounds (sides)", s.brand, sur.m, 2, sur.pair / 2, s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets");
+    if (state.around >= 7) add("Surrounds (rear)", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Bookshelf behind the seats");
+    // heights
+    if (state.heights > 0) {
+      const useCeil = state.heightType === "inceiling" || !s.height;
+      const h = useCeil ? (s.inceiling || INCEIL_FALLBACK) : s.height;
+      const hb = useCeil && !s.inceiling ? INCEIL_FALLBACK.brand : s.brand;
+      const roleName = state.heights === 4 ? "Heights (front + rear pairs)" : "Heights (front pair)";
+      const note = useCeil ? ("In-ceiling, installer-mounted" + (!s.inceiling ? "; " + INCEIL_FALLBACK.note : "")) : (s.height.kind === "module" ? "Atmos modules that sit on the fronts" + (state.heights === 4 ? " and surrounds" : "") : "Height speakers, wall or stand");
+      add(roleName, hb, h.m, state.heights, h.pair / 2, note);
+    }
+    // subs
+    if (state.subs > 0) {
+      const picks = SUB_PICKS[s.tier];
+      add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", s.brand, s.sub.m, state.subs, s.sub.each,
+        (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "));
+    }
+    // stands
+    if (state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional");
+    if (state.around >= 5 && !s.surround) add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional");
+    return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
+  }
+
+  function configString() { return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
+  function channels() { return state.around + state.heights; }
+  function avrFor(n) { return AVR.find(function (a) { return n <= a.ch; }) || AVR[AVR.length - 1]; }
+
+  function render() {
+    syncTier(); syncFronts(); syncAround(); syncHeights(); syncHeightType(); syncSubs();
+    renderSeries();
+    const s = SERIES.find(function (x) { return x.id === state.series; });
+    $("heightTypeCtl").hidden = state.heights === 0;
+    const hc = $("heightTypeChips").querySelector("[data-v='series']");
+    hc.textContent = s.height ? (s.height.kind === "module" ? "Atmos modules" : "Height speakers") : "Atmos modules";
+    hc.disabled = !s.height;
+    if (!s.height && state.heightType === "series") { hc.setAttribute("aria-pressed", "false"); $("heightTypeChips").querySelector("[data-v='inceiling']").setAttribute("aria-pressed", "true"); }
+    const r = build();
+    $("buildLabel").textContent = "The " + configString() + " family";
+    $("buildHead").textContent = s.brand + " " + s.series;
+    $("lines").innerHTML = r.lines.map(function (l) {
+      return "<div class='line'>" +
+        "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
+        "<div class='qty'>" + l.qty + " × " + money(l.each) + (l.note ? " · " + esc(l.note) : "") + "</div></div>" +
+        "<div class='price'>" + money(l.total) + "</div>" +
+        "<div class='find'><a href='" + bby(l.brand + " " + l.model) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" +
+        "</div>";
+    }).join("");
+    $("total").textContent = money(r.total);
+    $("totalNote").textContent = "Approximate list, " + r.lines.length + " line items. Receiver, mounts and install not included.";
+    const a = avrFor(channels());
+    $("avrCard").innerHTML = "<h3>Receiver for " + configString() + "</h3><p>" + channels() + " speakers to drive, so the receiver needs <b>" + esc(a.text) + "</b>" + (state.subs ? ", plus " + state.subs + " sub out" + (state.subs > 1 ? "s" : "") : "") + ".</p><p class='muted'>" + esc(a.ex) + "</p>";
+    $("bbyBtn").onclick = function () { window.open(bby(s.brand + " " + s.series), "_blank", "noopener"); };
+    persist();
+  }
+
+  function listText() {
+    const r = build();
+    const s = r.series;
+    const out = [s.brand + " " + s.series + " — " + configString() + " (" + (state.fronts === "tower" ? "towers" : "bookshelf fronts") + ")"];
+    r.lines.forEach(function (l) { out.push(l.role + ": " + l.brand + " " + l.model + " ×" + l.qty + " ~ " + money(l.total)); });
+    out.push("Approx. speakers total: " + money(r.total) + " (list; verify current price)");
+    const a = avrFor(channels());
+    out.push("Receiver: " + a.text + " — " + a.ex);
+    return out.join("\n");
+  }
+  function copyText(text) {
+    const done = function () { toast("List copied"); };
+    const fallback = function () {
+      const ta = $("clip"); ta.value = text; ta.classList.remove("offscreen"); ta.focus(); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("Select the text and copy"); }
+      setTimeout(function () { ta.classList.add("offscreen"); }, 50);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  }
+  $("copyBtn").addEventListener("click", function () { copyText(listText()); });
+
+  render();
+  if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+})();
+</script>
+</body>
+</html>
