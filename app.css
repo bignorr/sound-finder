@@ -109,7 +109,7 @@ footer { padding-block: 32px 0; color: var(--muted); font-size: 14px; max-width:
 .line .qty { color: var(--muted); font-size: 14px; }
 .line .price { font-family: var(--font-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .line .find { grid-column: 1 / -1; font-size: 14px; }
-.line a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.line a, .card a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 2px solid var(--fg); padding-top: 12px; }
 .total strong { font-family: var(--font-display); font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .sticky-bar { position: sticky; bottom: 0; background: var(--bg); padding-block: 12px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap; z-index: 5; }

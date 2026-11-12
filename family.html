@@ -101,6 +101,7 @@
       <div class="total"><span class="muted">Approx. speakers total</span><strong id="total"></strong></div>
       <p class="muted small" id="totalNote"></p>
     </div>
+    <div class="card alt" id="kitNote" hidden></div>
     <div class="card" id="avrCard"></div>
     <div class="sticky-bar">
       <button class="btn primary" type="button" id="copyBtn">Copy list</button>
@@ -184,6 +185,32 @@
       tower: { m: "Ultra Evolution Tower", pair: 3600 }, bookshelf: { m: "Ultra Evolution Bookshelf", pair: 1600 }, center: { m: "Ultra Evolution Center", each: 1000 },
       surround: { m: "Ultra Evolution Nano", pair: 700 }, height: { m: "Ultra Evolution Elevation", pair: 800, kind: "speaker" },
       sub: { m: "SB-3000", each: 1100 }, subAlt: { m: "PB-3000", each: 1500 } },
+    // Sonance: architectural (in-wall / in-ceiling) families. "tower" = in-wall fronts, "bookshelf" = in-ceiling fronts.
+    // Prices are what bestbuy.com showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
+    { id: "sonance-mag", brand: "Sonance", series: "Mag Series", tier: "value", arch: true, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
+      tower: { m: "MAG8R 8 in in-ceiling (pair)", pair: 249, note: "Comp. value $1,099; sold in pairs only" }, bookshelf: { m: "MAG6R 6.5 in in-ceiling (pair)", pair: 149, note: "Comp. value $749; sold in pairs only" },
+      center: { m: "MAG6R (one more pair; use one as center)", each: 149, note: "Mag has no in-wall center; the MAG5.1R puts a third ceiling speaker above the screen. For real dialog from the screen wall, step up to a VX62 LCR or VP62 LCR." },
+      surround: { m: "MAG6R in-ceiling (pair)", pair: 149 }, inceiling: { m: "MAG6R in-ceiling (pair)", pair: 149 },
+      sub: { m: "MS10SUB 10 in 275 W", each: 429 }, subAlt: { m: "MAG5.1R complete 5.1 in-ceiling system", each: 499 },
+      kit: "MAG5.1R: five MAG6R-class in-ceilings + MS10SUB for $499 (comp $2,499). MAG5.1 Premium: three MAG6 LCR in-walls, two MAG6R SUR, MS10SUB, wireless kit for $1,199 (comp $4,499)." },
+    { id: "sonance-vx", brand: "Sonance", series: "Visual Experience", tier: "mid", arch: true,
+      tower: { m: "VX62 6.5 in in-wall (pair)", pair: 550 }, bookshelf: { m: "VX62R 6.5 in in-ceiling (pair)", pair: 550 },
+      center: { m: "VX62 LCR in-wall", each: 440 },
+      surround: { m: "VX62R in-ceiling (pair)", pair: 550 }, inceiling: { m: "VX62R in-ceiling (pair)", pair: 550 },
+      sub: { m: "MS10SUB 10 in 275 W", each: 429 }, subAlt: { m: "Impact i8 8 in wireless", each: 1100 },
+      kit: "VX62 rectangle single $275; VX42 4 in in-wall pair is packaged with the UA 2-125 ARC amp at $1,369.99." },
+    { id: "sonance-vp", brand: "Sonance", series: "Visual Performance", tier: "premium", arch: true,
+      tower: { m: "VP62 LCR 6.5 in in-wall (each)", pair: 830, note: "$415 each; clearance units seen at $102.99" }, bookshelf: { m: "VP66R 6.5 in in-ceiling (each)", pair: 865 },
+      center: { m: "VP62 LCR in-wall", each: 415 },
+      surround: { m: "VP62R SST/SUR thin-line in-ceiling", pair: 990 }, inceiling: { m: "VP66R in-ceiling (each)", pair: 865 },
+      sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
+      kit: "VP62 rectangle in-wall pair on clearance at $162.99 (comp $479.98). VP66R $432.49 each; VP62R SST/SUR TL $495 each." },
+    { id: "sonance-is", brand: "Sonance", series: "Invisible Series", tier: "premium", arch: true,
+      tower: { m: "IS8 8 in invisible (pair)", pair: 2120, note: "$1,060 each; plastered over, needs a finisher" }, bookshelf: { m: "IS6 6.5 in invisible (pair)", pair: 1515 },
+      center: { m: "IS6 invisible (each)", each: 757.5 },
+      surround: { m: "IS6 invisible (pair)", pair: 1515 }, inceiling: { m: "IS6 invisible (pair)", pair: 1515 },
+      sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
+      kit: "IS8 $2,120 pair / $1,060 each; IS6 $1,515 pair / $757.50 each. 84 to 86 dB sensitivity, so give them a real amp." },
   ];
   // Subs worth suggesting beside the series sub, by tier.
   const SUB_PICKS = {
@@ -251,8 +278,9 @@
     if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
     list.innerHTML = shown.map(function (s) {
       return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
-        "<span class='tier'>" + esc(s.tier) + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
-        "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span></button>";
+        "<span class='tier'>" + esc(s.tier) + (s.arch ? " · in-wall / in-ceiling" : "") + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
+        (s.arch ? "<span>" + (s.frontLabels ? s.frontLabels[0] : "In-wall") + " " + money(s.tower.pair) + " pair · " + (s.frontLabels ? s.frontLabels[1] : "In-ceiling") + " " + money(s.bookshelf.pair) + " pair</span>"
+                : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + "</button>";
     }).join("");
   }
   $("seriesList").addEventListener("click", function (e) {
@@ -265,14 +293,17 @@
     const lines = [];
     const add = function (role, brand, model, qty, each, note) { lines.push({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "" }); };
     // fronts
-    if (state.fronts === "tower") add("Front left + right", s.brand, s.tower.m, 2, s.tower.pair / 2, s.towerAlt ? "Smaller room: " + s.towerAlt.m + " (" + money(s.towerAlt.pair) + " pair)" : "");
+    if (s.arch) {
+      const f = state.fronts === "tower" ? s.tower : s.bookshelf;
+      add("Front left + right", s.brand, f.m, 2, f.pair / 2, f.note || (state.fronts === "tower" && !s.frontLabels ? "In-wall, flanking the screen; installer-mounted" : "In-ceiling above the screen wall; aim the tweeters at the seats"));
+    } else if (state.fronts === "tower") add("Front left + right", s.brand, s.tower.m, 2, s.tower.pair / 2, s.towerAlt ? "Smaller room: " + s.towerAlt.m + " (" + money(s.towerAlt.pair) + " pair)" : "");
     else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Needs stands or a console; see Sanus line below");
     // center
-    if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, "Same series as the fronts so dialog matches");
+    if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, s.center.note || (s.arch ? "In-wall LCR under or above the screen; same driver as the fronts" : "Same series as the fronts so dialog matches"));
     // surrounds
     const sur = s.surround || s.bookshelf;
-    if (state.around >= 5) add("Surrounds (sides)", s.brand, sur.m, 2, sur.pair / 2, s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets");
-    if (state.around >= 7) add("Surrounds (rear)", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Bookshelf behind the seats");
+    if (state.around >= 5) add("Surrounds (sides)", s.brand, sur.m, 2, sur.pair / 2, s.arch ? "In-ceiling or in-wall beside the seats" : (s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets"));
+    if (state.around >= 7) add("Surrounds (rear)", s.brand, s.arch ? sur.m : s.bookshelf.m, 2, (s.arch ? sur.pair : s.bookshelf.pair) / 2, s.arch ? "In-ceiling behind the seats" : "Bookshelf behind the seats");
     // heights
     if (state.heights > 0) {
       const useCeil = state.heightType === "inceiling" || !s.height;
@@ -289,8 +320,8 @@
         (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "));
     }
     // stands
-    if (state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional");
-    if (state.around >= 5 && !s.surround) add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional");
+    if (!s.arch && state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional");
+    if (!s.arch && state.around >= 5 && !s.surround) add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional");
     return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
   }
 
@@ -302,14 +333,19 @@
     syncTier(); syncFronts(); syncAround(); syncHeights(); syncHeightType(); syncSubs();
     renderSeries();
     const s = SERIES.find(function (x) { return x.id === state.series; });
+    const fc = $("frontsChips");
+    fc.querySelector("[data-v='tower']").textContent = s.frontLabels ? s.frontLabels[0] : (s.arch ? "In-wall" : "Towers");
+    fc.querySelector("[data-v='bookshelf']").textContent = s.frontLabels ? s.frontLabels[1] : (s.arch ? "In-ceiling" : "Bookshelf");
     $("heightTypeCtl").hidden = state.heights === 0;
     const hc = $("heightTypeChips").querySelector("[data-v='series']");
     hc.textContent = s.height ? (s.height.kind === "module" ? "Atmos modules" : "Height speakers") : "Atmos modules";
     hc.disabled = !s.height;
     if (!s.height && state.heightType === "series") { hc.setAttribute("aria-pressed", "false"); $("heightTypeChips").querySelector("[data-v='inceiling']").setAttribute("aria-pressed", "true"); }
     const r = build();
-    $("buildLabel").textContent = "The " + configString() + " family";
+    $("buildLabel").textContent = "The " + configString() + " family" + (s.arch ? " · architectural" : "");
     $("buildHead").textContent = s.brand + " " + s.series;
+    $("kitNote").hidden = !s.kit;
+    $("kitNote").innerHTML = s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" + (s.brand === "Sonance" ? "<p class='small'><a href='sonance.html'>Full Sonance list with today's prices</a></p>" : "") : "";
     $("lines").innerHTML = r.lines.map(function (l) {
       return "<div class='line'>" +
         "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
@@ -329,7 +365,7 @@
   function listText() {
     const r = build();
     const s = r.series;
-    const out = [s.brand + " " + s.series + " — " + configString() + " (" + (state.fronts === "tower" ? "towers" : "bookshelf fronts") + ")"];
+    const out = [s.brand + " " + s.series + " — " + configString() + " (" + (s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts")) + ")"];
     r.lines.forEach(function (l) { out.push(l.role + ": " + l.brand + " " + l.model + " ×" + l.qty + " ~ " + money(l.total)); });
     out.push("Approx. speakers total: " + money(r.total) + " (list; verify current price)");
     const a = avrFor(channels());

@@ -38,6 +38,7 @@
     <a class="brand" href="index.html">Sound <b>Finder</b></a>
     <div class="row">
       <a class="btn" href="family.html">Family</a>
+      <a class="btn" href="sonance.html">Sonance</a>
       <a class="btn" href="index.html">Finder</a>
     </div>
   </header>
@@ -45,7 +46,7 @@
   <section>
     <p class="eyebrow">Series guide</p>
     <h2>Every family in the builder, ranked.</h2>
-    <p class="muted">Ranked on sound quality and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Tower pair price is approximate list.</p>
+    <p class="muted">Ranked on sound quality and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Tower pair price is approximate list. Sonance lines are in-wall and in-ceiling only, so they are ranked for what they do best; the <a href="sonance.html">Sonance brand sheet</a> has every line with current prices.</p>
     <div class="legend"><span>Premium</span><span>Mid</span><span>Value</span><span>· Pitch = one line to say on the floor</span></div>
   </section>
 
@@ -107,6 +108,14 @@
       tech: "Soft Magnetic Compound woofer magnet trickled down from Opticon, wood-fibre cones, oversized 29 mm soft-dome tweeter for wide dispersion. Easy load on any receiver.",
       sound: "Warm and wide; the music-first choice in the mid tier.",
       pitch: "Danish design, and it sounds good even when you're not sitting in the sweet spot." },
+    { brand: "Sonance", series: "Visual Performance", tier: "Mid", price: "$415 per in-wall LCR",
+      tech: "Installer-grade in-wall and in-ceiling line: pivoting tweeters, LCR in-wall versions, thin-line and single-stereo options, 90 dB sensitivity. In-wall and in-ceiling only; no box speakers.",
+      sound: "The Sonance line that can carry a front stage. VP62 LCR in-walls under the screen beat any ceiling speaker for dialog.",
+      pitch: "If the whole system has to disappear, this is the Sonance to put in the wall; keep Mag for the ceiling." },
+    { brand: "Sonance", series: "Invisible Series", tier: "Premium", price: "$2,120 pair (IS8)",
+      tech: "IS6 and IS8 flat-panel drivers that get plastered or skimmed over and painted; 84 to 86 dB sensitivity, 40 to 50 Hz low end. The only speaker on the floor that is literally invisible.",
+      sound: "A design purchase, not a sound purchase: good for what it is, but a visible VP speaker at half the price sounds better. Needs a real amp and a finisher.",
+      pitch: "For the customer who said no to anything showing, this is the answer; it is also a Budget Builder install job." },
     { brand: "SVS", series: "Prime", tier: "Value", price: "$1,200 towers",
       tech: "Aluminum dome tweeter, polypropylene cones, stiff MDF cabinets, and the Prime Elevation, a real height speaker instead of an up-firing module.",
       sound: "Clean and neutral for the money, with the best height option in the value tier.",
@@ -119,6 +128,10 @@
       tech: "Terylene (polyester) dome tweeter, Dynamic Balance polypropylene-mica cones, Power Port venting. Hi-Res certified.",
       sound: "Smooth, safe, forgiving; a complete 5.1.2 family under $2,500.",
       pitch: "The easiest full family to build on a budget, with matching Atmos modules." },
+    { brand: "Sonance", series: "Visual Experience", tier: "Value", price: "$550 in-wall pair",
+      tech: "The step between Mag and Visual Performance: 6.5 in in-wall pairs, an LCR version, in-ceiling rounds, a 4 in model for small rooms. In-wall and in-ceiling only.",
+      sound: "Clean and polite. Fine for a hidden front stage in a secondary room or a TV-sound setup with the UA 2-125 ARC amp.",
+      pitch: "Hidden TV sound with no receiver: two VX in-walls and the ARC amp, and nothing shows." },
     { brand: "JBL", series: "Stage 2", tier: "Value", price: "$1,200 towers",
       tech: "1-inch aluminum dome tweeter in an HDI waveguide from JBL Synthesis cinema speakers, polycellulose woofers.",
       sound: "Lively, forward, big soundstage. The cinema-brand story at entry pricing.",
@@ -127,6 +140,10 @@
       tech: "Mica-Reinforced Cellular woofers, soft-dome tweeter plus a super tweeter on the SS-CS5 bookshelf, 3-way design at the lowest price here.",
       sound: "Well above its price, but thinner and smaller-sounding than everything above it.",
       pitch: "A complete 5.1.2 family for less than one pair of the premium towers." },
+    { brand: "Sonance", series: "Mag Series", tier: "Value", price: "$149 in-ceiling pair",
+      tech: "6.5 in and 8 in in-ceiling speakers with a magnetic flush grille, sold in pairs and as the MAG5.1R and MAG5.1 Premium systems. Best Buy exclusive, always on promo against a high comp value.",
+      sound: "Good ceiling speakers for the money, and that is the whole sentence. As a front left, center and right they fire at the floor, so dialog never comes from the screen.",
+      pitch: "Heights and surrounds for any build at $149 a pair; the honest line is 'great for the ceiling, step up for the front wall.'" },
   ];
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   document.getElementById("list").innerHTML = S.map(function (s, i) {
