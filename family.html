@@ -36,7 +36,7 @@
   <section>
     <p class="eyebrow">Speaker family builder</p>
     <h2>Pick the series, size the build, pull the set.</h2>
-    <p class="muted">Every piece comes from one family so the voices match. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
+    <p class="muted">Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by Best Buy. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
   </section>
 
   <section>
@@ -78,6 +78,14 @@
         <button type="button" data-v="3" aria-pressed="false">3 (fronts + center)</button>
         <button type="button" data-v="5" aria-pressed="true">5</button>
         <button type="button" data-v="7" aria-pressed="false">7</button>
+      </div>
+    </div>
+    <div class="ctl" id="surroundTypeCtl">
+      <span>Surround speakers</span>
+      <div class="chips" id="surroundTypeChips">
+        <button type="button" data-v="series" aria-pressed="true">Series surrounds</button>
+        <button type="button" data-v="inwall" aria-pressed="false">In-wall</button>
+        <button type="button" data-v="inceiling" aria-pressed="false">In-ceiling</button>
       </div>
     </div>
     <div class="ctl">
@@ -155,21 +163,27 @@
 <script>
 (function () {
   // Prices: approximate USD list. "pair" entries are priced per pair, everything else per unit.
-  const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 800, note: "or Sonance VP66R if the install package calls for it" };
+  // In-wall and in-ceiling picks come from each family's own brand, confirmed sold and shipped by Best Buy (bestbuy.com, Nov 13, 2026).
+  // Brands with no architectural line at Best Buy (Sony, SVS, DALI, ELAC) get these Klipsch swaps, and the line says so.
+  const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 340, note: "Klipsch swap: this brand has no in-ceiling sold by Best Buy. Sonance MAG6R ($149 pair) is the budget swap" };
+  const INWALL_FALLBACK = { brand: "Klipsch", m: "R-5502-W II in-wall LCR", pair: 440, note: "Klipsch swap: this brand has no in-wall sold by Best Buy. Sonance VX62 ($550 pair) is the other option" };
   const SERIES = [
     { id: "sony-core", brand: "Sony", series: "Core", tier: "value",
       tower: { m: "SS-CS3", pair: 460 }, bookshelf: { m: "SS-CS5", pair: 180 }, center: { m: "SS-CS8", each: 150 },
       height: { m: "SS-CSE", pair: 200, kind: "module" }, sub: { m: "SS-CS9", each: 200 } },
     { id: "jbl-stage2", brand: "JBL", series: "Stage 2", tier: "value",
       tower: { m: "Stage 2 280F", pair: 1200 }, bookshelf: { m: "Stage 2 250B", pair: 500 }, center: { m: "Stage 2 245C", each: 400 },
-      height: { m: "Stage 2 240H", pair: 500, kind: "module" }, sub: { m: "Stage 2 220P", each: 400 } },
+      height: { m: "Stage 2 240H", pair: 500, kind: "module" }, inceiling: { m: "Stage 260CSA angled in-ceiling", pair: 420, note: "$209.95 each; 280CSA 8 in $309.95. No JBL in-wall at Best Buy" },
+      sub: { m: "Stage 2 220P", each: 400 } },
     { id: "klipsch-ref", brand: "Klipsch", series: "Reference", tier: "value",
       tower: { m: "R-800F", pair: 1100 }, bookshelf: { m: "R-600M", pair: 450 }, center: { m: "R-50C", each: 250 },
-      height: { m: "R-40SA", pair: 300, kind: "module" }, inceiling: { m: "R-2650-C II in-ceiling", pair: 300 },
+      height: { m: "R-40SA", pair: 300, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 340, note: "$169.99 each; R-3800-W II 8 in in-wall is $99 each" },
+      inwall: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each" },
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 } },
     { id: "polk-es", brand: "Polk Audio", series: "Signature Elite", tier: "value",
       tower: { m: "ES60", pair: 1000 }, bookshelf: { m: "ES20", pair: 400 }, center: { m: "ES35", each: 400 },
-      height: { m: "ES90", pair: 450, kind: "module" }, inceiling: { m: "RC80i in-ceiling", pair: 300 },
+      height: { m: "ES90", pair: 450, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the RC80i rounds are no longer sold new at Best Buy" },
+      inwall: { m: "265-RT dual 6.5 in in-wall", pair: 448, note: "$223.99 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 } },
     { id: "svs-prime", brand: "SVS", series: "Prime", tier: "value",
       tower: { m: "Prime Tower", pair: 1200 }, bookshelf: { m: "Prime Bookshelf", pair: 650 }, center: { m: "Prime Center", each: 450 },
@@ -177,15 +191,18 @@
       sub: { m: "SB-1000 Pro", each: 600 }, subAlt: { m: "PB-1000 Pro", each: 700 } },
     { id: "klipsch-rp2", brand: "Klipsch", series: "Reference Premiere II", tier: "mid",
       tower: { m: "RP-8000F II", pair: 2400 }, towerAlt: { m: "RP-6000F II", pair: 1800 }, bookshelf: { m: "RP-600M II", pair: 750 }, center: { m: "RP-504C II", each: 1000 },
-      surround: { m: "RP-502S II", pair: 1000 }, height: { m: "RP-500SA II", pair: 700, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 800 },
+      surround: { m: "RP-502S II", pair: 1000 }, height: { m: "RP-500SA II", pair: 700, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 340, note: "$169.99 each; CDT-5800-C II 8 in is $199.99 each for a big room" },
+      inwall: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each; the only Reference in-wall Best Buy sells" },
       sub: { m: "RP-1200SW", each: 1300 }, subAlt: { m: "RP-1000SW", each: 900 } },
     { id: "polk-reserve", brand: "Polk Audio", series: "Reserve", tier: "mid",
       tower: { m: "R700", pair: 2500 }, towerAlt: { m: "R600", pair: 1800 }, bookshelf: { m: "R200", pair: 800 }, center: { m: "R400", each: 900 },
-      height: { m: "R900", pair: 500, kind: "module" }, inceiling: { m: "V80 in-ceiling", pair: 400 },
+      height: { m: "R900", pair: 500, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; 90-RT 9 in is $299 each. Polk V80 is not sold by Best Buy" },
+      inwall: { m: "265-LS 6.5 in 3-way in-wall", pair: 758, note: "$379 each; 265-RT saves $155 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "MXT12", each: 500 } },
     { id: "kef-q", brand: "KEF", series: "Q Series Meta", tier: "mid",
       tower: { m: "Q11 Meta", pair: 2000 }, towerAlt: { m: "Q7 Meta", pair: 1500 }, bookshelf: { m: "Q3 Meta", pair: 800 }, center: { m: "Q6 Meta", each: 700 },
-      surround: { m: "Q8 Meta", pair: 1000 }, height: { m: "Q8 Meta", pair: 1000, kind: "module" }, inceiling: { m: "Ci160QR in-ceiling", pair: 600 },
+      surround: { m: "Q8 Meta", pair: 1000 }, height: { m: "Q8 Meta", pair: 1000, kind: "module" }, inceiling: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000, note: "$499.99 each, the Q Series ceiling; Ci160ES is $399.99 each" },
+      inwall: { m: "Ci160QS Uni-Q square in-wall", pair: 1000, note: "$499.99 each" },
       sub: { m: "Kube 12 MIE", each: 900 }, subAlt: { m: "Kube 10 MIE", each: 700 } },
     { id: "dali-oberon", brand: "DALI", series: "Oberon", tier: "mid",
       tower: { m: "Oberon 7", pair: 1700 }, towerAlt: { m: "Oberon 5", pair: 1200 }, bookshelf: { m: "Oberon 3", pair: 700 }, center: { m: "Oberon Vokal", each: 500 },
@@ -193,27 +210,33 @@
       sub: { m: "Sub E-12 F", each: 900 }, subAlt: { m: "Sub E-9 F", each: 700 } },
     { id: "ml-foundation", brand: "MartinLogan", series: "Motion Foundation", tier: "mid",
       tower: { m: "Motion Foundation F2", pair: 2300 }, towerAlt: { m: "Motion Foundation F1", pair: 1700 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at Best Buy ($439.99 on promo); the bigger C2 if it is stocked" },
-      inceiling: { m: "Motion MC6-HT in-ceiling", pair: 900 },
+      inceiling: { m: "Installer Series IC6 in-ceiling", pair: 500, note: "$249.99 each; Motion CI MC6 ($499.99 each) adds the Folded Motion tweeter" },
+      inwall: { m: "Installer Series IW6 in-wall", pair: 560, note: "$279.99 each; Motion CI MW6 ($599.99 each) adds the Folded Motion tweeter" },
       sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 } },
     { id: "deftech-dym", brand: "Definitive Technology", series: "Dymension", tier: "mid",
       tower: { m: "DM70", pair: 3400 }, towerAlt: { m: "DM60", pair: 2600 }, bookshelf: { m: "DM40", pair: 1200 }, center: { m: "DM30", each: 1249, note: "Flagship center with its own powered 8 in sub; DM20 slim center ($599) for a low console" },
-      surround: { m: "DM80", pair: 1000 }, height: { m: "DM90", pair: 600, kind: "module" }, inceiling: { m: "DI 6.5R in-ceiling", pair: 800 },
+      surround: { m: "DM80", pair: 1000 }, height: { m: "DM90", pair: 600, kind: "module" }, inceiling: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758, note: "$379 each; DC-65 MAX is $479 each" },
+      inwall: { m: "Dymension CI DW-65 PRO in-wall", pair: 758, note: "$379 each; DW MAX SUR bipolar surround is $679 each" },
       sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 } },
     { id: "bw-600", brand: "Bowers & Wilkins", series: "600 S3", tier: "mid",
       tower: { m: "603 S3", pair: 2500 }, bookshelf: { m: "606 S3", pair: 1200 }, center: { m: "HTM6 S3", each: 900 },
-      inceiling: { m: "CCM664 in-ceiling", pair: 700 },
+      inceiling: { m: "CI600 CCM665 in-ceiling", pair: 750, note: "Pair price; CCM664 ($475 each) has the better tweeter" },
+      inwall: { m: "CI600 CWM664 in-wall", pair: 900, note: "Pair price" },
       sub: { m: "ASW610", each: 900 }, subAlt: { m: "ASW608", each: 700 } },
     { id: "ml-xt", brand: "MartinLogan", series: "Motion XT", tier: "premium",
       tower: { m: "Motion XT F200", pair: 4000 }, towerAlt: { m: "Motion XT F100", pair: 3000 }, bookshelf: { m: "Motion XT B100", pair: 1500 }, center: { m: "Motion XT C100", each: 1300 },
-      surround: { m: "Motion XT FX100", pair: 1700 }, inceiling: { m: "Motion MC6-HT in-ceiling", pair: 900 },
+      surround: { m: "Motion XT FX100", pair: 1700 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000, note: "$499.99 each with the Folded Motion tweeter; XT CI XTC8 is $1,099.99 each" },
+      inwall: { m: "Motion XT CI XTW6 in-wall", pair: 1800, note: "$899.99 each; Motion CI MW6 saves $300 each" },
       sub: { m: "Dynamo 1000X", each: 1300 }, subAlt: { m: "Dynamo 800X", each: 1000 } },
     { id: "kef-r", brand: "KEF", series: "R Series Meta", tier: "premium",
       tower: { m: "R7 Meta", pair: 5000 }, towerAlt: { m: "R5 Meta", pair: 3500 }, bookshelf: { m: "R3 Meta", pair: 2200 }, center: { m: "R6 Meta", each: 1800 },
-      height: { m: "R8 Meta", pair: 1300, kind: "module" }, inceiling: { m: "Ci200RR-THX in-ceiling", pair: 1500 },
+      height: { m: "R8 Meta", pair: 1300, kind: "module" }, inceiling: { m: "Ci160RR-THX in-ceiling", pair: 2000, note: "$999.99 each; Ci200RR-THX 8 in is $1,199.99 each, Ci160QR saves $500 each" },
+      inwall: { m: "Ci4100QL-THX in-wall LCR", pair: 1400, note: "$699.99 each" },
       sub: { m: "Kube 15 MIE", each: 1200 }, subAlt: { m: "KC62", each: 1700 } },
     { id: "bw-700", brand: "Bowers & Wilkins", series: "700 S3", tier: "premium",
       tower: { m: "703 S3", pair: 5000 }, towerAlt: { m: "704 S3", pair: 3600 }, bookshelf: { m: "706 S3", pair: 2200 }, center: { m: "HTM71 S3", each: 2200 },
-      inceiling: { m: "CCM7.5 S2 in-ceiling", pair: 1500 },
+      inceiling: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500, note: "$1,250 each, Carbon Dome tweeter; CI600 CCM664 ($475 each) if heights only" },
+      inwall: { m: "CI700 S2 CWM7.5 S2 in-wall", pair: 2700, note: "$1,350 each" },
       sub: { m: "DB4S", each: 2500 }, subAlt: { m: "ASW610", each: 900 } },
     { id: "dali-opticon", brand: "DALI", series: "Opticon Mk2", tier: "premium",
       tower: { m: "Opticon 8 Mk2", pair: 4000 }, towerAlt: { m: "Opticon 6 Mk2", pair: 2800 }, bookshelf: { m: "Opticon 2 Mk2", pair: 1500 }, center: { m: "Opticon Vokal Mk2", each: 1000 },
@@ -223,8 +246,57 @@
       tower: { m: "Ultra Evolution Tower", pair: 3600 }, bookshelf: { m: "Ultra Evolution Bookshelf", pair: 1600 }, center: { m: "Ultra Evolution Center", each: 1000 },
       surround: { m: "Ultra Evolution Nano", pair: 700 }, height: { m: "Ultra Evolution Elevation", pair: 800, kind: "speaker" },
       sub: { m: "SB-3000", each: 1100 }, subAlt: { m: "PB-3000", each: 1500 } },
-    // Sonance: architectural (in-wall / in-ceiling) families. "tower" = in-wall fronts, "bookshelf" = in-ceiling fronts.
-    // Prices are what bestbuy.com showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
+    // Architectural (in-wall / in-ceiling) families. "tower" = in-wall fronts, "bookshelf" = in-ceiling fronts.
+    // Every model below is sold and shipped by Best Buy; prices are what bestbuy.com showed on Nov 13, 2026, each unless the model says pair.
+    { id: "klipsch-ci", brand: "Klipsch", series: "Reference CI", tier: "value", arch: true,
+      tower: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each (comp $489); dual 5.25 in, horizontal or vertical. R-3800-W II 8 in in-wall is $99 each" }, bookshelf: { m: "CDT-5650-C II 6.5 in in-ceiling", pair: 340, note: "$169.99 each; pivoting woofer and horn, so aim them at the seats" },
+      center: { m: "R-5502-W II in-wall LCR", each: 220, note: "Same LCR as the fronts, mounted horizontal under the screen" },
+      surround: { m: "CDT-5650-C II in-ceiling", pair: 340 }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 340 },
+      sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 },
+      kit: "CDT-5800-C II 8 in ceiling $199.99 each for a big room. CDT-2650-C II is listed without a price. No Klipsch in-wall sub at Best Buy, so the sub stays a box. R-2650-C II, R-5650-W II and R-5800-W II are not sold by Best Buy; R-1650-C packs are marketplace only." },
+    { id: "polk-ci", brand: "Polk Audio", series: "Vanishing Series", tier: "value", arch: true,
+      tower: { m: "265-RT dual 6.5 in 3-way in-wall", pair: 448, note: "$223.99 each; thin paintable bezel. 265-LS ($379 each) is the step-up in-wall" }, bookshelf: { m: "70-RT 7 in 3-way in-ceiling", pair: 398, note: "$199 each; angled mid and tweeter. 90-RT 9 in is $299 each" },
+      center: { m: "265-RT in-wall (horizontal)", each: 224, note: "Same speaker as the fronts, mounted sideways under the screen" },
+      surround: { m: "70-RT in-ceiling", pair: 398 }, inceiling: { m: "70-RT in-ceiling", pair: 398 },
+      sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 },
+      kit: "RC6s single-stereo ceiling for a hallway (price shows in cart). The RC80i / RC60i / RC85i rounds are no longer sold new at Best Buy and the V-series (V80, V60) never was; 65-RT is marketplace only." },
+    { id: "deftech-ci", brand: "Definitive Technology", series: "Dymension CI", tier: "mid", arch: true,
+      tower: { m: "Dymension CI DW-65 MAX 6.5 in in-wall", pair: 958, note: "$479 each; DW-65 PRO ($379 each) saves $200 a pair" }, bookshelf: { m: "Dymension CI DC-65 MAX 6.5 in in-ceiling", pair: 958, note: "$479 each; DC-65 PRO is $379 each" },
+      center: { m: "Dymension CI LCR-525 MAX in-wall", each: 529, note: "Dual 5.25 in LCR; LCR-650 MAX listed without a price" },
+      surround: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 }, inceiling: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 },
+      sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 },
+      kit: "DW MAX SUR bipolar in-wall surround $679 each is the Definitive trick in the wall. DC-65 PRO SI single-stereo $429. DC-80 MAX and DW-80 PRO 8 in are listed without prices. Older DI line still sold direct: DI 6.5R $299.99, DI 6.5LCR $599.99." },
+    { id: "ml-ci", brand: "MartinLogan", series: "Motion CI", tier: "mid", arch: true,
+      tower: { m: "Motion CI MW6 6.5 in in-wall", pair: 1200, note: "$599.99 each with the Folded Motion tweeter" }, bookshelf: { m: "Motion CI MC6-HT angled in-ceiling", pair: 1100, note: "$549.99 each; angled toward the seats for front channels" },
+      center: { m: "Motion CI MW4LCR in-wall", each: 600, note: "Dual 4 in LCR, $599.99" },
+      surround: { m: "Motion CI MC6 in-ceiling", pair: 1000 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000 },
+      sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 },
+      kit: "MC8 8 in ceiling $549.99, MC4 4 in $349.99. Installer Series for the budget: IC6 $249.99, IC8 $349.99, IW6 $279.99, IW5LCR $399.99. Helos 12 angled ceiling $449.99 (seen at $199.99). Back boxes C6BXR $30, C8BXR $55, C8HTBXR $65. A Dynamo in-wall sub is listed without a price." },
+    { id: "kef-ci", brand: "KEF", series: "Ci Series", tier: "premium", arch: true,
+      tower: { m: "Ci4100QL-THX in-wall LCR", pair: 1400, note: "$699.99 each; quad 4 in woofers + Uni-Q, THX Ultra. Ci3160RLM-THX ($2,299.99) and Ci5160RLM-THX ($3,299.99) above it" }, bookshelf: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000, note: "$499.99 each; Ci200QR 8 in $599.99, Ci160RR-THX reference $999.99" },
+      center: { m: "Ci4100QL-THX in-wall LCR", each: 700, note: "Same LCR as the fronts" },
+      surround: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000 }, inceiling: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000 },
+      sub: { m: "Kube 12 MIE", each: 900 }, subAlt: { m: "Ci3160RLB-THX in-wall sub (needs an amp)", each: 1300 },
+      kit: "Ci160QS square in-wall / in-ceiling $499.99; Ci160ES $399.99 and Ci130.2CS 5.25 in $299.99 for the budget; Ci160CRds single-stereo $399.99; Ci200.2CR 8 in $499.99. Reference: Ci160RR-THX $999.99, Ci200RR-THX $1,199.99, Ci200RS-THX in-wall $1,199.99. Ci160QL in-wall listed without a price." },
+    { id: "ml-xtci", brand: "MartinLogan", series: "Motion XT CI", tier: "premium", arch: true,
+      tower: { m: "Motion XT CI XTW6 6.5 in in-wall", pair: 1800, note: "$899.99 each with the XT Folded Motion tweeter" }, bookshelf: { m: "Motion XT CI XTC8 8 in in-ceiling", pair: 2200, note: "$1,099.99 each; XTC8-HT angled is listed without a price" },
+      center: { m: "Motion XT CI XTW5LCR in-wall", each: 1200, note: "Dual 5.25 in LCR; XTW6LCR dual 6.5 in is $1,699.99 for a big screen wall" },
+      surround: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000 },
+      sub: { m: "Dynamo 1000X", each: 1300 }, subAlt: { m: "Dynamo 800X", each: 1000 },
+      kit: "Heights drop to Motion CI MC6 ($499.99 each) because overhead channels do not need the XT tweeter; swap to XTC8 if the customer wants it all XT. Icon 3XW $2,199.99 and Tribute 5XW $3,499.99 are the in-wall flagships above this." },
+    { id: "bw-ci600", brand: "Bowers & Wilkins", series: "CI600", tier: "mid", arch: true,
+      tower: { m: "CI600 CWM664 in-wall (pair)", pair: 900, note: "Sold in pairs; 6 in 2-way with aluminum tweeter" }, bookshelf: { m: "CI600 CCM664 in-ceiling", pair: 950, note: "$475 each; CCM665 pair is $750" },
+      center: { m: "CI600 CWM664 (one of a pair)", each: 450, note: "B&W sells CI600 in pairs, so a center means a second pair; a single CI700 CWM7.5 S2 ($1,350) is the one-piece option" },
+      surround: { m: "CI600 CCM665 in-ceiling (pair)", pair: 750 }, inceiling: { m: "CI600 CCM665 in-ceiling (pair)", pair: 750 },
+      sub: { m: "ASW610", each: 900 }, subAlt: { m: "ASW608", each: 700 },
+      kit: "Pairs: CCM663RD reduced-depth $1,350, CCM662 3-way $1,650, CCM684 8 in $1,000, CCM683 $1,450, CCM682 8 in 3-way $2,000, CWM652 5 in in-wall $850, CCM632 3 in $950. CCM663SR single-stereo $825 each. CI300 entry: CCM362 ceiling $550 pair, in-wall $600 pair." },
+    { id: "bw-ci700", brand: "Bowers & Wilkins", series: "CI700 S2", tier: "premium", arch: true,
+      tower: { m: "CI700 S2 CWM7.5 S2 in-wall", pair: 2700, note: "$1,350 each; Carbon Dome tweeter from 700 S3" }, bookshelf: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500, note: "$1,250 each" },
+      center: { m: "CI700 S2 CWM7.5 S2 in-wall", each: 1350, note: "Sold singly, so a center is one more. CWM7.3 S2 3-way ($2,800) for a big screen wall" },
+      surround: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500 }, inceiling: { m: "CI600 CCM664 in-ceiling", pair: 950 },
+      sub: { m: "DB4S", each: 2500 }, subAlt: { m: "ASW610", each: 900 },
+      kit: "Heights drop to CI600 CCM664 ($475 each); swap to CCM7.5 S2 for all-700. CCM7.3 S2 3-way ceiling $2,550, CWM7.4 S2 $1,550, CWM7.3 S2 $2,800. CI800 CWM8.5D with the Diamond tweeter is $3,250 each." },
+    // Sonance. Prices are what bestbuy.com showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
     { id: "sonance-mag", brand: "Sonance", series: "Mag Series", tier: "value", arch: true, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
       tower: { m: "MAG8R 8 in in-ceiling (pair)", pair: 249, note: "Comp. value $1,099; sold in pairs only" }, bookshelf: { m: "MAG6R 6.5 in in-ceiling (pair)", pair: 149, note: "Comp. value $749; sold in pairs only" },
       center: { m: "MAG6R (one more pair; use one as center)", each: 149, note: "Mag has no in-wall center; the MAG5.1R puts a third ceiling speaker above the screen. For real dialog from the screen wall, step up to a VX62 LCR or VP62 LCR." },
@@ -258,7 +330,8 @@
     { id: "yamaha-ns", brand: "Yamaha", series: "NS Series", tier: "value",
       tower: { m: "NS-555 3-way tower", pair: 500 }, towerAlt: { m: "NS-F210 slim tower", pair: 360 }, bookshelf: { m: "NS-333 bookshelf", pair: 200 },
       center: { m: "NS-C444 center", each: 150 },
-      surround: { m: "NS-B210 bookshelf", pair: 150 }, inceiling: { m: "NS-IC600 6.5 in in-ceiling", pair: 150 },
+      surround: { m: "NS-B210 bookshelf", pair: 150 }, inceiling: { m: "NS-IC600 6.5 in in-ceiling", pair: 150, note: "$149.95 pair, confirmed; NS-IW480C 8 in 3-way pair $249.99" },
+      inwall: { m: "NS-IW660 6.5 in in-wall", pair: 320, note: "Best Buy lists it but showed no price; $319.95 is a marketplace price, so verify" },
       sub: { m: "NS-SW200 10 in", each: 300 }, subAlt: { m: "NS-SW100 10 in", each: 200 },
       kit: "Confirmed at Best Buy: NS-IC600 in-ceiling pair $149.95, NS-IC400 pair $149.99, NS-IW480C 8 in 3-way in-ceiling pair $249.99, NS-C210 center $99.99. Box-speaker prices are Yamaha list; confirm stock." },
     { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true,
@@ -311,10 +384,11 @@
   };
   const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
-  const BRAND_PAGES = { Sonance: "sonance", Yamaha: "yamaha", ELAC: "elac", Sonos: "sonos", Russound: "russound", Bose: "bose" };
+  const BRAND_PAGES = { Sonance: "sonance", Yamaha: "yamaha", ELAC: "elac", Sonos: "sonos", Russound: "russound", Bose: "bose",
+    Klipsch: "klipsch", "Polk Audio": "polk", KEF: "kef", MartinLogan: "martinlogan", "Definitive Technology": "deftech", "Bowers & Wilkins": "bw", JBL: "jbl" };
   const $ = function (id) { return document.getElementById(id); };
   const IMG = window.SF_IMG;
-  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, heights: 2, heightType: "series", subs: 1, avr: "auto" };
+  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto" };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
@@ -357,6 +431,7 @@
   const syncForm = chips("formChips", "form", false);
   const syncFronts = chips("frontsChips", "fronts", false);
   const syncAround = chips("aroundChips", "around", true);
+  const syncSurroundType = chips("surroundTypeChips", "surroundType", false);
   const syncHeights = chips("heightsChips", "heights", true);
   const syncHeightType = chips("heightTypeChips", "heightType", false);
   const syncSubs = chips("subsChips", "subs", true);
@@ -401,17 +476,29 @@
     else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Needs stands or a console; see Sanus line below", "bookshelf");
     // center
     if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, s.center.note || (s.arch ? "In-wall LCR under or above the screen; same driver as the fronts" : "Same series as the fronts so dialog matches"), s.arch ? "arch" : "center");
-    // surrounds
-    const sur = s.surround || s.bookshelf;
-    if (state.around >= 5) add("Surrounds (sides)", s.brand, sur.m, 2, sur.pair / 2, s.arch ? "In-ceiling or in-wall beside the seats" : (s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets"), s.arch ? "arch" : "bookshelf");
-    if (state.around >= 7) add("Surrounds (rear)", s.brand, s.arch ? sur.m : s.bookshelf.m, 2, (s.arch ? sur.pair : s.bookshelf.pair) / 2, s.arch ? "In-ceiling behind the seats" : "Bookshelf behind the seats", s.arch ? "arch" : "bookshelf");
+    // surrounds: the series' own, or the brand's in-wall / in-ceiling (a Klipsch swap when the brand has none at Best Buy)
+    const surType = s.arch ? "arch" : surroundType();
+    let sur = s.surround || s.bookshelf, rear = s.arch ? sur : s.bookshelf, surBrand = s.brand, surKind = s.arch ? "arch" : "bookshelf";
+    let sideNote = s.arch ? "In-ceiling or in-wall beside the seats" : (s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets");
+    let rearNote = s.arch ? "In-ceiling behind the seats" : "Bookshelf behind the seats";
+    if (surType === "inwall" || surType === "inceiling") {
+      const own = surType === "inwall" ? s.inwall : s.inceiling;
+      const fb = surType === "inwall" ? INWALL_FALLBACK : INCEIL_FALLBACK;
+      sur = rear = own || fb; surBrand = own ? s.brand : fb.brand; surKind = "arch";
+      const where = surType === "inwall" ? "In-wall" : "In-ceiling";
+      const extra = own ? (own.note ? "; " + own.note : "") : "; " + fb.note;
+      sideNote = where + " beside the seats, installer-mounted" + extra;
+      rearNote = where + " behind the seats" + (own && own.note ? "" : extra);
+    }
+    if (state.around >= 5) add("Surrounds (sides)", surBrand, sur.m, 2, sur.pair / 2, sideNote, surKind);
+    if (state.around >= 7) add("Surrounds (rear)", surBrand, rear.m, 2, rear.pair / 2, rearNote, surKind);
     // heights
     if (state.heights > 0) {
       const useCeil = state.heightType === "inceiling" || !s.height;
       const h = useCeil ? (s.inceiling || INCEIL_FALLBACK) : s.height;
       const hb = useCeil && !s.inceiling ? INCEIL_FALLBACK.brand : s.brand;
       const roleName = state.heights === 4 ? "Heights (front + rear pairs)" : "Heights (front pair)";
-      const note = useCeil ? ("In-ceiling, installer-mounted" + (!s.inceiling ? "; " + INCEIL_FALLBACK.note : "")) : (s.height.kind === "module" ? "Atmos modules that sit on the fronts" + (state.heights === 4 ? " and surrounds" : "") : "Height speakers, wall or stand");
+      const note = useCeil ? ("In-ceiling, installer-mounted" + (s.inceiling ? (s.inceiling.note ? "; " + s.inceiling.note : "") : "; " + INCEIL_FALLBACK.note)) : (s.height.kind === "module" ? "Atmos modules that sit on the fronts" + (state.heights === 4 ? " and surrounds" : "") : "Height speakers, wall or stand");
       add(roleName, hb, h.m, state.heights, h.pair / 2, note, useCeil ? "arch" : "module");
     }
     // subs
@@ -422,11 +509,12 @@
     }
     // stands
     if (!s.arch && state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional", "stand");
-    if (!s.arch && state.around >= 5 && !s.surround) add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional", "stand");
+    if (!s.arch && state.around >= 5 && !s.surround && surroundType() === "series") add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional", "stand");
     return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
   }
 
   function configString() { return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
+  function surroundType() { return state.around >= 5 ? state.surroundType : "series"; }
   function channels() { return state.around + state.heights; }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11].find(function (c) { return n <= c; }) || 11; }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
@@ -451,22 +539,31 @@
   }
 
   function render() {
-    syncTier(); syncForm(); syncFronts(); syncAround(); syncHeights(); syncHeightType(); syncSubs();
+    syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs();
     renderSeries();
     const s = SERIES.find(function (x) { return x.id === state.series; });
     const fc = $("frontsChips");
     fc.querySelector("[data-v='tower']").textContent = s.frontLabels ? s.frontLabels[0] : (s.arch ? "In-wall" : "Towers");
     fc.querySelector("[data-v='bookshelf']").textContent = s.frontLabels ? s.frontLabels[1] : (s.arch ? "In-ceiling" : "Bookshelf");
+    // surround type: only for box families with surrounds in the build; architectural families are already in the wall or ceiling
+    $("surroundTypeCtl").hidden = s.arch || state.around < 5;
+    const sc = $("surroundTypeChips");
+    sc.querySelector("[data-v='series']").textContent = s.surround ? "Series surrounds" : "Bookshelf";
+    sc.querySelector("[data-v='inwall']").textContent = s.inwall ? "In-wall" : "In-wall (Klipsch)";
+    sc.querySelector("[data-v='inceiling']").textContent = s.inceiling ? "In-ceiling" : "In-ceiling (Klipsch)";
     $("heightTypeCtl").hidden = state.heights === 0;
     const hc = $("heightTypeChips").querySelector("[data-v='series']");
     hc.textContent = s.height ? (s.height.kind === "module" ? "Atmos modules" : "Height speakers") : "Atmos modules";
     hc.disabled = !s.height;
+    $("heightTypeChips").querySelector("[data-v='inceiling']").textContent = s.inceiling || s.arch ? "In-ceiling" : "In-ceiling (Klipsch)";
     if (!s.height && state.heightType === "series") { hc.setAttribute("aria-pressed", "false"); $("heightTypeChips").querySelector("[data-v='inceiling']").setAttribute("aria-pressed", "true"); }
     const r = build();
     $("buildLabel").textContent = "The " + configString() + " family" + (s.arch ? " · architectural" : "");
     $("buildHead").textContent = s.brand + " " + s.series;
-    $("kitNote").hidden = !s.kit;
-    $("kitNote").innerHTML = s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" + (BRAND_PAGES[s.brand] ? "<p class='small'><a href='brands.html#" + BRAND_PAGES[s.brand] + "'>Full " + esc(s.brand) + " list with Best Buy prices</a></p>" : "") : "";
+    const page = BRAND_PAGES[s.brand];
+    $("kitNote").hidden = !s.kit && !page;
+    $("kitNote").innerHTML = (s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" : "<p class='eyebrow'>In-wall and in-ceiling</p>") +
+      (page ? "<p class='small'><a href='brands.html#" + page + "'>Every " + esc(s.brand) + (s.arch ? "" : " in-wall and in-ceiling") + " Best Buy sells, with prices</a></p>" : "");
     $("lines").innerHTML = r.lines.map(lineHtml).join("");
     $("total").textContent = money(r.total);
     $("totalNote").textContent = "List, " + r.lines.length + " line items. Mounts, wire and install not included.";
@@ -499,9 +596,12 @@
     const s = r.series;
     const rc = receiver();
     const fronts = s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts");
+    const st = surroundType();
+    const surr = s.arch || st === "series" ? "" : " · " + (st === "inwall" ? "in-wall" : "in-ceiling") + " surrounds";
+    const hts = state.heights && !s.arch ? " · " + (state.heightType === "inceiling" || !s.height ? "in-ceiling heights" : "Atmos modules") : "";
     const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     const line = function (l) { return "  " + l.role.replace(/ · .*$/, "") + ": " + l.brand + " " + l.model + " — " + l.qty + " × " + money(l.each) + " = " + money(l.total); };
-    const out = ["SOUND FINDER — FINALIZED LIST · " + today, s.brand + " " + s.series + " · " + configString() + " · " + fronts, "", "SPEAKERS"];
+    const out = ["SOUND FINDER — FINALIZED LIST · " + today, s.brand + " " + s.series + " · " + configString() + " · " + fronts + surr + hts, "", "SPEAKERS"];
     r.lines.forEach(function (l) { out.push(line(l)); });
     out.push("  Speakers subtotal: " + money(r.total), "");
     if (rc) {
