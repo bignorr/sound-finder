@@ -118,10 +118,9 @@
     "bw-700": "Bowers & Wilkins 703 S3 tower", "kef-r": "KEF R7 Meta tower", "ml-xt": "MartinLogan Motion XT F200 tower", "dali-opticon": "DALI Opticon 8 Mk2 tower",
     "svs-ultra": "SVS Ultra Evolution Tower", "kef-q": "KEF Q7 Meta tower", "bw-600": "Bowers & Wilkins 603 S3 tower", "ml-foundation": "MartinLogan Motion Foundation F2 tower",
     "klipsch-rp2": "Klipsch RP-8000F II tower", "polk-reserve": "Polk Audio R700 tower", "deftech-dym": "Definitive Technology DM70 tower", "dali-oberon": "DALI Oberon 7 tower",
-    "sonance-vp": "Sonance VP62 LCR in-wall", "sonance-is": "Sonance IS8 invisible in-ceiling", "elac-debut": "ELAC Debut 3.0 DB63 bookshelf", "svs-prime": "SVS Prime Tower",
+    "sonance-vp": "Sonance VP62 LCR in-wall", "sonance-is": "Sonance IS8 invisible in-ceiling", "svs-prime": "SVS Prime Tower",
     "klipsch-ref": "Klipsch R-800F tower", "polk-es": "Polk Audio ES60 tower", "sonos-arch": "Sonos Architectural in-ceiling", "sonance-vx": "Sonance VX62 in-wall",
-    "bose-791": "Bose Virtually Invisible 791 II in-ceiling", "russound": "Russound 6.5 in in-ceiling", "jbl-stage2": "JBL Stage 2 280F tower", "yamaha-ns": "Yamaha NS-555 tower",
-    "sony-core": "Sony SS-CS3 tower", "sonance-mag": "Sonance MAG6R in-ceiling",
+    "bose-791": "Bose Virtually Invisible 791 II in-ceiling", "russound": "Russound 6.5 in in-ceiling", "jbl-stage2": "JBL Stage 2 280F tower", "sony-core": "Sony SS-CS3 tower", "sonance-mag": "Sonance MAG6R in-ceiling",
     "klipsch-ci": "Klipsch R-5502-W II in-wall", "polk-ci": "Polk Audio 265-RT in-wall", "deftech-ci": "Definitive Technology DC-65 MAX in-ceiling", "ml-ci": "MartinLogan Motion CI MC6-HT in-ceiling",
     "kef-ci": "KEF Ci160QR in-ceiling", "jbl-ci": "JBL Stage 250WL in-wall", "ml-xtci": "MartinLogan Motion XT CI XTW6 in-wall", "bw-ci600": "Bowers & Wilkins CCM664 in-ceiling", "bw-ci700": "Bowers & Wilkins CCM7.5 S2 in-ceiling",
   };

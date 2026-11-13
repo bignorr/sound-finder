@@ -164,7 +164,7 @@
 (function () {
   // Prices: approximate USD list. "pair" entries are priced per pair, everything else per unit.
   // In-wall and in-ceiling picks come from each family's own brand, confirmed sold and shipped by Best Buy (bestbuy.com, Nov 13, 2026).
-  // Brands with no architectural line at Best Buy (Sony, SVS, DALI, ELAC, and Yamaha in-wall) get these Klipsch swaps, and the line says so.
+  // Brands with no architectural line at Best Buy (Sony, SVS, DALI) get these Klipsch swaps, and the line says so.
   const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 322, note: "Klipsch swap: this brand has no in-ceiling sold by Best Buy. Sonance MAG6R ($149 pair) is the budget swap" };
   const INWALL_FALLBACK = { brand: "Klipsch", m: "R-5502-W II in-wall LCR", pair: 440, note: "Klipsch swap: this brand has no in-wall sold by Best Buy. Sonance VX62 ($550 pair) is the other option" };
   const SERIES = [
@@ -183,7 +183,7 @@
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 } },
     { id: "polk-es", brand: "Polk Audio", series: "Signature Elite", tier: "value",
       tower: { m: "ES60", pair: 1000 }, bookshelf: { m: "ES20", pair: 400 }, center: { m: "ES35", each: 400 },
-      height: { m: "ES90", pair: 450, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the RC80i rounds are no longer sold new at Best Buy" },
+      height: { m: "ES90", pair: 450, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the old RC80i rounds are gone from Best Buy" },
       inwall: { m: "265-RT dual 6.5 in in-wall", pair: 448, note: "$223.99 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 } },
     { id: "svs-prime", brand: "SVS", series: "Prime", tier: "value",
@@ -197,7 +197,7 @@
       sub: { m: "RP-1200SW", each: 1300 }, subAlt: { m: "RP-1000SW", each: 900 } },
     { id: "polk-reserve", brand: "Polk Audio", series: "Reserve", tier: "mid",
       tower: { m: "R700", pair: 2500 }, towerAlt: { m: "R600", pair: 1800 }, bookshelf: { m: "R200", pair: 800 }, center: { m: "R400", each: 900 },
-      height: { m: "R900", pair: 500, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; 90-RT 9 in is $299 each. Polk V80 is not sold by Best Buy" },
+      height: { m: "R900", pair: 500, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; 90-RT 9 in is $299 each" },
       inwall: { m: "265-LS 6.5 in 3-way in-wall", pair: 758, note: "$379 each; 265-RT saves $155 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "MXT12", each: 500 } },
     { id: "kef-q", brand: "KEF", series: "Q Series Meta", tier: "mid",
@@ -260,19 +260,19 @@
       center: { m: "R-5502-W II in-wall LCR", each: 220, note: "Same LCR as the fronts, mounted horizontal under the screen" },
       surround: { m: "CDT-5650-C II in-ceiling", pair: 322 }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322 },
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 },
-      kit: "CDT-5800-C II 8 in ceiling $199.99 each for a big room. No Klipsch in-wall sub at Best Buy, so the sub stays a box. CDT-2650-C II is no longer sold new; R-2650-C II, R-5650-W II and R-5800-W II are not sold by Best Buy; R-3800-W II ($99) and R-1650-C packs are marketplace listings." },
+      kit: "CDT-5800-C II 8 in ceiling $199.99 each for a big room. No Klipsch in-wall sub at Best Buy, so the sub stays a box. These are the only Klipsch in-wall and in-ceiling pieces Best Buy sells; the R-2650-C II, R-5650-W II and R-5800-W II never came and the CDT-2650-C II is gone." },
     { id: "polk-ci", brand: "Polk Audio", series: "Vanishing Series", tier: "value", arch: true,
       tower: { m: "265-RT dual 6.5 in 3-way in-wall", pair: 448, note: "$223.99 each; thin paintable bezel. 265-LS ($379 each) is the step-up in-wall" }, bookshelf: { m: "70-RT 7 in 3-way in-ceiling", pair: 398, note: "$199 each; angled mid and tweeter. 90-RT 9 in is $299 each" },
       center: { m: "265-RT in-wall (horizontal)", each: 224, note: "Same speaker as the fronts, mounted sideways under the screen" },
       surround: { m: "70-RT in-ceiling", pair: 398 }, inceiling: { m: "70-RT in-ceiling", pair: 398 },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 },
-      kit: "RC6s single-stereo ceiling for a hallway (price shows in cart). The RC80i / RC60i / RC85i rounds are no longer sold new at Best Buy and the V-series (V80, V60) never was; 65-RT is marketplace only." },
+      kit: "RC6s single-stereo ceiling for a hallway ($149 list, price shows in cart). The RC80i / RC60i / RC85i rounds are gone from Best Buy and the V-series never came, so this is the Polk architectural line." },
     { id: "deftech-ci", brand: "Definitive Technology", series: "Dymension CI", tier: "mid", arch: true,
       tower: { m: "Dymension CI DW-65 MAX 6.5 in in-wall", pair: 958, note: "$479 each; DW-65 PRO ($379 each) saves $200 a pair" }, bookshelf: { m: "Dymension CI DC-65 MAX 6.5 in in-ceiling", pair: 958, note: "$479 each; DC-65 PRO is $379 each" },
       center: { m: "Dymension CI LCR-525 MAX in-wall", each: 529, note: "Dual 5.25 in LCR; LCR-650 MAX dual 6.5 in is $629" },
       surround: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 }, inceiling: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 },
       sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 },
-      kit: "DW MAX SUR bipolar in-wall surround $679 each is the Definitive trick in the wall; DC-80 MAX SUR does it from the ceiling for $679. 8 in: DC-80 PRO $479, DC-80 MAX $599, DW-80 PRO $479. DC-65 PRO SI single-stereo $429. Older DI line still sold direct: DI 6.5R $299.99, DI 6.5LCR $599.99." },
+      kit: "DW MAX SUR bipolar in-wall surround $679 each is the Definitive trick in the wall; DC-80 MAX SUR does it from the ceiling for $679. 8 in: DC-80 PRO $479, DC-80 MAX $599, DW-80 PRO $479. DC-65 PRO SI single-stereo $429. Older DI line still sold by Best Buy: DI 6.5R $299.99, DI 6.5LCR $599.99." },
     { id: "ml-ci", brand: "MartinLogan", series: "Motion CI", tier: "mid", arch: true,
       tower: { m: "Motion CI MW6 6.5 in in-wall", pair: 1200, note: "$599.99 each with the Folded Motion tweeter" }, bookshelf: { m: "Motion CI MC6-HT angled in-ceiling", pair: 1100, note: "$549.99 each; angled toward the seats for front channels" },
       center: { m: "Motion CI MW4LCR in-wall", each: 600, note: "Dual 4 in LCR, $599.99" },
@@ -286,7 +286,7 @@
       sub: { m: "Kube 12 MIE", each: 900 }, subAlt: { m: "Ci3160RLB-THX in-wall sub (needs an amp)", each: 1300 },
       kit: "Ci160QS square and Ci160QL rectangular in-wall $499.99 each; Ci160ES $399.99 a PAIR and Ci130.2CS 5.25 in $299.99 for the budget; Ci160.2CL in-wall $399.99; Ci160CRds single-stereo $399.99; Ci200.2CR 8 in $499.99. Reference: Ci160RR-THX $999.99, Ci200RR-THX $1,199.99, Ci200RS-THX in-wall $1,199.99." },
     { id: "ml-xtci", brand: "MartinLogan", series: "Motion XT CI", tier: "premium", arch: true,
-      tower: { m: "Motion XT CI XTW6 6.5 in in-wall", pair: 1800, note: "$899.99 each with the XT Folded Motion tweeter" }, bookshelf: { m: "Motion XT CI XTC8 8 in in-ceiling", pair: 2200, note: "$1,099.99 each; the angled XTC8-HT is no longer sold new at Best Buy" },
+      tower: { m: "Motion XT CI XTW6 6.5 in in-wall", pair: 1800, note: "$899.99 each with the XT Folded Motion tweeter" }, bookshelf: { m: "Motion XT CI XTC8 8 in in-ceiling", pair: 2200, note: "$1,099.99 each" },
       center: { m: "Motion XT CI XTW5LCR in-wall", each: 1200, note: "Dual 5.25 in LCR; XTW6LCR dual 6.5 in is $1,699.99 for a big screen wall" },
       surround: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000 },
       sub: { m: "Dynamo 1000X", each: 1300 }, subAlt: { m: "Dynamo 800X", each: 1000 },
@@ -328,24 +328,12 @@
       surround: { m: "IS6 invisible (pair)", pair: 1515 }, inceiling: { m: "IS6 invisible (pair)", pair: 1515 },
       sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
       kit: "IS8 $2,120 pair / $1,060 each; IS6 $1,515 pair / $757.50 each. 84 to 86 dB sensitivity, so give them a real amp." },
-    { id: "elac-debut", brand: "ELAC", series: "Debut 3.0", tier: "value",
-      tower: { m: "DF63 6.5 in tower", pair: 1298 }, towerAlt: { m: "DF53 5.25 in tower", pair: 1098 }, bookshelf: { m: "DB63 6.5 in bookshelf", pair: 499 },
-      center: { m: "DC53 center", each: 349 },
-      surround: { m: "DB53 5.25 in bookshelf", pair: 399 },
-      sub: { m: "Debut SUB3010 10 in", each: 400 }, subAlt: { m: "Debut SUB3030 12 in", each: 600 },
-      kit: "DB63 pair $499 (walnut on sale at $399), DF63 $649 each confirmed at Best Buy. DC53 $349, DB53 $399 pair and DF53 $549 each are ELAC list; the SUB3010/3030 too; confirm stock before quoting. No ELAC in-wall or in-ceiling is sold by Best Buy itself, so hidden surrounds and heights here swap to Klipsch. Uni-Fi UBR62 bookshelf is the step up at about $600 a pair." },
-    { id: "yamaha-ns", brand: "Yamaha", series: "NS Series", tier: "value",
-      tower: { m: "NS-555 3-way tower", pair: 500 }, towerAlt: { m: "NS-F210 slim tower", pair: 360 }, bookshelf: { m: "NS-333 bookshelf", pair: 330, note: "$329.95 pair, Yamaha list" },
-      center: { m: "NS-C444 center", each: 230, note: "$229.95, Yamaha list" },
-      surround: { m: "NS-B210 bookshelf", pair: 150 }, inceiling: { m: "NS-IC600 6.5 in in-ceiling", pair: 154, note: "Clearance $153.99 a pair (was $219.95); the last Yamaha in-ceiling Best Buy sells itself" },
-      sub: { m: "NS-SW200 10 in", each: 300 }, subAlt: { m: "NS-SW100 10 in", each: 200 },
-      kit: "NS-IC600 on clearance at $153.99 a pair is the only Yamaha in-wall or in-ceiling Best Buy still sells itself; NS-IC400, NS-IW480C, NS-IW660 and NS-IW470 have gone to marketplace sellers, so in-wall surrounds here swap to Klipsch. NS-C210 center $99.99 confirmed. Box-speaker prices are Yamaha list; confirm stock." },
-    { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true,
-      tower: { m: "Architectural in-wall (pair)", pair: 679, note: "Needs a Sonos Amp ($699, drives one pair)" }, bookshelf: { m: "Architectural in-ceiling (pair)", pair: 679, note: "Seen as low as $589.99; comp $729" },
-      center: { m: "Architectural in-wall (one of a pair)", each: 340, note: "Sonos sells pairs only; a center means a second pair. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
-      surround: { m: "Architectural in-ceiling (pair)", pair: 679 }, inceiling: { m: "Architectural in-ceiling (pair)", pair: 679 },
+    { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
+      tower: { m: "In-Ceiling 8 in (pair)", pair: 1099, note: "The new 8 in with deeper bass; needs a Sonos Amp ($699, drives one pair)" }, bookshelf: { m: "In-Ceiling 6 in (pair)", pair: 679, note: "Seen as low as $589.99; comp $729" },
+      center: { m: "In-Ceiling 6 in (one of a pair)", each: 340, note: "Sonos sells pairs only and Best Buy no longer sells the in-wall, so a center is a third ceiling speaker over the screen. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
+      surround: { m: "In-Ceiling 6 in (pair)", pair: 679 }, inceiling: { m: "In-Ceiling 6 in (pair)", pair: 679 },
       sub: { m: "Sub (Gen 3), wireless", each: 799, brand: "Sonos" }, subAlt: { m: "Sub Mini", each: 429 },
-      kit: "Made by Sonance, tuned with Sonos Trueplay. In-ceiling pair $679 confirmed; in-wall and outdoor pairs are Sonos list. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
+      kit: "Made by Sonance, tuned with Sonos Trueplay. Best Buy sells the 6 in ceiling pair ($679), the 8 in ceiling pair ($1,099) and the outdoor pair ($899); the in-wall pair has gone to marketplace sellers. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
     { id: "russound", brand: "Russound", series: "In-Ceiling", tier: "value", arch: true, frontLabels: ["6.5 in enhanced", "6.5 in all-purpose"],
       tower: { m: "6.5 in enhanced-performance in-ceiling (each)", pair: 798, note: "$399 each at Best Buy; toolless install, paintable grille" }, bookshelf: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436, note: "$218 each; pivoting silk tweeter" },
       center: { m: "6.5 in all-purpose in-ceiling (each)", each: 218 },
@@ -390,7 +378,7 @@
   };
   const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
-  const BRAND_PAGES = { Sonance: "sonance", Yamaha: "yamaha", ELAC: "elac", Sonos: "sonos", Russound: "russound", Bose: "bose",
+  const BRAND_PAGES = { Sonance: "sonance", Sonos: "sonos", Russound: "russound", Bose: "bose",
     Klipsch: "klipsch", "Polk Audio": "polk", KEF: "kef", MartinLogan: "martinlogan", "Definitive Technology": "deftech", "Bowers & Wilkins": "bw", JBL: "jbl" };
   const $ = function (id) { return document.getElementById(id); };
   const IMG = window.SF_IMG;

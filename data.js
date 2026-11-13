@@ -15,7 +15,6 @@ window.SF_QUAL = {
   "polk-reserve":  { detail: 4, bass: 4, dyn: 4, imaging: 3, build: 4, form: "box",  best: ["Movies", "Balanced", "Long sessions"] },
   "deftech-dym":   { detail: 3, bass: 5, dyn: 4, imaging: 3, build: 4, form: "box",  best: ["Bass without a sub", "Movies"] },
   "dali-oberon":   { detail: 4, bass: 3, dyn: 3, imaging: 4, build: 4, form: "box",  best: ["Music", "Easy to drive", "Off-axis"] },
-  "elac-debut":    { detail: 4, bass: 3, dyn: 3, imaging: 3, build: 3, form: "box",  best: ["Value", "Music", "First real system"] },
   "bw-ci700":      { detail: 5, bass: 3, dyn: 4, imaging: 4, build: 5, form: "arch", best: ["Hidden 700 S3 room", "Refinement"] },
   "kef-ci":        { detail: 5, bass: 3, dyn: 3, imaging: 5, build: 5, form: "arch", best: ["Wide seating", "Overhead imaging", "THX in-walls"] },
   "ml-xtci":       { detail: 5, bass: 3, dyn: 4, imaging: 4, build: 4, form: "arch", best: ["Hidden Motion XT", "Detail"] },
@@ -35,7 +34,6 @@ window.SF_QUAL = {
   "jbl-stage2":    { detail: 3, bass: 3, dyn: 4, imaging: 3, build: 3, form: "box",  best: ["Cinema brand", "Entry price"] },
   "bose-791":      { detail: 3, bass: 2, dyn: 3, imaging: 3, build: 3, form: "arch", best: ["Bose households", "Stereo from one spot"] },
   "russound":      { detail: 3, bass: 2, dyn: 3, imaging: 2, build: 3, form: "arch", best: ["Whole-home audio", "Russound amps"] },
-  "yamaha-ns":     { detail: 2, bass: 2, dyn: 3, imaging: 2, build: 3, form: "box",  best: ["Budget", "Reliability", "Cheap in-ceilings"] },
   "sony-core":     { detail: 2, bass: 2, dyn: 2, imaging: 2, build: 2, form: "box",  best: ["Lowest price", "Complete family"] },
   "sonance-mag":   { detail: 2, bass: 2, dyn: 3, imaging: 2, build: 3, form: "arch", best: ["Heights", "Surrounds", "$500 5.1"] },
 };
