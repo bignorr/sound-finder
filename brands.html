@@ -19,15 +19,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
+<script src="images.js"></script>
 <style>
 .tbl { display: flex; flex-direction: column; }
-.trow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding-block: 10px; border-top: 1px solid var(--line); align-items: start; }
+.trow { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 2px 12px; padding-block: 10px; border-top: 1px solid var(--line); align-items: start; }
+.trow .thumb { width: 48px; height: 60px; grid-row: 1 / span 3; }
 .trow:first-child { border-top: none; padding-top: 0; }
 .trow .m { font-weight: 600; }
-.trow .d { color: var(--muted); font-size: 14px; grid-column: 1; }
+.trow .d { color: var(--muted); font-size: 14px; grid-column: 2; }
 .trow .p { font-family: var(--font-display); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
-.trow .c { color: var(--muted); font-size: 12px; text-align: right; grid-column: 2; }
-.trow .f { grid-column: 1 / -1; font-size: 13px; }
+.trow .c { color: var(--muted); font-size: 12px; text-align: right; grid-column: 3; }
+.trow .f { grid-column: 2 / -1; font-size: 13px; }
 .trow a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .use { display: grid; grid-template-columns: 1fr; gap: 10px; }
 @media (min-width: 560px) { .use { grid-template-columns: 1fr 1fr; } }
@@ -256,9 +258,12 @@
       ["UA 2-125 ARC + 3-item package", "Amp with two $868.50 speakers and a $129.95 accessory.", "$2,866.94", "comp $3,059.94"],
     ],
   };
+  // silhouette per table when the model name alone does not say what it is
+  const HINT = { "mag-t": "arch", "vx-t": "arch", "vp-t": "arch", "is-t": "arch", "out-t": "bookshelf", "subs-t": "sub", "bars-t": "bar", "amps-t": "amp" };
   Object.keys(T).forEach(function (id) {
     document.getElementById(id).innerHTML = T[id].map(function (r) {
-      return "<div class='trow'><div class='m'>" + esc(r[0]) + "</div><div class='p'>" + esc(r[2]) + "</div>" +
+      const pic = window.SF_IMG ? window.SF_IMG.thumb((BRAND[id] || "Sonance") + " " + r[0], HINT[id] || null) : "";
+      return "<div class='trow'>" + pic + "<div class='m'>" + esc(r[0]) + "</div><div class='p'>" + esc(r[2]) + "</div>" +
         "<div class='d'>" + esc(r[1]) + "</div>" + (r[3] ? "<div class='c'>" + esc(r[3]) + "</div>" : "") +
         "<div class='f'><a href='" + bby(r[0], id) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div></div>";
     }).join("");

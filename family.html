@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
 <script src="data.js"></script>
+<script src="images.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -108,19 +109,45 @@
     <p class="eyebrow" id="buildLabel"></p>
     <h2 id="buildHead"></h2>
     <div class="card">
+      <p class="eyebrow">Speakers</p>
       <div class="lines" id="lines"></div>
-      <div class="total"><span class="muted">Approx. speakers total</span><strong id="total"></strong></div>
+      <div class="total"><span class="muted">Speakers subtotal</span><strong id="total"></strong></div>
       <p class="muted small" id="totalNote"></p>
     </div>
     <div class="card alt" id="kitNote" hidden></div>
-    <div class="card" id="avrCard"></div>
+    <div class="card" id="avrCard">
+      <div class="row between">
+        <p class="eyebrow">Receiver</p>
+        <span class="muted small" id="avrNeed"></span>
+      </div>
+      <div class="ctl" id="avrCtl">
+        <span>Receiver level</span>
+        <div class="chips" id="avrChips">
+          <button type="button" data-v="none" aria-pressed="false">None</button>
+          <button type="button" data-v="value" aria-pressed="false">Value</button>
+          <button type="button" data-v="mid" aria-pressed="false">Mid</button>
+          <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+        </div>
+        <p class="muted small" id="avrAuto"></p>
+      </div>
+      <div class="lines" id="avrLines"></div>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Finalized list</p>
+      <div class="sums">
+        <div><span class="muted">Speakers</span><b id="sumSpk"></b></div>
+        <div><span class="muted" id="sumAvrLabel">Receiver</span><b id="sumAvr"></b></div>
+        <div class="grand"><span>System total</span><b id="sumTotal"></b></div>
+      </div>
+      <p class="muted small" id="sumNote"></p>
+    </div>
     <div class="sticky-bar">
-      <button class="btn primary" type="button" id="copyBtn">Copy list</button>
+      <button class="btn primary" type="button" id="copyBtn">Copy finalized list</button>
       <button class="btn" type="button" id="bbyBtn">Open series on bestbuy.com</button>
     </div>
   </section>
 
-  <footer>Approximate list prices for equipment only, rounded; promos and bundles change weekly. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
+  <footer>Best Buy list prices for equipment only, rounded; promos and bundles change weekly, so confirm today's price and stock before you quote. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
 </div>
 <textarea class="offscreen" id="clip" aria-hidden="true" tabindex="-1"></textarea>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -165,11 +192,11 @@
       surround: { m: "Oberon On-Wall", pair: 700 }, height: { m: "Alteco C-1", pair: 600, kind: "module" },
       sub: { m: "Sub E-12 F", each: 900 }, subAlt: { m: "Sub E-9 F", each: 700 } },
     { id: "ml-foundation", brand: "MartinLogan", series: "Motion Foundation", tier: "mid",
-      tower: { m: "Motion Foundation F2", pair: 2400 }, towerAlt: { m: "Motion Foundation F1", pair: 1800 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C2", each: 900 },
+      tower: { m: "Motion Foundation F2", pair: 2300 }, towerAlt: { m: "Motion Foundation F1", pair: 1700 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at Best Buy ($439.99 on promo); the bigger C2 if it is stocked" },
       inceiling: { m: "Motion MC6-HT in-ceiling", pair: 900 },
       sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 } },
     { id: "deftech-dym", brand: "Definitive Technology", series: "Dymension", tier: "mid",
-      tower: { m: "DM70", pair: 3000 }, towerAlt: { m: "DM60", pair: 2000 }, bookshelf: { m: "DM20", pair: 1000 }, center: { m: "DM30", each: 1000 },
+      tower: { m: "DM70", pair: 3400 }, towerAlt: { m: "DM60", pair: 2600 }, bookshelf: { m: "DM40", pair: 1200 }, center: { m: "DM30", each: 1249, note: "Flagship center with its own powered 8 in sub; DM20 slim center ($599) for a low console" },
       surround: { m: "DM80", pair: 1000 }, height: { m: "DM90", pair: 600, kind: "module" }, inceiling: { m: "DI 6.5R in-ceiling", pair: 800 },
       sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 } },
     { id: "bw-600", brand: "Bowers & Wilkins", series: "600 S3", tier: "mid",
@@ -238,7 +265,7 @@
       tower: { m: "Architectural in-wall (pair)", pair: 679, note: "Needs a Sonos Amp ($699, drives one pair)" }, bookshelf: { m: "Architectural in-ceiling (pair)", pair: 679, note: "Seen as low as $589.99; comp $729" },
       center: { m: "Architectural in-wall (one of a pair)", each: 340, note: "Sonos sells pairs only; a center means a second pair. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
       surround: { m: "Architectural in-ceiling (pair)", pair: 679 }, inceiling: { m: "Architectural in-ceiling (pair)", pair: 679 },
-      sub: { m: "Sonos Sub (Gen 3), wireless", each: 799, brand: "Sonos" }, subAlt: { m: "Sonos Sub Mini", each: 429 },
+      sub: { m: "Sub (Gen 3), wireless", each: 799, brand: "Sonos" }, subAlt: { m: "Sub Mini", each: 429 },
       kit: "Made by Sonance, tuned with Sonos Trueplay. In-ceiling pair $679 confirmed; in-wall and outdoor pairs are Sonos list. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
     { id: "russound", brand: "Russound", series: "In-Ceiling", tier: "value", arch: true, frontLabels: ["6.5 in enhanced", "6.5 in all-purpose"],
       tower: { m: "6.5 in enhanced-performance in-ceiling (each)", pair: 798, note: "$399 each at Best Buy; toolless install, paintable grille" }, bookshelf: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436, note: "$218 each; pivoting silk tweeter" },
@@ -259,16 +286,35 @@
     mid: [{ brand: "SVS", m: "PB-2000 Pro", each: 1000 }, { brand: "REL", m: "T/7x", each: 1100 }, { brand: "MartinLogan", m: "Dynamo 800X", each: 1000 }],
     premium: [{ brand: "SVS", m: "PB-3000", each: 1500 }, { brand: "REL", m: "T/9x", each: 1450 }, { brand: "MartinLogan", m: "Dynamo 1000X", each: 1300 }],
   };
-  const AVR = [
-    { ch: 5, text: "5 to 7 amplified channels", ex: "Denon AVR-S770H, Yamaha RX-V4A, Sony STR-AN1000" },
-    { ch: 7, text: "7 amplified channels", ex: "Denon AVR-S970H or X1800H, Yamaha RX-V6A, Onkyo TX-NR6100, Sony STR-AN1000" },
-    { ch: 9, text: "9 amplified channels", ex: "Denon AVR-X3800H, Marantz Cinema 50, Onkyo TX-RZ50, Yamaha RX-A6A" },
-    { ch: 11, text: "11 amplified channels", ex: "Denon AVR-X6800H, Yamaha RX-A8A, or a 9-channel AVR plus a 2-channel power amp" },
-  ];
+  // Receivers Best Buy sells and ships, one per price level for each channel count. Prices are bestbuy.com list on Nov 13, 2026.
+  const AVRS = {
+    2: { need: "2 amplified channels",
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later" },
+      mid: { brand: "Denon", m: "DRA-900H 2.2-ch stereo receiver", price: 799, why: "True two-channel, 100 W, 8K HDMI, HEOS streaming, two sub outs" },
+      premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "HDAM amplification for a premium stereo pair, with five channels in reserve for a full theater" } },
+    5: { need: "5 amplified channels",
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration" },
+      mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", price: 649, why: "8K HDMI, HEOS, Audyssey room correction, phono input, Alexa" },
+      premium: { brand: "Marantz", m: "Cinema 70s 7.2-ch slim receiver", price: 1300, why: "Slim Marantz with Dolby Atmos and two spare channels for heights" } },
+    7: { need: "7 amplified channels",
+      value: { brand: "Denon", m: "AVR-S770H 7.2-ch receiver", price: 749, why: "Dolby Atmos and DTS:X, 8K HDMI, HEOS; promoted around $599 to $649 most weeks" },
+      mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", price: 1299, why: "95 W, pre-outs, Audyssey MultEQ XT; the step up in amplifier quality" },
+      premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "100 W HDAM amplification and the Marantz voicing for music-first rooms" } },
+    9: { need: "9 amplified channels",
+      value: { brand: "Onkyo", m: "TX-RZ30 9.2-ch receiver", price: 1000, why: "Dirac Live room correction included, IMAX Enhanced, THX; comp value $1,249.99" },
+      mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", price: 1799, why: "Four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse. Denon lists it at $1,399, so ask for a match" },
+      premium: { brand: "Marantz", m: "Cinema 50 9.4-ch receiver", price: 2800, why: "110 W HDAM, 9.4 channels; the premium pick under B&W, KEF R and Motion XT" } },
+    11: { need: "11 amplified channels",
+      value: { brand: "Pioneer Elite", m: "VSX-LX805 11.4-ch receiver", price: 1699, why: "150 W x 11, Dirac Live, balanced pre-outs; comp value $2,999" },
+      mid: { brand: "Denon", m: "AVR-X6800H 11.4-ch receiver", price: 3799, why: "Made in Japan, 140 W x 11; drives a 7.2.4 with no outboard amp" },
+      premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", price: 4800, why: "The reference Marantz: 140 W x 11, 13.4 pre-outs, HDAM SA-2 modules" } },
+  };
+  const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
   const BRAND_PAGES = { Sonance: "sonance", Yamaha: "yamaha", ELAC: "elac", Sonos: "sonos", Russound: "russound", Bose: "bose" };
   const $ = function (id) { return document.getElementById(id); };
-  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, heights: 2, heightType: "series", subs: 1 };
+  const IMG = window.SF_IMG;
+  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, heights: 2, heightType: "series", subs: 1, avr: "auto" };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
@@ -314,6 +360,13 @@
   const syncHeights = chips("heightsChips", "heights", true);
   const syncHeightType = chips("heightTypeChips", "heightType", false);
   const syncSubs = chips("subsChips", "subs", true);
+  // Receiver level: "auto" follows the series' price level until a chip is tapped.
+  function avrTier() { return state.avr === "auto" ? currentSeries().tier : state.avr; }
+  function currentSeries() { return SERIES.find(function (x) { return x.id === state.series; }); }
+  const avrBtns = $("avrChips").querySelectorAll("button");
+  const syncAvr = function () { Array.prototype.forEach.call(avrBtns, function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === avrTier())); }); };
+  Array.prototype.forEach.call(avrBtns, function (b) { b.addEventListener("click", function () { state.avr = b.dataset.v; persist(); render(); }); });
+  $("avrAuto").addEventListener("click", function (e) { if (e.target.closest("#avrReset")) { state.avr = "auto"; persist(); render(); } });
 
   function renderSeries() {
     const list = $("seriesList");
@@ -325,9 +378,10 @@
       const dots = function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
       const mini = q ? "<span class='mini'><span>Detail</span>" + dots(q.detail) + "<span>Bass</span>" + dots(q.bass) + "<span>Dynamics</span>" + dots(q.dyn) + "</span>" : "";
       return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
+        (IMG ? IMG.lead(s.id) : "") + "<span class='txt'>" +
         "<span class='tier'>" + esc(s.tier) + (s.arch ? " · in-wall / in-ceiling" : "") + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
         (s.arch ? "<span>" + (s.frontLabels ? s.frontLabels[0] : "In-wall") + " " + money(s.tower.pair) + " pair · " + (s.frontLabels ? s.frontLabels[1] : "In-ceiling") + " " + money(s.bookshelf.pair) + " pair</span>"
-                : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + mini + "</button>";
+                : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + mini + "</span></button>";
     }).join("");
   }
   $("seriesList").addEventListener("click", function (e) {
@@ -336,21 +390,21 @@
   });
 
   function build() {
-    const s = SERIES.find(function (x) { return x.id === state.series; });
+    const s = currentSeries();
     const lines = [];
-    const add = function (role, brand, model, qty, each, note) { lines.push({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "" }); };
+    const add = function (role, brand, model, qty, each, note, kind) { lines.push({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }); };
     // fronts
     if (s.arch) {
       const f = state.fronts === "tower" ? s.tower : s.bookshelf;
-      add("Front left + right", s.brand, f.m, 2, f.pair / 2, f.note || (state.fronts === "tower" && !s.frontLabels ? "In-wall, flanking the screen; installer-mounted" : "In-ceiling above the screen wall; aim the tweeters at the seats"));
-    } else if (state.fronts === "tower") add("Front left + right", s.brand, s.tower.m, 2, s.tower.pair / 2, s.towerAlt ? "Smaller room: " + s.towerAlt.m + " (" + money(s.towerAlt.pair) + " pair)" : "");
-    else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Needs stands or a console; see Sanus line below");
+      add("Front left + right", s.brand, f.m, 2, f.pair / 2, f.note || (state.fronts === "tower" && !s.frontLabels ? "In-wall, flanking the screen; installer-mounted" : "In-ceiling above the screen wall; aim the tweeters at the seats"), "arch");
+    } else if (state.fronts === "tower") add("Front left + right", s.brand, s.tower.m, 2, s.tower.pair / 2, s.towerAlt ? "Smaller room: " + s.towerAlt.m + " (" + money(s.towerAlt.pair) + " pair)" : "", "tower");
+    else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Needs stands or a console; see Sanus line below", "bookshelf");
     // center
-    if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, s.center.note || (s.arch ? "In-wall LCR under or above the screen; same driver as the fronts" : "Same series as the fronts so dialog matches"));
+    if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, s.center.note || (s.arch ? "In-wall LCR under or above the screen; same driver as the fronts" : "Same series as the fronts so dialog matches"), s.arch ? "arch" : "center");
     // surrounds
     const sur = s.surround || s.bookshelf;
-    if (state.around >= 5) add("Surrounds (sides)", s.brand, sur.m, 2, sur.pair / 2, s.arch ? "In-ceiling or in-wall beside the seats" : (s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets"));
-    if (state.around >= 7) add("Surrounds (rear)", s.brand, s.arch ? sur.m : s.bookshelf.m, 2, (s.arch ? sur.pair : s.bookshelf.pair) / 2, s.arch ? "In-ceiling behind the seats" : "Bookshelf behind the seats");
+    if (state.around >= 5) add("Surrounds (sides)", s.brand, sur.m, 2, sur.pair / 2, s.arch ? "In-ceiling or in-wall beside the seats" : (s.surround ? "Dedicated surround model" : "Bookshelf on stands or wall brackets"), s.arch ? "arch" : "bookshelf");
+    if (state.around >= 7) add("Surrounds (rear)", s.brand, s.arch ? sur.m : s.bookshelf.m, 2, (s.arch ? sur.pair : s.bookshelf.pair) / 2, s.arch ? "In-ceiling behind the seats" : "Bookshelf behind the seats", s.arch ? "arch" : "bookshelf");
     // heights
     if (state.heights > 0) {
       const useCeil = state.heightType === "inceiling" || !s.height;
@@ -358,23 +412,43 @@
       const hb = useCeil && !s.inceiling ? INCEIL_FALLBACK.brand : s.brand;
       const roleName = state.heights === 4 ? "Heights (front + rear pairs)" : "Heights (front pair)";
       const note = useCeil ? ("In-ceiling, installer-mounted" + (!s.inceiling ? "; " + INCEIL_FALLBACK.note : "")) : (s.height.kind === "module" ? "Atmos modules that sit on the fronts" + (state.heights === 4 ? " and surrounds" : "") : "Height speakers, wall or stand");
-      add(roleName, hb, h.m, state.heights, h.pair / 2, note);
+      add(roleName, hb, h.m, state.heights, h.pair / 2, note, useCeil ? "arch" : "module");
     }
     // subs
     if (state.subs > 0) {
       const picks = SUB_PICKS[s.tier];
       add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", s.sub.brand || s.brand, s.sub.m, state.subs, s.sub.each,
-        (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "));
+        (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "), "sub");
     }
     // stands
-    if (!s.arch && state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional");
-    if (!s.arch && state.around >= 5 && !s.surround) add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional");
+    if (!s.arch && state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional", "stand");
+    if (!s.arch && state.around >= 5 && !s.surround) add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional", "stand");
     return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
   }
 
   function configString() { return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
   function channels() { return state.around + state.heights; }
-  function avrFor(n) { return AVR.find(function (a) { return n <= a.ch; }) || AVR[AVR.length - 1]; }
+  function avrNeedKey(n) { return [2, 5, 7, 9, 11].find(function (c) { return n <= c; }) || 11; }
+  // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
+  function receiver() {
+    const s = currentSeries(); const tier = avrTier(); const n = channels();
+    if (s.id === "sonos-arch") {
+      if (tier === "none") return null;
+      const amps = Math.ceil(n / 2);
+      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp" };
+    }
+    if (tier === "none") return null;
+    const key = avrNeedKey(n); const a = AVRS[key][tier];
+    return { role: "Receiver · " + tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: AVRS[key].need, tier: tier, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, "") };
+  }
+  function lineHtml(l) {
+    return "<div class='line'>" + (IMG ? IMG.thumb(l.brand + " " + l.model, l.kind) : "") +
+      "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
+      "<div class='qty'>" + l.qty + " × " + money(l.each) + (l.note ? " · " + esc(l.note) : "") + "</div></div>" +
+      "<div class='price'>" + money(l.total) + "</div>" +
+      "<div class='find'><a href='" + bby(l.q || (l.brand + " " + l.model)) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" +
+      "</div>";
+  }
 
   function render() {
     syncTier(); syncForm(); syncFronts(); syncAround(); syncHeights(); syncHeightType(); syncSubs();
@@ -393,30 +467,49 @@
     $("buildHead").textContent = s.brand + " " + s.series;
     $("kitNote").hidden = !s.kit;
     $("kitNote").innerHTML = s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" + (BRAND_PAGES[s.brand] ? "<p class='small'><a href='brands.html#" + BRAND_PAGES[s.brand] + "'>Full " + esc(s.brand) + " list with Best Buy prices</a></p>" : "") : "";
-    $("lines").innerHTML = r.lines.map(function (l) {
-      return "<div class='line'>" +
-        "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
-        "<div class='qty'>" + l.qty + " × " + money(l.each) + (l.note ? " · " + esc(l.note) : "") + "</div></div>" +
-        "<div class='price'>" + money(l.total) + "</div>" +
-        "<div class='find'><a href='" + bby(l.brand + " " + l.model) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" +
-        "</div>";
-    }).join("");
+    $("lines").innerHTML = r.lines.map(lineHtml).join("");
     $("total").textContent = money(r.total);
-    $("totalNote").textContent = "Approximate list, " + r.lines.length + " line items. Receiver, mounts and install not included.";
-    const a = avrFor(channels());
-    $("avrCard").innerHTML = "<h3>Receiver for " + configString() + "</h3><p>" + channels() + " speakers to drive, so the receiver needs <b>" + esc(a.text) + "</b>" + (state.subs ? ", plus " + state.subs + " sub out" + (state.subs > 1 ? "s" : "") : "") + ".</p><p class='muted'>" + esc(a.ex) + "</p>";
+    $("totalNote").textContent = "List, " + r.lines.length + " line items. Mounts, wire and install not included.";
+    // receiver
+    syncAvr();
+    const rc = receiver(); const n = channels(); const tier = avrTier();
+    $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
+    $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" ? "Amplifier" : "Receiver level";
+    Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = s.id === "sonos-arch" && b.dataset.v !== "none"; });
+    $("avrAuto").innerHTML = s.id === "sonos-arch"
+      ? (tier === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so the level chips are off here.")
+      : (state.avr === "auto" ? "Matched to the series' <b>" + esc(s.tier) + "</b> level. Tap a level to change it."
+        : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Match the series</button>"
+        : "Set to <b>" + esc(tier) + "</b> by hand. <button type='button' class='btn link' id='avrReset'>Match the series (" + esc(s.tier) + ")</button>");
+    $("avrLines").innerHTML = rc ? lineHtml(rc) : "";
+    // finalized totals
+    const grand = r.total + (rc ? rc.total : 0);
+    $("sumSpk").textContent = money(r.total);
+    $("sumAvrLabel").textContent = rc ? (rc.sonos ? "Sonos Amp" + (rc.qty > 1 ? "s (" + rc.qty + ")" : "") : rc.brand + " " + rc.short) : "Receiver";
+    $("sumAvr").textContent = rc ? money(rc.total) : "Customer's own";
+    $("sumTotal").textContent = money(grand);
+    $("sumNote").textContent = (r.lines.length + (rc ? 1 : 0)) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Copy the list to text it or paste it into the quote.";
     $("bbyBtn").onclick = function () { window.open(bby(s.brand + " " + s.series), "_blank", "noopener"); };
     persist();
   }
 
+  // Finalized list for the clipboard: speakers, receiver, system total, with the date and a verify line.
   function listText() {
     const r = build();
     const s = r.series;
-    const out = [s.brand + " " + s.series + " — " + configString() + " (" + (s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts")) + ")"];
-    r.lines.forEach(function (l) { out.push(l.role + ": " + l.brand + " " + l.model + " ×" + l.qty + " ~ " + money(l.total)); });
-    out.push("Approx. speakers total: " + money(r.total) + " (list; verify current price)");
-    const a = avrFor(channels());
-    out.push("Receiver: " + a.text + " — " + a.ex);
+    const rc = receiver();
+    const fronts = s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts");
+    const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const line = function (l) { return "  " + l.role.replace(/ · .*$/, "") + ": " + l.brand + " " + l.model + " — " + l.qty + " × " + money(l.each) + " = " + money(l.total); };
+    const out = ["SOUND FINDER — FINALIZED LIST · " + today, s.brand + " " + s.series + " · " + configString() + " · " + fronts, "", "SPEAKERS"];
+    r.lines.forEach(function (l) { out.push(line(l)); });
+    out.push("  Speakers subtotal: " + money(r.total), "");
+    if (rc) {
+      out.push(rc.sonos ? "AMPLIFIER" : "RECEIVER (" + rc.tier + " · " + rc.need + ")");
+      out.push(line(rc));
+      if (rc.note) out.push("  " + rc.note);
+    } else out.push("RECEIVER: customer's own");
+    out.push("", "SYSTEM TOTAL: " + money(r.total + (rc ? rc.total : 0)), "", "Best Buy list prices as of " + today + "; confirm today's price and stock in store. Mounts, wire, in-wall work and calibration quoted separately.");
     return out.join("\n");
   }
   function copyText(text) {

@@ -20,13 +20,15 @@
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
 <script src="data.js"></script>
+<script src="images.js"></script>
 <style>
-.rank { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 6px 14px; padding-block: 16px; border-top: 1px solid var(--line); }
+.rank { display: grid; grid-template-columns: 44px 56px minmax(0, 1fr); gap: 6px 12px; padding-block: 16px; border-top: 1px solid var(--line); }
+.rank .thumb { grid-row: 1 / span 2; width: 56px; height: 70px; }
 .rank:first-child { border-top: none; }
 .rank .n { font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
 .rank .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
 .rank .head b { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
-.rank .body { grid-column: 2; display: flex; flex-direction: column; gap: 6px; }
+.rank .body { grid-column: 3; display: flex; flex-direction: column; gap: 6px; }
 .rank dl { margin: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 4px 10px; }
 .rank dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
 .rank dd { margin: 0; min-width: 0; }
@@ -35,6 +37,7 @@
 .rank .head .chip { font-size: 11px; }
 .cmpgrid { display: grid; gap: 8px 10px; align-items: start; overflow-x: auto; }
 .cmpgrid .ch { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.cmpgrid .ch .thumb { width: 64px; height: 80px; margin-bottom: 4px; }
 .cmpgrid .ch b { font-family: var(--font-display); font-size: 20px; line-height: 1; }
 .cmpgrid .ch span { color: var(--muted); }
 .cmpgrid .ch .chip { align-self: flex-start; color: var(--accent); }
@@ -143,7 +146,7 @@
       tech: "Titanium Dome tweeter borrowed from the 700 S3. The 603 tower uses a Continuum-cone FST midrange and paper/Kevlar bass drivers.",
       sound: "Smooth and refined in the mid tier, strongest with music. Prefers a solid receiver.",
       pitch: "The entry to the brand that voices studio monitors, with the 700 Series tweeter." },
-    { id: "ml-foundation", pn: 2400, brand: "MartinLogan", series: "Motion Foundation", tier: "Mid", price: "$2,400 towers",
+    { id: "ml-foundation", pn: 2300, brand: "MartinLogan", series: "Motion Foundation", tier: "Mid", price: "$2,300 towers",
       tech: "Folded Motion tweeter in a value cabinet. Same pleated-film concept as the XT, smaller radiating area.",
       sound: "The MartinLogan detail and speed at a price that fits a 5.1.2 build.",
       pitch: "The cheapest way into the tweeter that made MartinLogan famous." },
@@ -155,7 +158,7 @@
       tech: "Pinnacle ring-radiator tweeter and Turbine Cone (foam-core polypropylene with turbine ribs) from the Legend series, Power Port bass venting, X-Port resonance control.",
       sound: "Balanced and forgiving; nothing sticks out, which makes it an easy long-session home theater speaker.",
       pitch: "Trickle-down from Polk's $6,000 Legend line, tuned for movies first." },
-    { id: "deftech-dym", pn: 3000, brand: "Definitive Technology", series: "Dymension", tier: "Mid", price: "$3,000 towers",
+    { id: "deftech-dym", pn: 3400, brand: "Definitive Technology", series: "Dymension", tier: "Mid", price: "$3,400 towers",
       tech: "BDSS (Balanced Double Surround) drivers, aluminum dome tweeter, and on the DM70 and DM60 towers a built-in powered subwoofer with Intelligent Bass Control.",
       sound: "Towers that make real bass on their own; a 3.0 Dymension set plays like 3.1.",
       pitch: "Each tower has its own powered sub inside, so you may not need a separate one." },
@@ -246,7 +249,7 @@
     $("list").innerHTML = rows.length ? rows.map(function (x) {
       const on = st.cmp.indexOf(x.id) >= 0;
       return "<div class='rank reveal' data-id='" + x.id + "'>" +
-        "<div class='n'>" + x.rank + "</div>" +
+        "<div class='n'>" + x.rank + "</div>" + (window.SF_IMG ? window.SF_IMG.lead(x.id) : "") +
         "<div class='head'><b>" + esc(x.brand) + " " + esc(x.series) + "</b><span class='chip'>" + esc(x.tier) + "</span><span class='chip quiet'>" + (x.q.form === "arch" ? "In-wall / in-ceiling" : "Towers and bookshelf") + "</span><span class='price'>" + esc(x.price) + "</span></div>" +
         "<div class='body'>" + bars(x.q) +
         "<div class='tags'>" + x.q.best.map(function (t) { return "<span class='chip quiet'>" + esc(t) + "</span>"; }).join("") + "</div>" +
@@ -271,7 +274,7 @@
     if (picks.length < 2) return;
     const col = "repeat(" + picks.length + ", minmax(0, 1fr))";
     let h = "<div class='cmpgrid' style='grid-template-columns: 92px " + col + "'>";
-    h += "<div></div>" + picks.map(function (p) { return "<div class='ch'><b>" + esc(p.brand) + "</b><span>" + esc(p.series) + "</span><span class='chip'>" + esc(p.tier) + "</span></div>"; }).join("");
+    h += "<div></div>" + picks.map(function (p) { return "<div class='ch'>" + (window.SF_IMG ? window.SF_IMG.lead(p.id) : "") + "<b>" + esc(p.brand) + "</b><span>" + esc(p.series) + "</span><span class='chip'>" + esc(p.tier) + "</span></div>"; }).join("");
     h += "<div class='rl'>Rank</div>" + picks.map(function (p) { return "<div class='cv big'>#" + p.rank + "</div>"; }).join("");
     h += "<div class='rl'>Price</div>" + picks.map(function (p) { return "<div class='cv'>" + esc(p.price) + "</div>"; }).join("");
     QK.forEach(function (k) {

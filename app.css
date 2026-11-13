@@ -122,25 +122,43 @@ footer { padding-block: 32px 0; color: var(--muted); font-size: 14px; max-width:
 /* family builder */
 .series { display: grid; grid-template-columns: 1fr; gap: 8px; }
 @media (min-width: 560px) { .series { grid-template-columns: 1fr 1fr; } }
-.ser { display: flex; flex-direction: column; gap: 3px; text-align: left; font: inherit; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer; min-height: 56px; box-shadow: var(--shadow); transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease); }
+.ser { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 0 12px; align-items: start; text-align: left; font: inherit; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer; min-height: 56px; box-shadow: var(--shadow); transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--ease); }
 .ser:hover { border-color: var(--accent); box-shadow: var(--shadow-lift); transform: translateY(-1px); }
 .ser[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent), var(--shadow); background: var(--accent-soft); }
+.ser .txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .ser b { font-weight: 600; font-size: 17px; }
 .ser span { color: var(--muted); font-size: 14px; }
 .ser .tier { color: var(--accent); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+.ser .thumb { width: 52px; height: 66px; }
 .ctl { display: flex; flex-direction: column; gap: 6px; }
 .ctl > span { font-size: 14px; font-weight: 600; color: var(--muted); }
 .lines { display: flex; flex-direction: column; }
-.line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding-block: 12px; border-top: 1px solid var(--line); align-items: start; }
+.line { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 4px 12px; padding-block: 12px; border-top: 1px solid var(--line); align-items: start; }
 .line:first-child { border-top: none; padding-top: 0; }
+.line .thumb { width: 58px; height: 72px; grid-row: 1 / span 2; }
 .line .role { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 .line .model { font-weight: 600; font-size: 18px; }
 .line .qty { color: var(--muted); font-size: 14px; }
 .line .price { font-family: var(--font-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
-.line .find { grid-column: 1 / -1; font-size: 14px; }
+.line .find { grid-column: 2 / -1; font-size: 14px; }
 .line a, .card a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 2px solid var(--fg); padding-top: 12px; }
 .total strong { font-family: var(--font-display); font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.row.between { justify-content: space-between; align-items: baseline; }
+.sums { display: flex; flex-direction: column; }
+.sums > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-block: 10px; border-top: 1px solid var(--line); }
+.sums > div:first-child { border-top: none; padding-top: 0; }
+.sums b { font-family: var(--font-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sums .grand { border-top: 2px solid var(--fg); margin-top: 4px; padding-top: 12px; }
+.sums .grand span { font-weight: 600; }
+.sums .grand b { font-size: 38px; color: var(--accent); }
+
+/* product thumbnails: drawn silhouette underneath, Best Buy photo on top when one loads */
+.thumb { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 70px; flex: 0 0 auto; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.thumb svg { width: 72%; height: 72%; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linejoin: round; opacity: .75; }
+.thumb svg .in { stroke-width: 1.4; opacity: .6; }
+.thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 4px; }
+.thumb.fb img { display: none; }
 .sticky-bar { position: sticky; bottom: 0; background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); padding-block: 12px; border-top: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap; z-index: 5; }
 
 /* quality scores (guide + builder) */
