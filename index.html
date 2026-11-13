@@ -18,6 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
+<script src="theme.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -26,12 +27,12 @@
     <div class="row">
       <a class="btn" href="family.html">Family</a>
       <a class="btn" href="series.html">Guide</a>
-      <a class="btn" href="sonance.html">Sonance</a>
+      <a class="btn" href="brands.html">Brands</a>
       <button class="btn" id="leadsBtn" type="button">Leads <span id="leadCount" class="muted small"></span></button>
     </div>
   </header>
 
-  <section id="intro" class="hero">
+  <section id="intro" class="hero reveal">
     <p class="eyebrow">Soundbars · AVR systems · Media rooms</p>
     <h1>Six questions. One setup to walk them to.</h1>
     <p>Ask the customer about the room, the screen and the budget. You get the setup, a price range, a talk track, and the gear to pull from the floor.</p>
@@ -52,7 +53,7 @@
     <div class="row"><button class="btn link" id="backBtn" type="button">Back</button></div>
   </section>
 
-  <section id="result" hidden>
+  <section id="result" class="reveal" hidden>
     <p class="eyebrow">Recommended setup</p>
     <h2 id="rHead"></h2>
     <div class="spec" id="rSpec"></div>
@@ -171,9 +172,9 @@
     "avr-core": { approach: "AVR + speakers", install: "Light", range: "$1,200 to 2,500",
       head: "An AVR with real speakers",
       gear: [["Receiver", "Denon AVR-S or X1800-class, Yamaha RX-V, Onkyo TX-NR, or Sony STR-AN 7-channel"],
-             ["Fronts + center", "Klipsch Reference or Reference Premiere bookshelves, Polk Signature Elite or Reserve, KEF Q, or DALI Oberon, with the matching center"],
+             ["Fronts + center", "Klipsch Reference or Reference Premiere bookshelves, Polk Signature Elite or Reserve, ELAC Debut 3.0, KEF Q, or DALI Oberon, with the matching center"],
              ["Sub", "One 10 to 12 in powered sub: Klipsch R-series, Polk, or SVS SB-1000 / PB-1000"],
-             ["Heights", "Klipsch or Polk Atmos modules on the fronts, or a pair of in-ceilings: Sonance MAG6R ($149 pair) is the value pick, Klipsch, Polk or Definitive Technology the step up"]] },
+             ["Heights", "Klipsch or Polk Atmos modules on the fronts, or a pair of in-ceilings: Sonance MAG6R or Yamaha NS-IC600 (about $150 a pair) are the value picks, Klipsch, Polk or Definitive Technology the step up"]] },
     "avr-performance": { approach: "AVR + speakers", install: "Pro", range: "$2,500 to 6,000",
       head: "A full AVR theater",
       gear: [["Receiver", "Denon X3800-class, Marantz Cinema 50 or 60, Yamaha RX-A, or Onkyo TX-RZ 9-channel with room correction"],

@@ -18,6 +18,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
+<script src="theme.js"></script>
+<script src="data.js"></script>
 <style>
 .rank { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 6px 14px; padding-block: 16px; border-top: 1px solid var(--line); }
 .rank:first-child { border-top: none; }
@@ -30,6 +32,22 @@
 .rank dd { margin: 0; min-width: 0; }
 .rank .price { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; color: var(--muted); }
+.rank .head .chip { font-size: 11px; }
+.cmpgrid { display: grid; gap: 8px 10px; align-items: start; overflow-x: auto; }
+.cmpgrid .ch { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.cmpgrid .ch b { font-family: var(--font-display); font-size: 20px; line-height: 1; }
+.cmpgrid .ch span { color: var(--muted); }
+.cmpgrid .ch .chip { align-self: flex-start; color: var(--accent); }
+.cmpgrid .rl { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 4px; border-top: 1px solid var(--line); }
+.cmpgrid .cv { border-top: 1px solid var(--line); padding-top: 4px; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cmpgrid .cv.big { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+.cmpgrid .cv.small { font-size: 13px; line-height: 1.35; display: block; }
+.cmpgrid .track { flex: 1; height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.cmpgrid .track i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.cmpgrid .n { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
+.cmpgrid .n.top { color: var(--accent); font-weight: 700; }
+.rank .btn.cmp { min-height: 36px; padding: 6px 12px; font-size: 14px; }
+.rank .btn.cmp[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -38,7 +56,7 @@
     <a class="brand" href="index.html">Sound <b>Finder</b></a>
     <div class="row">
       <a class="btn" href="family.html">Family</a>
-      <a class="btn" href="sonance.html">Sonance</a>
+      <a class="btn" href="brands.html">Brands</a>
       <a class="btn" href="index.html">Finder</a>
     </div>
   </header>
@@ -46,13 +64,50 @@
   <section>
     <p class="eyebrow">Series guide</p>
     <h2>Every family in the builder, ranked.</h2>
-    <p class="muted">Ranked on sound quality and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Tower pair price is approximate list. Sonance lines are in-wall and in-ceiling only, so they are ranked for what they do best; the <a href="sonance.html">Sonance brand sheet</a> has every line with current prices.</p>
-    <div class="legend"><span>Premium</span><span>Mid</span><span>Value</span><span>· Pitch = one line to say on the floor</span></div>
+    <p class="muted">Ranked on sound and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Each family is scored 1 to 5 on five qualities; sort by any of them, filter by type, and tap Compare on two or three to see them side by side. The <a href="brands.html">Brands</a> page has every line with Best Buy prices.</p>
+  </section>
+
+  <section>
+    <div class="ctl"><span>Type</span>
+      <div class="chips" id="formChips">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="box" aria-pressed="false">Towers and bookshelf</button>
+        <button type="button" data-v="arch" aria-pressed="false">In-wall and in-ceiling</button>
+      </div></div>
+    <div class="ctl"><span>Tier</span>
+      <div class="chips" id="tierChips">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="Premium" aria-pressed="false">Premium</button>
+        <button type="button" data-v="Mid" aria-pressed="false">Mid</button>
+        <button type="button" data-v="Value" aria-pressed="false">Value</button>
+      </div></div>
+    <div class="ctl"><span>Sort by</span>
+      <div class="chips" id="sortChips">
+        <button type="button" data-v="rank" aria-pressed="true">Rank</button>
+        <button type="button" data-v="price" aria-pressed="false">Price</button>
+        <button type="button" data-v="detail" aria-pressed="false">Detail</button>
+        <button type="button" data-v="bass" aria-pressed="false">Bass</button>
+        <button type="button" data-v="dyn" aria-pressed="false">Dynamics</button>
+        <button type="button" data-v="imaging" aria-pressed="false">Imaging</button>
+        <button type="button" data-v="build" aria-pressed="false">Build</button>
+      </div></div>
+  </section>
+
+  <section id="compareSec" hidden>
+    <div class="row" style="justify-content:space-between">
+      <h3>Side by side</h3>
+      <button class="btn link" type="button" id="clearCmp">Clear</button>
+    </div>
+    <div class="card" id="compare"></div>
   </section>
 
   <section>
     <div class="card" id="list"></div>
   </section>
+  <div class="sticky-bar" id="cmpBar" hidden>
+    <button class="btn primary" type="button" id="showCmp">Compare</button>
+    <span class="muted small" id="cmpHint"></span>
+  </div>
 
   <footer>Driver and material details are from each maker's published specs for the current series; a few parts differ between the small and large models within a series.</footer>
 </div>
@@ -60,102 +115,180 @@
 <script>
 (function () {
   const S = [
-    { brand: "Bowers & Wilkins", series: "700 S3", tier: "Premium", price: "$5,000 towers",
+    { id: "bw-700", pn: 5000, brand: "Bowers & Wilkins", series: "700 S3", tier: "Premium", price: "$5,000 towers",
       tech: "Carbon Dome tweeter in a solid-body pod on top of the cabinet (703, 705), Continuum woven-composite midrange, Aerofoil-profile bass cones. All three came down from the 800 Series.",
       sound: "The most refined and detailed set on the floor. Vocals and strings sound like the real thing. Wants a good receiver or a power amp.",
       pitch: "This is the studio-monitor brand; Abbey Road mixes on the big brothers of these." },
-    { brand: "KEF", series: "R Series Meta", tier: "Premium", price: "$5,000 towers",
+    { id: "kef-r", pn: 5000, brand: "KEF", series: "R Series Meta", tier: "Premium", price: "$5,000 towers",
       tech: "12th-generation Uni-Q: the tweeter sits in the center of the midrange so sound comes from one point. Metamaterial Absorption Technology soaks up 99% of the tweeter's rear energy. Aluminum cones.",
       sound: "Imaging you can point at, and it holds up off-axis, so every seat on a wide sectional gets the same mix.",
       pitch: "Sit anywhere on the couch and the center of the picture stays in the center." },
-    { brand: "MartinLogan", series: "Motion XT", tier: "Premium", price: "$4,000 towers",
+    { id: "ml-xt", pn: 4000, brand: "MartinLogan", series: "Motion XT", tier: "Premium", price: "$4,000 towers",
       tech: "Folded Motion XT tweeter: a pleated film that squeezes air out like an accordion, 40% larger than the standard version. Aluminum-cone woofers. Same DNA as their electrostatic panels.",
       sound: "Fast, airy, effortless detail at high volume. Big, open rooms are where it shines.",
       pitch: "That tweeter moves air ten times faster than a dome; you hear it in cymbals and dialogue." },
-    { brand: "DALI", series: "Opticon Mk2", tier: "Premium", price: "$4,000 towers",
+    { id: "dali-opticon", pn: 4000, brand: "DALI", series: "Opticon Mk2", tier: "Premium", price: "$4,000 towers",
       tech: "Soft Magnetic Compound magnet system that cuts the distortion normal iron magnets add. Wood-fibre cones. Hybrid tweeter on the 6 and 8: a soft dome plus a ribbon for the top octave.",
       sound: "Warm, big and easy to drive. More musical than clinical. Made in Denmark.",
       pitch: "Danish-built, and you hear the wood-fibre cone in how natural voices sound." },
-    { brand: "SVS", series: "Ultra Evolution", tier: "Premium", price: "$3,600 towers",
+    { id: "svs-ultra", pn: 3600, brand: "SVS", series: "Ultra Evolution", tier: "Premium", price: "$3,600 towers",
       tech: "Diamond-coated aluminum dome tweeter, time-aligned sloped baffle so every driver's sound reaches you at the same instant, glass-fiber cones, and deep cabinets from a company that lives on subwoofers.",
       sound: "Dynamics and bass weight above its price. Pairs with SVS subs in the same voice.",
       pitch: "Built by the subwoofer company, so even the towers hit like they have a sub inside." },
-    { brand: "KEF", series: "Q Series Meta", tier: "Mid", price: "$2,000 towers",
+    { id: "kef-q", pn: 2000, brand: "KEF", series: "Q Series Meta", tier: "Mid", price: "$2,000 towers",
       tech: "The same Uni-Q point-source driver and Metamaterial absorber as the R Series, with aluminum cones and simpler cabinets. Q8 Meta doubles as a surround or an Atmos height.",
       sound: "Most of the R Series imaging for less than half the money. The mid-tier pick for wide seating.",
       pitch: "Same tweeter technology as the $5,000 KEFs, and you can hear it from any seat." },
-    { brand: "Bowers & Wilkins", series: "600 S3", tier: "Mid", price: "$2,500 towers",
+    { id: "bw-600", pn: 2500, brand: "Bowers & Wilkins", series: "600 S3", tier: "Mid", price: "$2,500 towers",
       tech: "Titanium Dome tweeter borrowed from the 700 S3. The 603 tower uses a Continuum-cone FST midrange and paper/Kevlar bass drivers.",
       sound: "Smooth and refined in the mid tier, strongest with music. Prefers a solid receiver.",
       pitch: "The entry to the brand that voices studio monitors, with the 700 Series tweeter." },
-    { brand: "MartinLogan", series: "Motion Foundation", tier: "Mid", price: "$2,400 towers",
+    { id: "ml-foundation", pn: 2400, brand: "MartinLogan", series: "Motion Foundation", tier: "Mid", price: "$2,400 towers",
       tech: "Folded Motion tweeter in a value cabinet. Same pleated-film concept as the XT, smaller radiating area.",
       sound: "The MartinLogan detail and speed at a price that fits a 5.1.2 build.",
       pitch: "The cheapest way into the tweeter that made MartinLogan famous." },
-    { brand: "Klipsch", series: "Reference Premiere II", tier: "Mid", price: "$2,400 towers",
+    { id: "klipsch-rp2", pn: 2400, brand: "Klipsch", series: "Reference Premiere II", tier: "Mid", price: "$2,400 towers",
       tech: "Tractrix horn around a 1-inch titanium tweeter with a vented chamber, Cerametallic woofers (ceramic-coated aluminum, copper color). Around 98 dB sensitivity, so a modest receiver plays loud.",
       sound: "Huge dynamics and punch; the movie-night speaker. Bright for some ears on music.",
       pitch: "The horn makes it the most efficient speaker here; your receiver barely works to fill the room." },
-    { brand: "Polk Audio", series: "Reserve", tier: "Mid", price: "$2,500 towers",
+    { id: "polk-reserve", pn: 2500, brand: "Polk Audio", series: "Reserve", tier: "Mid", price: "$2,500 towers",
       tech: "Pinnacle ring-radiator tweeter and Turbine Cone (foam-core polypropylene with turbine ribs) from the Legend series, Power Port bass venting, X-Port resonance control.",
       sound: "Balanced and forgiving; nothing sticks out, which makes it an easy long-session home theater speaker.",
       pitch: "Trickle-down from Polk's $6,000 Legend line, tuned for movies first." },
-    { brand: "Definitive Technology", series: "Dymension", tier: "Mid", price: "$3,000 towers",
+    { id: "deftech-dym", pn: 3000, brand: "Definitive Technology", series: "Dymension", tier: "Mid", price: "$3,000 towers",
       tech: "BDSS (Balanced Double Surround) drivers, aluminum dome tweeter, and on the DM70 and DM60 towers a built-in powered subwoofer with Intelligent Bass Control.",
       sound: "Towers that make real bass on their own; a 3.0 Dymension set plays like 3.1.",
       pitch: "Each tower has its own powered sub inside, so you may not need a separate one." },
-    { brand: "DALI", series: "Oberon", tier: "Mid", price: "$1,700 towers",
+    { id: "dali-oberon", pn: 1700, brand: "DALI", series: "Oberon", tier: "Mid", price: "$1,700 towers",
       tech: "Soft Magnetic Compound woofer magnet trickled down from Opticon, wood-fibre cones, oversized 29 mm soft-dome tweeter for wide dispersion. Easy load on any receiver.",
       sound: "Warm and wide; the music-first choice in the mid tier.",
       pitch: "Danish design, and it sounds good even when you're not sitting in the sweet spot." },
-    { brand: "Sonance", series: "Visual Performance", tier: "Mid", price: "$415 per in-wall LCR",
+    { id: "sonance-vp", pn: 830, brand: "Sonance", series: "Visual Performance", tier: "Mid", price: "$415 per in-wall LCR",
       tech: "Installer-grade in-wall and in-ceiling line: pivoting tweeters, LCR in-wall versions, thin-line and single-stereo options, 90 dB sensitivity. In-wall and in-ceiling only; no box speakers.",
       sound: "The Sonance line that can carry a front stage. VP62 LCR in-walls under the screen beat any ceiling speaker for dialog.",
       pitch: "If the whole system has to disappear, this is the Sonance to put in the wall; keep Mag for the ceiling." },
-    { brand: "Sonance", series: "Invisible Series", tier: "Premium", price: "$2,120 pair (IS8)",
+    { id: "sonance-is", pn: 2120, brand: "Sonance", series: "Invisible Series", tier: "Premium", price: "$2,120 pair (IS8)",
       tech: "IS6 and IS8 flat-panel drivers that get plastered or skimmed over and painted; 84 to 86 dB sensitivity, 40 to 50 Hz low end. The only speaker on the floor that is literally invisible.",
       sound: "A design purchase, not a sound purchase: good for what it is, but a visible VP speaker at half the price sounds better. Needs a real amp and a finisher.",
       pitch: "For the customer who said no to anything showing, this is the answer; it is also a Budget Builder install job." },
-    { brand: "SVS", series: "Prime", tier: "Value", price: "$1,200 towers",
+    { id: "elac-debut", pn: 1298, brand: "ELAC", series: "Debut 3.0", tier: "Value", price: "$1,298 towers",
+      tech: "Aluminum dome tweeter with a wide waveguide, aramid-fiber woofers with oversized magnets, braced cabinets and magnetic grilles. DB63 bookshelf $499, DF63 tower $649 each at Best Buy.",
+      sound: "The budget line reviewers keep calling the best thing under $500 a pair: even, detailed, and honest about needing a sub.",
+      pitch: "Andrew Jones designed the Debut line; this is the speaker the audio press sends beginners to." },
+    { id: "svs-prime", pn: 1200, brand: "SVS", series: "Prime", tier: "Value", price: "$1,200 towers",
       tech: "Aluminum dome tweeter, polypropylene cones, stiff MDF cabinets, and the Prime Elevation, a real height speaker instead of an up-firing module.",
       sound: "Clean and neutral for the money, with the best height option in the value tier.",
       pitch: "Same company as the subs everyone recommends, and the Elevation is a real Atmos speaker." },
-    { brand: "Klipsch", series: "Reference", tier: "Value", price: "$1,100 towers",
+    { id: "klipsch-ref", pn: 1100, brand: "Klipsch", series: "Reference", tier: "Value", price: "$1,100 towers",
       tech: "Tractrix horn around an aluminum tweeter, injection-molded graphite (IMG) woofers. High sensitivity like its big brother.",
       sound: "Loud and lively on a budget receiver. Less refined than Premiere II.",
       pitch: "Plays loud and clear on any receiver you pair it with." },
-    { brand: "Polk Audio", series: "Signature Elite", tier: "Value", price: "$1,000 towers",
+    { id: "polk-es", pn: 1000, brand: "Polk Audio", series: "Signature Elite", tier: "Value", price: "$1,000 towers",
       tech: "Terylene (polyester) dome tweeter, Dynamic Balance polypropylene-mica cones, Power Port venting. Hi-Res certified.",
       sound: "Smooth, safe, forgiving; a complete 5.1.2 family under $2,500.",
       pitch: "The easiest full family to build on a budget, with matching Atmos modules." },
-    { brand: "Sonance", series: "Visual Experience", tier: "Value", price: "$550 in-wall pair",
+    { id: "sonos-arch", pn: 679, brand: "Sonos", series: "Architectural by Sonance", tier: "Mid", price: "$679 in-ceiling pair",
+      tech: "Built by Sonance for Sonos: 6.5 in in-ceiling, in-wall and outdoor pairs that Sonos Amp tunes with Trueplay. Passive, so they need the Amp ($699 per pair).",
+      sound: "A clean, slightly polite Sonance in-ceiling that the Amp room-corrects. Stereo or 2.1 per room is the sweet spot; multichannel gets expensive fast.",
+      pitch: "If they already own Sonos, this is the ceiling speaker that shows up in the Sonos app." },
+    { id: "sonance-vx", pn: 550, brand: "Sonance", series: "Visual Experience", tier: "Value", price: "$550 in-wall pair",
       tech: "The step between Mag and Visual Performance: 6.5 in in-wall pairs, an LCR version, in-ceiling rounds, a 4 in model for small rooms. In-wall and in-ceiling only.",
       sound: "Clean and polite. Fine for a hidden front stage in a secondary room or a TV-sound setup with the UA 2-125 ARC amp.",
       pitch: "Hidden TV sound with no receiver: two VX in-walls and the ARC amp, and nothing shows." },
-    { brand: "JBL", series: "Stage 2", tier: "Value", price: "$1,200 towers",
+    { id: "bose-791", pn: 599, brand: "Bose", series: "Virtually Invisible 791 II", tier: "Mid", price: "$599 in-ceiling pair",
+      tech: "Two angled full-range drivers plus tweeter per speaker (Stereo Everywhere), nearly bezel-free grille. The one passive Bose line at Best Buy.",
+      sound: "Smooth and wide; one speaker fills a small room with both channels. Not a theater front stage.",
+      pitch: "For the customer who only trusts Bose: real ceiling speakers with the badge, and both channels from each one." },
+    { id: "russound", pn: 436, brand: "Russound", series: "In-Ceiling", tier: "Value", price: "$218 each",
+      tech: "6.5 in polypropylene woofer with a pivoting silk tweeter, toolless dog-ear install, paintable grille. Sold as singles ($218, $229, $399 each).",
+      sound: "Background and whole-home audio done properly; the enhanced-performance model is a step up for a main room.",
+      pitch: "The installer's whole-home speaker; pair it with a Russound or Sonance amp and every room sounds the same." },
+    { id: "jbl-stage2", pn: 1200, brand: "JBL", series: "Stage 2", tier: "Value", price: "$1,200 towers",
       tech: "1-inch aluminum dome tweeter in an HDI waveguide from JBL Synthesis cinema speakers, polycellulose woofers.",
       sound: "Lively, forward, big soundstage. The cinema-brand story at entry pricing.",
       pitch: "JBL is in most movie theaters; this waveguide comes from their cinema line." },
-    { brand: "Sony", series: "Core", tier: "Value", price: "$460 towers",
+    { id: "yamaha-ns", pn: 500, brand: "Yamaha", series: "NS Series", tier: "Value", price: "$500 towers",
+      tech: "Polymer-injected mica woofers, aluminum or soft-dome tweeters, and a deep bench of in-ceilings: NS-IC600 pair $149.95, NS-IW480C 8 in 3-way pair $249.99.",
+      sound: "Neutral and safe; the box speakers are thin next to ELAC or Klipsch, the in-ceilings are a quiet bargain.",
+      pitch: "Yamaha reliability at the lowest price, and the cheapest decent in-ceilings on the floor after Mag." },
+    { id: "sony-core", pn: 460, brand: "Sony", series: "Core", tier: "Value", price: "$460 towers",
       tech: "Mica-Reinforced Cellular woofers, soft-dome tweeter plus a super tweeter on the SS-CS5 bookshelf, 3-way design at the lowest price here.",
       sound: "Well above its price, but thinner and smaller-sounding than everything above it.",
       pitch: "A complete 5.1.2 family for less than one pair of the premium towers." },
-    { brand: "Sonance", series: "Mag Series", tier: "Value", price: "$149 in-ceiling pair",
+    { id: "sonance-mag", pn: 149, brand: "Sonance", series: "Mag Series", tier: "Value", price: "$149 in-ceiling pair",
       tech: "6.5 in and 8 in in-ceiling speakers with a magnetic flush grille, sold in pairs and as the MAG5.1R and MAG5.1 Premium systems. Best Buy exclusive, always on promo against a high comp value.",
       sound: "Good ceiling speakers for the money, and that is the whole sentence. As a front left, center and right they fire at the floor, so dialog never comes from the screen.",
       pitch: "Heights and surrounds for any build at $149 a pair; the honest line is 'great for the ceiling, step up for the front wall.'" },
   ];
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
-  document.getElementById("list").innerHTML = S.map(function (s, i) {
-    return "<div class='rank'>" +
-      "<div class='n'>" + (i + 1) + "</div>" +
-      "<div class='head'><b>" + esc(s.brand) + " " + esc(s.series) + "</b><span class='chip'>" + esc(s.tier) + "</span><span class='price'>" + esc(s.price) + "</span></div>" +
-      "<div class='body'><dl>" +
-      "<dt>Stands out</dt><dd>" + esc(s.tech) + "</dd>" +
-      "<dt>Sounds like</dt><dd>" + esc(s.sound) + "</dd>" +
-      "<dt>Pitch</dt><dd>" + esc(s.pitch) + "</dd>" +
-      "</dl></div></div>";
-  }).join("");
+  const Q = window.SF_QUAL || {}; const QK = window.SF_QUAL_KEYS || [];
+  const $ = function (id) { return document.getElementById(id); };
+  S.forEach(function (x, i) { x.rank = i + 1; x.q = Q[x.id] || { detail: 0, bass: 0, dyn: 0, imaging: 0, build: 0, form: "box", best: [] }; });
+  const st = { form: "all", tier: "all", sort: "rank", cmp: [] };
+  try { Object.assign(st, JSON.parse(localStorage.getItem("sf-guide") || "{}")); } catch (e) {}
+  if (!Array.isArray(st.cmp)) st.cmp = [];
+  function persist() { try { localStorage.setItem("sf-guide", JSON.stringify(st)); } catch (e) {} }
+  function chips(id, key) {
+    const btns = $(id).querySelectorAll("button");
+    const sync = function () { Array.prototype.forEach.call(btns, function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === st[key])); }); };
+    Array.prototype.forEach.call(btns, function (b) { b.addEventListener("click", function () { st[key] = b.dataset.v; sync(); persist(); render(); }); });
+    sync();
+  }
+  chips("formChips", "form"); chips("tierChips", "tier"); chips("sortChips", "sort");
+  function bars(q) {
+    return "<div class='scores'>" + QK.map(function (k) { return "<small>" + k[1] + "</small><span class='track'><i style='width:" + (q[k[0]] * 20) + "%'></i></span><span class='n'>" + q[k[0]] + "</span>"; }).join("") + "</div>";
+  }
+  function fmt(n) { return "$" + n.toLocaleString("en-US"); }
+  function render() {
+    let rows = S.filter(function (x) { return (st.form === "all" || x.q.form === st.form) && (st.tier === "all" || x.tier === st.tier); });
+    if (st.sort === "price") rows = rows.slice().sort(function (a, b) { return a.pn - b.pn; });
+    else if (st.sort !== "rank") rows = rows.slice().sort(function (a, b) { return (b.q[st.sort] - a.q[st.sort]) || (a.rank - b.rank); });
+    $("list").innerHTML = rows.length ? rows.map(function (x) {
+      const on = st.cmp.indexOf(x.id) >= 0;
+      return "<div class='rank reveal' data-id='" + x.id + "'>" +
+        "<div class='n'>" + x.rank + "</div>" +
+        "<div class='head'><b>" + esc(x.brand) + " " + esc(x.series) + "</b><span class='chip'>" + esc(x.tier) + "</span><span class='chip quiet'>" + (x.q.form === "arch" ? "In-wall / in-ceiling" : "Towers and bookshelf") + "</span><span class='price'>" + esc(x.price) + "</span></div>" +
+        "<div class='body'>" + bars(x.q) +
+        "<div class='tags'>" + x.q.best.map(function (t) { return "<span class='chip quiet'>" + esc(t) + "</span>"; }).join("") + "</div>" +
+        "<dl><dt>Stands out</dt><dd>" + esc(x.tech) + "</dd><dt>Sounds like</dt><dd>" + esc(x.sound) + "</dd><dt>Pitch</dt><dd>" + esc(x.pitch) + "</dd></dl>" +
+        "<div class='row'><button type='button' class='btn cmp' data-id='" + x.id + "' aria-pressed='" + on + "'>" + (on ? "In comparison" : "Compare") + "</button></div>" +
+        "</div></div>";
+    }).join("") : "<p class='muted'>Nothing matches both filters.</p>";
+    renderCompare();
+  }
+  $("list").addEventListener("click", function (e) {
+    const b = e.target.closest("button.cmp"); if (!b) return;
+    const id = b.dataset.id; const i = st.cmp.indexOf(id);
+    if (i >= 0) st.cmp.splice(i, 1); else { if (st.cmp.length >= 3) st.cmp.shift(); st.cmp.push(id); }
+    persist(); render();
+  });
+  function renderCompare() {
+    const picks = st.cmp.map(function (id) { return S.find(function (x) { return x.id === id; }); }).filter(Boolean);
+    $("cmpBar").hidden = picks.length < 1;
+    $("cmpHint").textContent = picks.length < 2 ? "Pick one more to compare" : picks.length + " selected · up to 3";
+    $("showCmp").disabled = picks.length < 2;
+    $("compareSec").hidden = picks.length < 2;
+    if (picks.length < 2) return;
+    const col = "repeat(" + picks.length + ", minmax(0, 1fr))";
+    let h = "<div class='cmpgrid' style='grid-template-columns: 92px " + col + "'>";
+    h += "<div></div>" + picks.map(function (p) { return "<div class='ch'><b>" + esc(p.brand) + "</b><span>" + esc(p.series) + "</span><span class='chip'>" + esc(p.tier) + "</span></div>"; }).join("");
+    h += "<div class='rl'>Rank</div>" + picks.map(function (p) { return "<div class='cv big'>#" + p.rank + "</div>"; }).join("");
+    h += "<div class='rl'>Price</div>" + picks.map(function (p) { return "<div class='cv'>" + esc(p.price) + "</div>"; }).join("");
+    QK.forEach(function (k) {
+      const best = Math.max.apply(null, picks.map(function (p) { return p.q[k[0]]; }));
+      h += "<div class='rl'>" + k[1] + "</div>" + picks.map(function (p) { const v = p.q[k[0]]; return "<div class='cv'><span class='track'><i style='width:" + (v * 20) + "%'></i></span><span class='n" + (v === best ? " top" : "") + "'>" + v + "</span></div>"; }).join("");
+    });
+    h += "<div class='rl'>Best for</div>" + picks.map(function (p) { return "<div class='cv small'>" + p.q.best.map(esc).join(" · ") + "</div>"; }).join("");
+    h += "<div class='rl'>Tech</div>" + picks.map(function (p) { return "<div class='cv small'>" + esc(p.tech) + "</div>"; }).join("");
+    h += "<div class='rl'>Pitch</div>" + picks.map(function (p) { return "<div class='cv small'>" + esc(p.pitch) + "</div>"; }).join("");
+    h += "</div>";
+    const tot = picks.map(function (p) { return { p: p, t: QK.reduce(function (a, k) { return a + p.q[k[0]]; }, 0) }; }).sort(function (a, b) { return b.t - a.t; });
+    h += "<p class='muted small'>Score out of 25: " + tot.map(function (x) { return esc(x.p.brand) + " " + esc(x.p.series) + " " + x.t; }).join(" · ") + ". Higher is better on sound; price is not in the score.</p>";
+    $("compare").innerHTML = h;
+  }
+  $("clearCmp").addEventListener("click", function () { st.cmp = []; persist(); render(); });
+  $("showCmp").addEventListener("click", function () { $("compareSec").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  render();
   if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
 })();
 </script>

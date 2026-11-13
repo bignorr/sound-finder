@@ -1,6 +1,6 @@
 // Sound Finder service worker: caches the app shell so it opens with no signal.
-const CACHE = "sound-finder-v4";
-const SHELL = ["./", "./index.html", "./family.html", "./series.html", "./sonance.html", "./app.css", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
+const CACHE = "sound-finder-v5";
+const SHELL = ["./", "./index.html", "./family.html", "./series.html", "./sonance.html", "./brands.html", "./theme.js", "./data.js", "./app.css", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).then(function () { return self.skipWaiting(); }));
@@ -18,7 +18,7 @@ self.addEventListener("fetch", function (e) {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  const isShell = url.origin === self.location.origin && (url.pathname.endsWith("/") || url.pathname.endsWith(".html") || url.pathname.endsWith("app.css") || url.pathname.endsWith("manifest.webmanifest"));
+  const isShell = url.origin === self.location.origin && (url.pathname.endsWith("/") || url.pathname.endsWith(".html") || url.pathname.endsWith("app.css") || url.pathname.endsWith(".js") || url.pathname.endsWith("manifest.webmanifest"));
   if (isShell) {
     e.respondWith(fetch(req).then(function (res) {
       const copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); return res;

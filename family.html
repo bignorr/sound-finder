@@ -18,6 +18,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
+<script src="theme.js"></script>
+<script src="data.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -25,6 +27,7 @@
     <a class="brand" href="index.html">Sound <b>Finder</b></a>
     <div class="row">
       <a class="btn" href="series.html">Guide</a>
+      <a class="btn" href="brands.html">Brands</a>
       <a class="btn" href="index.html">Finder</a>
     </div>
   </header>
@@ -43,6 +46,14 @@
         <button type="button" data-v="value" aria-pressed="false">Value</button>
         <button type="button" data-v="mid" aria-pressed="false">Mid</button>
         <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Type</span>
+      <div class="chips" id="formChips">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="box" aria-pressed="false">Towers and bookshelf</button>
+        <button type="button" data-v="arch" aria-pressed="false">In-wall and in-ceiling</button>
       </div>
     </div>
     <div class="ctl">
@@ -93,7 +104,7 @@
     </div>
   </section>
 
-  <section id="result">
+  <section id="result" class="reveal">
     <p class="eyebrow" id="buildLabel"></p>
     <h2 id="buildHead"></h2>
     <div class="card">
@@ -211,6 +222,36 @@
       surround: { m: "IS6 invisible (pair)", pair: 1515 }, inceiling: { m: "IS6 invisible (pair)", pair: 1515 },
       sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
       kit: "IS8 $2,120 pair / $1,060 each; IS6 $1,515 pair / $757.50 each. 84 to 86 dB sensitivity, so give them a real amp." },
+    { id: "elac-debut", brand: "ELAC", series: "Debut 3.0", tier: "value",
+      tower: { m: "DF63 6.5 in tower", pair: 1298 }, towerAlt: { m: "DF53 5.25 in tower", pair: 998 }, bookshelf: { m: "DB63 6.5 in bookshelf", pair: 499 },
+      center: { m: "DC53 center", each: 349 },
+      surround: { m: "DB53 5.25 in bookshelf", pair: 399 },
+      sub: { m: "Debut SUB3010 10 in", each: 400 }, subAlt: { m: "Debut SUB3030 12 in", each: 600 },
+      kit: "DB63 pair $499 (walnut on sale at $399), DF63 $649 each confirmed at Best Buy. DC53 center, DB53 and the SUB3010/3030 are ELAC list; confirm they are in stock before quoting. Uni-Fi UBR62 bookshelf is the step up at about $600 a pair." },
+    { id: "yamaha-ns", brand: "Yamaha", series: "NS Series", tier: "value",
+      tower: { m: "NS-555 3-way tower", pair: 500 }, towerAlt: { m: "NS-F210 slim tower", pair: 360 }, bookshelf: { m: "NS-333 bookshelf", pair: 200 },
+      center: { m: "NS-C444 center", each: 150 },
+      surround: { m: "NS-B210 bookshelf", pair: 150 }, inceiling: { m: "NS-IC600 6.5 in in-ceiling", pair: 150 },
+      sub: { m: "NS-SW200 10 in", each: 300 }, subAlt: { m: "NS-SW100 10 in", each: 200 },
+      kit: "Confirmed at Best Buy: NS-IC600 in-ceiling pair $149.95, NS-IC400 pair $149.99, NS-IW480C 8 in 3-way in-ceiling pair $249.99, NS-C210 center $99.99. Box-speaker prices are Yamaha list; confirm stock." },
+    { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true,
+      tower: { m: "Architectural in-wall (pair)", pair: 679, note: "Needs a Sonos Amp ($699, drives one pair)" }, bookshelf: { m: "Architectural in-ceiling (pair)", pair: 679, note: "Seen as low as $589.99; comp $729" },
+      center: { m: "Architectural in-wall (one of a pair)", each: 340, note: "Sonos sells pairs only; a center means a second pair. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
+      surround: { m: "Architectural in-ceiling (pair)", pair: 679 }, inceiling: { m: "Architectural in-ceiling (pair)", pair: 679 },
+      sub: { m: "Sonos Sub (Gen 3), wireless", each: 799, brand: "Sonos" }, subAlt: { m: "Sonos Sub Mini", each: 429 },
+      kit: "Made by Sonance, tuned with Sonos Trueplay. In-ceiling pair $679 confirmed; in-wall and outdoor pairs are Sonos list. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
+    { id: "russound", brand: "Russound", series: "In-Ceiling", tier: "value", arch: true, frontLabels: ["6.5 in enhanced", "6.5 in all-purpose"],
+      tower: { m: "6.5 in enhanced-performance in-ceiling (each)", pair: 798, note: "$399 each at Best Buy; toolless install, paintable grille" }, bookshelf: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436, note: "$218 each; pivoting silk tweeter" },
+      center: { m: "6.5 in all-purpose in-ceiling (each)", each: 218 },
+      surround: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 }, inceiling: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 },
+      sub: { m: "SB-1000 Pro", each: 600, brand: "SVS" }, subAlt: { m: "Sonance MS10SUB", each: 429 },
+      kit: "Sold as singles ($218, $229 and $399 each at Best Buy). Russound also lists Acclaim 5 Outback indoor/outdoor bookshelf speakers. No Russound sub at Best Buy; pair with SVS or the Sonance MS10SUB. Best fit: whole-home audio on Russound or Sonance amps." },
+    { id: "bose-791", brand: "Bose", series: "Virtually Invisible 791 II", tier: "mid", arch: true, frontLabels: ["791 II (pair)", "791 II (pair)"],
+      tower: { m: "Virtually Invisible 791 II in-ceiling (pair)", pair: 599, note: "Bose Stereo Everywhere: both channels from each speaker" }, bookshelf: { m: "Virtually Invisible 791 II in-ceiling (pair)", pair: 599 },
+      center: { m: "791 II (one of a second pair)", each: 300, note: "Pairs only. One model, one job: ceilings." },
+      surround: { m: "Virtually Invisible 791 II (pair)", pair: 599 }, inceiling: { m: "Virtually Invisible 791 II (pair)", pair: 599 },
+      sub: { m: "SB-1000 Pro", each: 600, brand: "SVS" }, subAlt: { m: "Sonance MS10SUB", each: 429 },
+      kit: "The only passive Bose line Best Buy sells: 791 II pair $599, 4.9 stars. Two drivers angled so each speaker throws both channels, good for a hallway or kitchen with one speaker. No Bose center, in-wall or passive sub; everything else Bose is wireless." },
   ];
   // Subs worth suggesting beside the series sub, by tier.
   const SUB_PICKS = {
@@ -225,8 +266,9 @@
     { ch: 11, text: "11 amplified channels", ex: "Denon AVR-X6800H, Yamaha RX-A8A, or a 9-channel AVR plus a 2-channel power amp" },
   ];
 
+  const BRAND_PAGES = { Sonance: "sonance", Yamaha: "yamaha", ELAC: "elac", Sonos: "sonos", Russound: "russound", Bose: "bose" };
   const $ = function (id) { return document.getElementById(id); };
-  const state = { tier: "all", series: "klipsch-rp2", fronts: "tower", around: 5, heights: 2, heightType: "series", subs: 1 };
+  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, heights: 2, heightType: "series", subs: 1 };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
@@ -266,6 +308,7 @@
     return sync;
   }
   const syncTier = chips("tierChips", "tier", false);
+  const syncForm = chips("formChips", "form", false);
   const syncFronts = chips("frontsChips", "fronts", false);
   const syncAround = chips("aroundChips", "around", true);
   const syncHeights = chips("heightsChips", "heights", true);
@@ -274,13 +317,17 @@
 
   function renderSeries() {
     const list = $("seriesList");
-    const shown = SERIES.filter(function (s) { return state.tier === "all" || s.tier === state.tier; });
+    const shown = SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "all" || (state.form === "arch") === !!s.arch); });
+    if (!shown.length) { list.innerHTML = "<p class='muted small'>No families match both filters.</p>"; return; }
     if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
     list.innerHTML = shown.map(function (s) {
+      const q = (window.SF_QUAL || {})[s.id];
+      const dots = function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
+      const mini = q ? "<span class='mini'><span>Detail</span>" + dots(q.detail) + "<span>Bass</span>" + dots(q.bass) + "<span>Dynamics</span>" + dots(q.dyn) + "</span>" : "";
       return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
         "<span class='tier'>" + esc(s.tier) + (s.arch ? " · in-wall / in-ceiling" : "") + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
         (s.arch ? "<span>" + (s.frontLabels ? s.frontLabels[0] : "In-wall") + " " + money(s.tower.pair) + " pair · " + (s.frontLabels ? s.frontLabels[1] : "In-ceiling") + " " + money(s.bookshelf.pair) + " pair</span>"
-                : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + "</button>";
+                : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + mini + "</button>";
     }).join("");
   }
   $("seriesList").addEventListener("click", function (e) {
@@ -316,7 +363,7 @@
     // subs
     if (state.subs > 0) {
       const picks = SUB_PICKS[s.tier];
-      add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", s.brand, s.sub.m, state.subs, s.sub.each,
+      add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", s.sub.brand || s.brand, s.sub.m, state.subs, s.sub.each,
         (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "));
     }
     // stands
@@ -330,7 +377,7 @@
   function avrFor(n) { return AVR.find(function (a) { return n <= a.ch; }) || AVR[AVR.length - 1]; }
 
   function render() {
-    syncTier(); syncFronts(); syncAround(); syncHeights(); syncHeightType(); syncSubs();
+    syncTier(); syncForm(); syncFronts(); syncAround(); syncHeights(); syncHeightType(); syncSubs();
     renderSeries();
     const s = SERIES.find(function (x) { return x.id === state.series; });
     const fc = $("frontsChips");
@@ -345,7 +392,7 @@
     $("buildLabel").textContent = "The " + configString() + " family" + (s.arch ? " · architectural" : "");
     $("buildHead").textContent = s.brand + " " + s.series;
     $("kitNote").hidden = !s.kit;
-    $("kitNote").innerHTML = s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" + (s.brand === "Sonance" ? "<p class='small'><a href='sonance.html'>Full Sonance list with today's prices</a></p>" : "") : "";
+    $("kitNote").innerHTML = s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" + (BRAND_PAGES[s.brand] ? "<p class='small'><a href='brands.html#" + BRAND_PAGES[s.brand] + "'>Full " + esc(s.brand) + " list with Best Buy prices</a></p>" : "") : "";
     $("lines").innerHTML = r.lines.map(function (l) {
       return "<div class='line'>" +
         "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
