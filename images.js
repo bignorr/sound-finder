@@ -20,7 +20,7 @@
     ["265-rt", 4215141], ["265-ls", 4215104], ["70-rt", 4215133], ["90-rt", 4215111], ["rc6s", 3992911],
     // Bowers & Wilkins
     ["603 s3", 6551308], ["606 s3", 6553109], ["htm6 s3", 6554271], ["703 s3", 6517787], ["704 s3", 6517799], ["706 s3", 6517786], ["707 s3", 6517791], ["705 s3", 6517797], ["htm71 s3", 6517806], ["htm72 s3", 6517810],
-    ["ccm362", 3527067], ["ci300 in-wall", 5160065], ["ccm664", 3526174], ["ccm665", 2155658], ["ccm663sr", 2155524], ["ccm663rd", 6404055], ["ccm662", 2155612], ["ccm632", 4595047],
+    ["ccm362", 3527067], ["ci300 in-wall", 5160065], ["marine 6", 5711051], ["ccm664", 3526174], ["ccm665", 2155658], ["ccm663sr", 2155524], ["ccm663rd", 6404055], ["ccm662", 2155612], ["ccm632", 4595047],
     ["ccm684", 2156038], ["ccm683", 2165036], ["ccm682", 2156074], ["cwm664", 2165063], ["cwm652", 2156047],
     ["ccm7.5 s2", 6376573], ["ccm7.3 s2", 6376570], ["cwm7.5 s2", 6376597], ["cwm7.4 s2", 6376593], ["cwm7.3 s2", 6376591], ["cwm8.5d", 5799118],
     // MartinLogan
@@ -40,15 +40,17 @@
     // Definitive Technology
     ["dm70", 6532522], ["dm60", 6532524], ["dm40", 6532525], ["dm80", 6532832], ["dm90", 6532730], ["dm30", 6532526], ["dm20", 6532521], ["dm10", 6532523],
     ["dc-65 pro si", 6563224], ["dc-65 pro", 6564542], ["dc-65 max", 6564545], ["dw-65 pro", 6563223], ["dw-80 pro", 6563220], ["dw-65 max", 6563216], ["dw max sur", 6563214],
+    ["dc-80 max sur", 6563213], ["dc-80 max", 6563219], ["dc-80 pro", 6563221],
     ["di 6.5r", 5977373], ["di 6.5lcr", 5977415], ["lcr-65", 6563249], ["lcr-85", 6563251],
     // KEF
     ["q11 meta", 6590360], ["q7 meta", 6590361], ["q6 meta", 6590367], ["q3 meta", 6590373], ["q concerto", 6590363],
     ["r11 meta", 6534272], ["r7 meta", 6534452], ["r6 meta", 6534457], ["r5 meta", 6534463], ["r2 meta", 6534459], ["reference 5", 6502497],
     ["ci160qr", 6204540], ["ci160qs", 6204535], ["ci200qr", 6204542], ["ci160ql", 6204532], ["ci160rr-thx", 6413896], ["ci200rr-thx", 6382214], ["ci200rs-thx", 6382213],
     ["ci4100ql-thx", 6204534], ["ci3160rlm-thx", 6566992], ["ci5160rlm-thx", 6566972], ["ci3160rlb-thx", 6382205],
-    ["ci160crds", 6830235], ["ci200.2cr", 6197964], ["ci130.2cs", 6197963], ["ci160es", 6474476],
+    ["ci160crds", 6830235], ["ci200.2cr", 6197964], ["ci130.2cs", 6197963], ["ci160es", 6474476], ["ci160.2cl", 6197977], ["ci160.2cs", 6197980],
     // JBL architectural
-    ["stage 280csa", 6528852], ["stage 260csa", 6528864], ["stage 280c", 6528859],
+    ["stage 280csa", 6528852], ["stage 260csa", 6528864], ["stage 280c", 6528859], ["stage 260c", 6528866], ["stage 260w", 6528853], ["stage 280w", 6528846], ["stage 250wl", 6528863],
+    ["studio 6 6iw", 6552249], ["studio 6 8iw", 6528854], ["studio 6 66lcr", 6528861], ["studio 6 88lcr", 6528868], ["studio 6 theater", 6552212], ["conceal c86", 6549269],
     // ELAC
     ["df63", 12017502], ["df53", 12017495], ["db63", 10417108], ["dc63", 12219055], ["iw-d61-w", 6042005],
     // Monitor Audio
@@ -56,13 +58,13 @@
     // Sonance
     ["mag6r", 5852330], ["mag5.1 premium", 6401739], ["ms10sub", 6360974], ["impact i8", 6221808], ["impact i10", 6221819],
     ["vp62 lcr", 5683584], ["vp62 rectangle", 5683434], ["vp66r", 5683526], ["vp62r sst", 5683575],
-    ["vx62r tl sst", 6624214], ["vx62r tl", 6624217], ["vx62r sst", 6597099], ["vx62r", 6575405], ["vx82r", 6608189], ["vx60r", 6575410], ["vx62 lcr", 6597097], ["vx42", 6579697],
+    ["vx62r tl sst", 6624214], ["vx62r tl", 6624217], ["vx62r sst", 6597099], ["vx62r", 6575405], ["vx82r", 6608189], ["vx60r", 6575410], ["vx66r", 6579701], ["vx62 lcr", 6597097], ["vx42", 6579697],
     ["is6", 6444860], ["is8", 6444932],
     ["mx62", 6590101], ["mx52 sst", 6590114], ["mx52", 6590097],
     ["ua 2-125", 6635174], ["sb46l", 5683586], ["sb46-75", 6341798],
     ["vpsub", 6253955], ["r12sub", 6253942], ["bps6 tl", 6552707], ["bps6", 5683415],
     // Yamaha
-    ["ns-ic600", 2052555], ["ns-c210", 2877429], ["ns-ic400", 5607278], ["ns-iw480c", 8285884], ["ns-iw660", 6552249],
+    ["ns-ic600", 2052555], ["ns-c210", 2877429], ["ns-ic400", 5607278], ["ns-iw480c", 8285884], ["ns-iw470", 7688834],
     // Bose
     ["791", 4664000],
     // Sonos
@@ -91,7 +93,7 @@
     if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-/.test(t)) return "avr";
     if (/sonos amp|ua 2-125|amplifier/.test(t)) return "amp";
     if (/sub|sw\d|kube|kc62|dynamo|descend|hts |pb-|sb-1|sb-2|sb-3|ms10|impact i|bps6/.test(t) && !/sb46/.test(t)) return "sub";
-    if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|791|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|280c\b|i[cw]-d|installer/.test(t)) return "arch";
+    if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|791|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|2[68]0c\b|\d{3}w\b|\d{3}wl\b|\diw\b|studio 6|conceal|marine 6|i[cw]-d|installer/.test(t)) return "arch";
     if (/module|atmos|elevation|-sa |sa ii|es90|r900|240h|dm90|alteco|ss-cse|r8 meta|q8 meta|rp-500sa|r-40sa/.test(t)) return "module";
     if (/center|vokal|htm|c100|c1\b|c2\b|c10\b|dc53|dc63|r400|r50c|r-50c|es35|245c|ss-cs8|q6 meta|r6 meta|rp-504c|c444|c210|dm30/.test(t)) return "center";
     if (/tower|floor|f100|f200|f2\b|f1\b|f20|f10|\b60[3]\b|\b70[34]\b|r700|r600|es60|280f|260f|r-800f|r-600f|rp-8000|rp-6000|rp-5000|q7|q11|r7 meta|r11|r5 meta|oberon [57]|opticon [68]|dm70|dm60|ns-555|ns-f210|df63|df53|pinnacle|ss-cs3|prime tower|evolution tower/.test(t)) return "tower";
@@ -121,7 +123,7 @@
     "bose-791": "Bose Virtually Invisible 791 II in-ceiling", "russound": "Russound 6.5 in in-ceiling", "jbl-stage2": "JBL Stage 2 280F tower", "yamaha-ns": "Yamaha NS-555 tower",
     "sony-core": "Sony SS-CS3 tower", "sonance-mag": "Sonance MAG6R in-ceiling",
     "klipsch-ci": "Klipsch R-5502-W II in-wall", "polk-ci": "Polk Audio 265-RT in-wall", "deftech-ci": "Definitive Technology DC-65 MAX in-ceiling", "ml-ci": "MartinLogan Motion CI MC6-HT in-ceiling",
-    "kef-ci": "KEF Ci160QR in-ceiling", "ml-xtci": "MartinLogan Motion XT CI XTW6 in-wall", "bw-ci600": "Bowers & Wilkins CCM664 in-ceiling", "bw-ci700": "Bowers & Wilkins CCM7.5 S2 in-ceiling",
+    "kef-ci": "KEF Ci160QR in-ceiling", "jbl-ci": "JBL Stage 250WL in-wall", "ml-xtci": "MartinLogan Motion XT CI XTW6 in-wall", "bw-ci600": "Bowers & Wilkins CCM664 in-ceiling", "bw-ci700": "Bowers & Wilkins CCM7.5 S2 in-ceiling",
   };
   // One thumbnail: silhouette underneath, Best Buy photo on top when there is one; the photo removes itself if it fails.
   function thumb(text, hint, cls) {

@@ -23,6 +23,7 @@ window.SF_QUAL = {
   "deftech-ci":    { detail: 3, bass: 4, dyn: 4, imaging: 3, build: 4, form: "arch", best: ["Bipolar in-wall surround", "Movies"] },
   "bw-ci600":      { detail: 4, bass: 3, dyn: 3, imaging: 3, build: 4, form: "arch", best: ["Hidden 600 S3 room", "Pair pricing"] },
   "klipsch-ci":    { detail: 3, bass: 3, dyn: 5, imaging: 3, build: 3, form: "arch", best: ["Loud hidden theater", "Easy to drive", "Value"] },
+  "jbl-ci":        { detail: 3, bass: 3, dyn: 4, imaging: 3, build: 3, form: "arch", best: ["Cinema brand hidden", "Value", "Studio 6 step-up"] },
   "polk-ci":       { detail: 3, bass: 3, dyn: 3, imaging: 3, build: 4, form: "arch", best: ["Paintable bezels", "3-way ceilings", "Value"] },
   "sonance-vp":    { detail: 4, bass: 3, dyn: 3, imaging: 3, build: 4, form: "arch", best: ["Hidden front stage", "Install jobs"] },
   "sonance-is":    { detail: 3, bass: 2, dyn: 2, imaging: 2, build: 5, form: "arch", best: ["Nothing showing", "Design rooms"] },
