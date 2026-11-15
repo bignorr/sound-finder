@@ -21,6 +21,7 @@
 <script src="theme.js"></script>
 <script src="data.js"></script>
 <script src="images.js"></script>
+<script src="bars.js"></script>
 <script src="sales.js"></script>
 </head>
 <body>
@@ -37,10 +38,17 @@
   <section>
     <p class="eyebrow">Speaker family builder</p>
     <h2>Budget, build size, brand. Pull the set.</h2>
-    <p class="muted">Start with what the customer wants to spend, size the build, and the app shows which brands can do it for the money, with the system total on every card. Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by Best Buy. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
+    <p class="muted">Speakers with a receiver, or a soundbar system. Start with what the customer wants to spend, size the build, and the app shows which brands can do it for the money, with the system total on every card. Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by Best Buy. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
   </section>
 
   <section>
+    <div class="ctl">
+      <span>What are we building?</span>
+      <div class="chips" id="kindChips">
+        <button type="button" data-v="speakers" aria-pressed="true">Speakers + receiver</button>
+        <button type="button" data-v="bar" aria-pressed="false">Soundbar system</button>
+      </div>
+    </div>
     <div class="ctl">
       <span>What the customer wants to spend, whole system</span>
       <div class="chips" id="budgetChips">
@@ -55,7 +63,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="sizeSec">
     <div class="ctl">
       <span>Fronts</span>
       <div class="chips" id="frontsChips">
@@ -105,6 +113,31 @@
     </div>
   </section>
 
+  <section id="barSec" hidden>
+    <div class="ctl">
+      <span>Subwoofer</span>
+      <div class="chips" id="barSubChips">
+        <button type="button" data-v="1" aria-pressed="true">With the sub</button>
+        <button type="button" data-v="0" aria-pressed="false">Bar only</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Rear speakers</span>
+      <div class="chips" id="barRearsChips">
+        <button type="button" data-v="1" aria-pressed="true">With wireless rears</button>
+        <button type="button" data-v="0" aria-pressed="false">No rears</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Where the bar goes</span>
+      <div class="chips" id="barMountChips">
+        <button type="button" data-v="console" aria-pressed="true">On the console</button>
+        <button type="button" data-v="wall" aria-pressed="false">Wall mounted</button>
+      </div>
+    </div>
+    <p class="muted small">Every bar here is sold and shipped by Best Buy. "With the sub" and "with rears" cost nothing extra when the bar ships with them; otherwise the brand's own wireless kit is added.</p>
+  </section>
+
   <section>
     <div class="ctl" id="brandCtl" hidden>
       <span>Brands that build it for the money</span>
@@ -119,7 +152,7 @@
         <button type="button" data-v="premium" aria-pressed="false">Premium</button>
       </div>
     </div>
-    <div class="ctl">
+    <div class="ctl" id="formCtl">
       <span>Type</span>
       <div class="chips" id="formChips">
         <button type="button" data-v="all" aria-pressed="true">All</button>
@@ -437,7 +470,12 @@
   const IMG = window.SF_IMG;
   const SALES = window.SF_SALES;
   const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
-    acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all" };
+    acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all",
+    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console" };
+  // Soundbar systems Best Buy sells and ships (bestbuy.com, checked Nov 15, 2026). price = the bar as sold (with whatever ships in the box).
+  // subIn / rearsIn = ships with them. sub / rears = the brand's own wireless add-on when it does not. tier by bar price: value < $900, mid to $1,500, premium above.
+  const BARS = window.SF_BARS || [];
+  BARS.forEach(function (b) { b.bar = true; b.series = b.m; });
   // Budget ceilings for the whole system (speakers + matched receiver + cables). The Finder's budget answer deep-links to the same keys.
   const BUDGETS = { b1: 1000, b2: 2500, b3: 6000, b4: 12000 };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
@@ -460,6 +498,8 @@
       if ([0, 1, 2].indexOf(subs) >= 0) state.subs = subs;
       if ([0, 2, 4].indexOf(heights) >= 0) state.heights = heights;
     }
+    if (q.get("kind") === "bar") { state.kind = "bar"; state.brand = "all"; }
+    if (q.get("rears") === "0" || q.get("rears") === "1") state.barRears = parseInt(q.get("rears"), 10);
     const bq = q.get("budget");
     if (bq && (bq === "all" || BUDGETS[bq])) { state.budget = bq; state.max = 0; state.brand = "all"; }
     const tier = q.get("tier");
@@ -484,6 +524,12 @@
   }
   const syncTier = chips("tierChips", "tier", false);
   const syncBudget = chips("budgetChips", "budget", false);
+  const syncKind = chips("kindChips", "kind", false);
+  $("kindChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.brand = "all"; persist(); render(); } });
+  const syncBarSub = chips("barSubChips", "barSub", true);
+  const syncBarRears = chips("barRearsChips", "barRears", true);
+  const syncBarMount = chips("barMountChips", "barMount", false);
+  function isBar() { return state.kind === "bar" && BARS.length > 0; }
   $("budgetChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.max = 0; $("budgetMax").value = ""; state.brand = "all"; persist(); render(); } });
   // Typed ceiling: apply as they type (debounced) so a tap elsewhere right after does not land on a re-rendered page.
   function applyMax() { const v = Math.max(0, parseInt($("budgetMax").value, 10) || 0); if (v === state.max) return; state.max = v; if (v) state.budget = "all"; state.brand = "all"; persist(); render(); }
@@ -501,7 +547,10 @@
   // Receiver level: "auto" follows the series' price level until a chip is tapped.
   function tierFor(s) { return state.avr === "auto" ? s.tier : state.avr; }
   function avrTier() { return tierFor(currentSeries()); }
-  function currentSeries() { return SERIES.find(function (x) { return x.id === state.series; }); }
+  function currentSeries() {
+    if (isBar()) return BARS.find(function (x) { return x.id === state.bar; }) || BARS[0];
+    return SERIES.find(function (x) { return x.id === state.series; });
+  }
   // The whole-system price for any family at the current build size: speakers, the matched receiver, and the cables that are switched on.
   function systemTotal(s) { const r = build(s); const rc = receiver(s); return r.total + (rc ? rc.total : 0) + accTotal(accessories(r, rc)); }
   const avrBtns = $("avrChips").querySelectorAll("button");
@@ -512,7 +561,9 @@
   function renderSeries() {
     const list = $("seriesList");
     const cap = budgetCap();
-    let pool = SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "all" || (state.form === "arch") === !!s.arch); });
+    let pool = isBar()
+      ? BARS.filter(function (s) { return state.tier === "all" || s.tier === state.tier; })
+      : SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "all" || (state.form === "arch") === !!s.arch); });
     pool.forEach(function (s) { s.sys = systemTotal(s); });
     let fits = pool, over = [];
     if (cap) {
@@ -529,15 +580,28 @@
         brands.map(function (b) { const n = fits.filter(function (s) { return s.brand === b; }).length; return "<button type='button' data-v='" + esc(b) + "' aria-pressed='" + (state.brand === b) + "'>" + esc(b) + (n > 1 ? " (" + n + ")" : "") + "</button>"; }).join("");
     }
     const shown = state.brand === "all" ? fits : fits.filter(function (s) { return s.brand === state.brand; });
-    $("seriesLabel").textContent = cap ? "Series that fit, closest to the budget first" : "Series";
+    const what = isBar() ? "soundbar systems" : "families";
+    $("seriesLabel").textContent = isBar() ? (cap ? "Bars that fit, closest to the budget first" : "Soundbar systems") : (cap ? "Series that fit, closest to the budget first" : "Series");
     $("budgetNote").textContent = cap
-      ? fits.length + " of " + pool.length + " families build a " + configString() + " for " + money(cap) + " or less" + (fits.length ? "." : ". Try bookshelf fronts, fewer speakers, one sub, or a higher ceiling.")
-      : "Speakers, the matched receiver and the cables below, for the build size you pick next.";
+      ? fits.length + " of " + pool.length + " " + what + " come in at " + money(cap) + " or less" + (fits.length ? "." : (isBar() ? ". Try the bar without rears, or a higher ceiling." : ". Try bookshelf fronts, fewer speakers, one sub, or a higher ceiling."))
+      : (isBar() ? "Bar, sub, rears and the cables below, as you set them next." : "Speakers, the matched receiver and the cables below, for the build size you pick next.");
     $("overNote").hidden = !(cap && over.length);
     $("overNote").innerHTML = cap && over.length ? "Just over: " + over.map(function (s) { return "<button type='button' class='btn link' data-pick='" + s.id + "'>" + esc(s.brand + " " + s.series) + " " + money(s.sys) + "</button>"; }).join(" · ") : "";
     if (!shown.length) { list.innerHTML = "<p class='muted small'>" + (cap ? "Nothing builds this size for " + money(cap) + ". Change the size above or raise the ceiling." : "No families match both filters.") + "</p>"; return; }
-    if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
+    if (isBar()) { if (!shown.some(function (s) { return s.id === state.bar; })) state.bar = shown[0].id; }
+    else if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
     list.innerHTML = shown.map(function (s) {
+      if (s.bar) {
+        const room = cap ? cap - s.sys : 0;
+        const inBox = [s.subIn ? "sub" : null, s.rearsIn ? "rears" : null].filter(Boolean);
+        return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.bar) + "'>" +
+          (IMG ? IMG.thumb(s.brand + " " + s.m, "bar") : "") + "<span class='txt'>" +
+          "<span class='tier'>" + esc(s.tier) + " · " + esc(s.cfg) + (s.atmos ? " · Atmos" : "") + "</span><b>" + esc(s.brand) + " " + esc(s.m) + "</b>" +
+          "<span class='sys'>System " + money(s.sys) + (cap ? (room >= 300 ? " · " + money(room) + " under" : " · fits") : "") + "</span>" +
+          "<span>Bar " + money(s.price) + (inBox.length ? " with " + inBox.join(" and ") + " in the box" : "") + (!s.subIn && s.sub ? " · sub +" + money(s.sub.price) : "") + (!s.rearsIn && s.rears ? " · rears +" + money(s.rears.price) : "") + "</span>" +
+          (s.tv ? "<span class='mini'><span>Pairs with</span><span>" + esc(s.tv) + "</span></span>" : "") +
+          "</span></button>";
+      }
       const q = (window.SF_QUAL || {})[s.id];
       const dots = function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
       const mini = q ? "<span class='mini'><span>Detail</span>" + dots(q.detail) + "<span>Bass</span>" + dots(q.bass) + "<span>Dynamics</span>" + dots(q.dyn) + "</span>" : "";
@@ -557,13 +621,23 @@
   });
   $("seriesList").addEventListener("click", function (e) {
     const b = e.target.closest(".ser"); if (!b) return;
-    state.series = b.dataset.id; persist(); render();
+    if (isBar()) state.bar = b.dataset.id; else state.series = b.dataset.id;
+    persist(); render();
   });
 
   function build(sArg) {
     const s = sArg || currentSeries();
     const lines = [];
-    const add = function (role, brand, model, qty, each, note, kind) { lines.push({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }); };
+    const add = function (role, brand, model, qty, each, note, kind, extra) { lines.push(Object.assign({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }, extra || {})); };
+    if (s.bar) {
+      add("Soundbar", s.brand, s.m, 1, s.price, s.cfg + (s.atmos ? " Dolby Atmos" : "") + (s.hdmi ? " · " + s.hdmi + " HDMI in" + (s.pass ? ", " + s.pass + " pass-through" : "") : s.hdmi === 0 ? " · eARC only, sources stay on the TV" : "") + (s.note ? " · " + s.note : ""), "bar", { sku: s.sku });
+      if (s.subIn) add("Subwoofer", s.brand, "Wireless sub, in the box", 1, 0, "Ships with the bar", "sub", { included: true, nosku: true });
+      else if (state.barSub && s.sub) add("Subwoofer", s.brand, s.sub.m, 1, s.sub.price, "Brand's wireless sub; pairs in the app", "sub", { sku: s.sub.sku });
+      if (s.rearsIn) add("Rear speakers", s.brand, "Wireless rears, in the box", 1, 0, "Ship with the bar", "bookshelf", { included: true, nosku: true });
+      else if (state.barRears && s.rears) add("Rear speakers", s.brand, s.rears.m, 1, s.rears.price, "Brand's wireless rear pair; power outlet needed at each", "bookshelf", { sku: s.rears.sku });
+      if (state.barMount === "wall") add("Wall mount", s.bracket ? s.brand : "Sanus", s.bracket ? s.bracket.m : "Universal soundbar wall mount", 1, s.bracket ? s.bracket.price : 40, "Under the TV; confirm the TV mount leaves room", "stand", s.bracket ? { sku: s.bracket.sku } : {});
+      return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
+    }
     // fronts
     if (s.arch) {
       const f = state.fronts === "tower" ? s.tower : s.bookshelf;
@@ -610,13 +684,13 @@
     return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
   }
 
-  function configString() { return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
+  function configString() { const s = currentSeries(); if (s && s.bar) return s.cfg || "soundbar"; return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
   function surroundType() { return state.around >= 5 ? state.surroundType : "series"; }
   function channels() { return state.around + state.heights; }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11].find(function (c) { return n <= c; }) || 11; }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
   function receiver(sArg) {
-    const s = sArg || currentSeries(); const tier = tierFor(s); const n = channels();
+    const s = sArg || currentSeries(); if (s.bar) return null; const tier = tierFor(s); const n = channels();
     if (s.id === "sonos-arch") {
       if (tier === "none") return null;
       const amps = Math.ceil(n / 2);
@@ -628,6 +702,7 @@
   }
   // Does this series need a receiver rated for 4 ohms, or real power? Returns the warning to show, if any.
   function loadCheck(s, rc) {
+    if (s.bar) return s.tv || s.tech ? { bad: false, html: (s.tv ? "<b>Pairs best with " + esc(s.tv) + ".</b> " : "") + esc(s.tech || "") } : null;
     const L = s.load; if (!L) return null;
     const needs4 = L.ohm <= 4 || (L.min && L.min < 4);
     const lowSens = L.sens < 86;
@@ -639,9 +714,11 @@
     if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " handles it; set the speaker-impedance menu to 4 ohms during setup." + (lowSens ? " It is also only " + L.sens + " dB, so do not go below the Mid receiver in a big room." : "") };
     return { bad: false, html: "<b>Power-hungry.</b> " + esc(name) + " is " + L.sens + " dB, among the least sensitive here. It sounds its best on the Mid or Premium receiver" + (rc && rc.tier === "value" ? ", not the " + esc(rc.brand + " " + rc.short) : "") + "." };
   }
+  function lineSku(l) { if (l.nosku) return null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
   function skuHtml(l) {
+    if (l.nosku) return "";
     const key = l.brand + " " + l.model;
-    const k = SALES.sku(key);
+    const k = lineSku(l);
     return "<span class='sku coach'>" + (k ? "SKU " + esc(k) : "no SKU on file") + " <button type='button' data-skukey='" + esc(key) + "'>" + (k ? "edit" : "add") + "</button></span>";
   }
   function lineHtml(l) {
@@ -649,8 +726,8 @@
     return "<div class='line'>" + (IMG ? IMG.thumb(key, l.kind) : "") +
       "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
       "<div class='qty'>" + l.qty + " × " + money(l.each) + (l.note ? " · " + esc(l.note) : "") + "</div></div>" +
-      "<div class='price'>" + money(l.total) + "</div>" +
-      "<div class='find'><a href='" + SALES.bbyUrl(key, l.q || key) + "' target='_blank' rel='noopener'>" + (SALES.sku(key) ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + skuHtml(l) + "</div>" +
+      "<div class='price'>" + (l.included ? "Included" : money(l.total)) + "</div>" +
+      (l.nosku ? "" : "<div class='find'><a href='" + (lineSku(l) ? "https://www.bestbuy.com/site/" + lineSku(l) + ".p" : SALES.bbyUrl(key, l.q || key)) + "' target='_blank' rel='noopener'>" + (lineSku(l) ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + skuHtml(l) + "</div>") +
       "</div>";
   }
   // Inline SKU editor on a line: tap edit, type the SKU, it saves on this phone and the link goes straight to the product page.
@@ -669,6 +746,12 @@
   // Cables and accessories sized to the build. Typical Best Buy house-brand prices; the exact SKU goes in at the register.
   function accessories(r, rc) {
     const s = r.series; const out = [];
+    if (s.bar) {
+      out.push({ id: "hdmi", role: "HDMI", brand: "Rocketfish / AudioQuest", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", qty: s.hdmi ? 2 : 1, each: 25, note: s.hdmi ? "TV eARC to the bar, plus the main source into the bar" : "TV eARC to the bar; sources plug into the TV" });
+      out.push({ id: "surge", role: "Power", brand: "Rocketfish", model: "6-outlet surge protector", qty: 1, each: 40, note: "bar" + (barHasSub(s) ? ", sub" : "") + (barHasRears(s) ? ", rears" : "") + ", TV" });
+      out.forEach(function (a) { a.on = state.acc[a.id] !== false; a.total = a.qty * a.each; });
+      return out;
+    }
     const arch = s.arch || surroundType() !== "series" || (state.heights > 0 && (state.heightType === "inceiling" || !s.height));
     let ft = 2 * 20; // fronts
     if (state.around >= 3) ft += 10;
@@ -694,12 +777,16 @@
   }
   $("accLines").addEventListener("change", function (e) { const i = e.target.closest("input[data-acc]"); if (!i) return; state.acc[i.dataset.acc] = i.checked; persist(); render(); });
   function accTotal(list) { return list.reduce(function (a, x) { return a + (x.on ? x.total : 0); }, 0); }
-  function installKind() { const s = currentSeries(); return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
+  function installKind() { const s = currentSeries(); if (s.bar) return "bar"; return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
 
   function render() {
-    syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs(); syncBudget();
+    syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs(); syncBudget(); syncKind(); syncBarSub(); syncBarRears(); syncBarMount();
     if (state.max > 0 && String($("budgetMax").value) !== String(state.max)) $("budgetMax").value = state.max;
+    $("kindChips").querySelector("[data-v='bar']").disabled = !BARS.length;
+    const bar = isBar();
+    $("sizeSec").hidden = bar; $("barSec").hidden = !bar; $("formCtl").hidden = bar; $("avrCard").hidden = bar;
     renderSeries();
+    if (bar) { renderBar(); persist(); return; }
     const s = SERIES.find(function (x) { return x.id === state.series; });
     const fc = $("frontsChips");
     fc.querySelector("[data-v='tower']").textContent = s.frontLabels ? s.frontLabels[0] : (s.arch ? "In-wall" : "Towers");
@@ -763,6 +850,48 @@
     if (!$("sowCard").hidden) $("sowText").value = sowText();
     persist();
   }
+  function barHasSub(s) { return !!(s.subIn || (state.barSub && s.sub)); }
+  function barHasRears(s) { return !!(s.rearsIn || (state.barRears && s.rears)); }
+  function renderBar() {
+    const s = currentSeries();
+    const r = build(s);
+    // chips reflect what this bar ships with: no "bar only" when the sub is in the box, no rears choice when the brand offers none
+    const sc = $("barSubChips"), rcps = $("barRearsChips");
+    sc.querySelector("[data-v='1']").textContent = s.subIn ? "Sub in the box" : s.sub ? "With " + s.sub.m.replace(/ \(.*$/, "") : "No sub offered";
+    sc.querySelector("[data-v='0']").hidden = !!s.subIn || !s.sub;
+    sc.querySelector("[data-v='1']").disabled = !s.subIn && !s.sub;
+    rcps.querySelector("[data-v='1']").textContent = s.rearsIn ? "Rears in the box" : s.rears ? "With " + s.rears.m.replace(/ \(.*$/, "") : "No rears offered";
+    rcps.querySelector("[data-v='0']").hidden = !!s.rearsIn || !s.rears;
+    rcps.querySelector("[data-v='1']").disabled = !s.rearsIn && !s.rears;
+    $("buildLabel").textContent = "Soundbar system · " + s.cfg + (barHasRears(s) ? " with rears" : "") + (barHasSub(s) ? "" : " · no sub");
+    $("buildHead").textContent = s.brand + " " + s.m;
+    const page = BRAND_PAGES[s.brand];
+    $("kitNote").hidden = !s.kit && !s.tech;
+    $("kitNote").innerHTML = "<p class='eyebrow'>Why this bar</p><p>" + esc(s.tech || "") + (s.kit ? " " + esc(s.kit) : "") + "</p>" +
+      (s.tv ? "<p class='small'>Pairs best with " + esc(s.tv) + ". On another TV it still works over eARC; the TV-link features are what you give up.</p>" : "") +
+      (page ? "<p class='small'><a href='brands.html#" + page + "'>" + esc(s.brand) + " on the Brands page</a></p>" : "");
+    $("lines").innerHTML = r.lines.map(lineHtml).join("");
+    $("total").textContent = money(r.total);
+    $("totalNote").textContent = "List, " + r.lines.length + " line items. No receiver: the bar is the amplifier.";
+    const warn = loadCheck(s, null);
+    $("loadWarn").hidden = true;
+    const acc = accessories(r, null);
+    $("accLines").innerHTML = acc.map(accHtml).join("");
+    const accSum = accTotal(acc);
+    $("accTotal").textContent = money(accSum);
+    const grand = r.total + accSum;
+    $("sumSpk").textContent = money(r.total);
+    $("sumAvrLabel").textContent = "Receiver";
+    $("sumAvr").textContent = "Not needed";
+    $("sumAcc").textContent = money(accSum);
+    $("sumTotal").textContent = money(grand);
+    $("sumFin").innerHTML = SALES.monthlyHtml(grand) || "<p class='muted small'>No financing promo covers " + money(grand) + ". Check the promo table in Settings.</p>";
+    $("sumInst").textContent = SALES.installText("bar");
+    $("instKind").textContent = "· " + SALES.installBand("bar").label;
+    $("sumNote").textContent = (r.lines.length + acc.filter(function (a) { return a.on; }).length) + " line items · " + s.cfg + " · Best Buy prices as of Nov 15, 2026. Install is your Settings range; Budget Builder sets the quote.";
+    $("bbyBtn").onclick = function () { window.open(s.sku ? "https://www.bestbuy.com/site/" + s.sku + ".p" : bby(s.brand + " " + s.m), "_blank", "noopener"); };
+    if (!$("sowCard").hidden) $("sowText").value = sowText();
+  }
   document.addEventListener("sf-settings", render);
 
   // Finalized list for the clipboard: speakers, receiver, system total, with the date and a verify line.
@@ -770,24 +899,24 @@
     const r = build();
     const s = r.series;
     const rc = receiver();
-    const fronts = s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts");
+    const fronts = s.bar ? (barHasRears(s) ? "with rears" : "no rears") : s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts");
     const st = surroundType();
-    const surr = s.arch || st === "series" ? "" : " · " + (st === "inwall" ? "in-wall" : "in-ceiling") + " surrounds";
-    const hts = state.heights && !s.arch ? " · " + (state.heightType === "inceiling" || !s.height ? "in-ceiling heights" : "Atmos modules") : "";
+    const surr = s.bar || s.arch || st === "series" ? "" : " · " + (st === "inwall" ? "in-wall" : "in-ceiling") + " surrounds";
+    const hts = !s.bar && state.heights && !s.arch ? " · " + (state.heightType === "inceiling" || !s.height ? "in-ceiling heights" : "Atmos modules") : "";
     const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    const skuTag = function (l) { const k = SALES.sku(l.brand + " " + l.model); return k ? " [SKU " + k + "]" : ""; };
-    const line = function (l) { return "  " + l.role.replace(/ · .*$/, "") + ": " + l.brand + " " + l.model + skuTag(l) + " — " + l.qty + " × " + money(l.each) + " = " + money(l.total); };
+    const skuTag = function (l) { const k = lineSku(l); return k ? " [SKU " + k + "]" : ""; };
+    const line = function (l) { return "  " + l.role.replace(/ · .*$/, "") + ": " + l.brand + " " + l.model + skuTag(l) + " — " + (l.included ? "included" : l.qty + " × " + money(l.each) + " = " + money(l.total)); };
     const acc = accessories(r, rc).filter(function (a) { return a.on; });
     const accSum = accTotal(acc);
     const grand = r.total + (rc ? rc.total : 0) + accSum;
-    const out = ["SOUND FINDER — FINALIZED LIST · " + today, s.brand + " " + s.series + " · " + configString() + " · " + fronts + surr + hts, "", "SPEAKERS"];
+    const out = ["SOUND FINDER — FINALIZED LIST · " + today, s.brand + " " + s.series + " · " + configString() + " · " + fronts + surr + hts, "", s.bar ? "SOUNDBAR SYSTEM" : "SPEAKERS"];
     r.lines.forEach(function (l) { out.push(line(l)); });
-    out.push("  Speakers subtotal: " + money(r.total), "");
+    out.push("  " + (s.bar ? "System" : "Speakers") + " subtotal: " + money(r.total), "");
     if (rc) {
       out.push(rc.sonos ? "AMPLIFIER" : "RECEIVER (" + rc.tier + " · " + rc.need + ")");
       out.push(line(rc));
       if (rc.note) out.push("  " + rc.note);
-    } else out.push("RECEIVER: customer's own");
+    } else out.push(s.bar ? "RECEIVER: none needed; the bar is the amplifier (TV connects over HDMI eARC)" : "RECEIVER: customer's own");
     const warn = loadCheck(s, rc);
     if (warn) out.push("  NOTE: " + warn.html.replace(/<[^>]+>/g, ""));
     out.push("", "CABLES AND ACCESSORIES");
@@ -807,7 +936,7 @@
     const all = r.lines.concat(rc ? [rc] : []);
     const out = ["SKUs · " + r.series.brand + " " + r.series.series + " · " + configString()];
     const missing = [];
-    all.forEach(function (l) { const k = SALES.sku(l.brand + " " + l.model); if (k) out.push(k + "  × " + l.qty + "  " + l.brand + " " + l.model); else missing.push(l.brand + " " + l.model); });
+    all.forEach(function (l) { if (l.nosku) return; const k = lineSku(l); if (k) out.push(k + "  × " + l.qty + "  " + l.brand + " " + l.model); else missing.push(l.brand + " " + l.model); });
     if (missing.length) out.push("", "No SKU on file (add it on the line): " + missing.join("; "));
     out.push("", "Cables: " + accessories(r, rc).filter(function (a) { return a.on; }).map(function (a) { return a.qty + " × " + a.model; }).join("; "));
     return out.join("\n");
@@ -821,7 +950,29 @@
     const ceilHeights = state.heights > 0 && (state.heightType === "inceiling" || !s.height || s.arch);
     const b = function (t) { return "- " + t; };
     const out = ["ROOM NAME", b(room), "", "EQUIPMENT"];
-    r.lines.forEach(function (l) { const k = SALES.sku(l.brand + " " + l.model); out.push(b(l.qty + " × " + l.brand + " " + l.model + (k ? " (SKU " + k + ")" : "") + " — " + l.role.replace(/ · .*$/, "").toLowerCase())); });
+    r.lines.forEach(function (l) { const k = lineSku(l); out.push(b((l.included ? "" : l.qty + " × ") + l.brand + " " + l.model + (k ? " (SKU " + k + ")" : "") + " — " + l.role.replace(/ · .*$/, "").toLowerCase())); });
+    if (s.bar) {
+      acc.forEach(function (a) { out.push(b(a.qty + " × " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
+      out.push("", "SCOPE");
+      out.push(b(state.barMount === "wall" ? "Wall-mount the soundbar centered under the display; confirm clearance below the TV mount and route power behind the wall where code allows" : "Place the soundbar centered on the console under the display; confirm it does not block the TV's IR window"));
+      if (barHasSub(s)) out.push(b("Place the wireless subwoofer on the front wall near an outlet; pair it to the bar and confirm the link"));
+      if (barHasRears(s)) out.push(b("Place the wireless rear speakers beside or behind the seating at ear height" + (/battery/i.test(s.tech || "") ? "; charge them on the bar first" : ", one outlet each") + "; pair and confirm the link"));
+      out.push(b("Connect the TV's HDMI eARC port to the bar's HDMI eARC/out with the Ultra High Speed cable" + (s.hdmi ? "; main source into the bar's HDMI input for " + (s.pass || "pass-through") : "; all sources stay on the TV's inputs")));
+      out.push(b("Set the TV: audio output to eARC/external speaker, digital output to pass-through or bitstream, CEC on; turn off the TV's internal speakers"));
+      out.push(b("Run the bar's room calibration in the app" + (s.tv ? "; enable the " + s.tv + " link features" : "") + "; update firmware"));
+      out.push(b("Walk the customer through the remote, the app and volume from the TV remote; play a Dolby Atmos demo before leaving"));
+      out.push("", "WATCH");
+      out.push(b("TV apps and " + (s.hdmi ? "the source on the bar's HDMI input" : "every HDMI source on the TV") + " play through the bar over eARC"));
+      out.push("", "LISTEN");
+      out.push(b((s.atmos ? "Dolby Atmos" : "Surround") + " from streaming apps and disc; " + s.cfg + " layout" + (barHasRears(s) ? " with rears" : "")));
+      out.push(b("Music through the brand's app, AirPlay or Bluetooth as the bar supports"));
+      out.push("", "DISCLAIMERS");
+      out.push(b("Equipment at Best Buy price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
+      out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText("bar") + " range for this kind of job)"));
+      out.push(b("Wireless sub and rears each need a power outlet; outlets by a licensed electrician if new"));
+      out.push(b("TV-link features (" + (s.tv || "same-brand TV") + ") depend on the customer's TV model and firmware"));
+      return out.join("\n");
+    }
     if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : ""))); else out.push(b("Receiver: customer's existing unit (confirm channel count and 4-ohm rating)"));
     acc.forEach(function (a) { out.push(b(a.qty + " × " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
     out.push("", "SCOPE");

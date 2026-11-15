@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
 <script src="images.js"></script>
+<script src="bars.js"></script>
 <script src="sales.js"></script>
 <style>
 .tbl { display: flex; flex-direction: column; }
@@ -58,7 +59,7 @@
     <h2>Every in-wall and in-ceiling, line by line.</h2>
     <p class="muted">For each brand in the app, the in-wall and in-ceiling models Best Buy itself sells and ships, with the prices bestbuy.com showed when pulled (Nov 12 and 13, 2026; every open item re-checked on the product page Nov 13). Marketplace listings, discontinued models and anything Best Buy does not carry are left out entirely. Promo prices move weekly, so confirm before you quote.</p>
     <div class="jump">
-      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a>
+      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a><a href="#soundbars">Soundbars</a>
     </div>
     <div class="use">
       <div><b>Reading the sheets</b><span>Every row is a model Best Buy itself sells and ships. "Verify" or "price in cart" means Best Buy lists it but the price was not on the page when pulled; a maker's price fills the gap where the note says so. Third-party marketplace listings on bestbuy.com are not here at all.</span></div>
@@ -187,9 +188,17 @@
     <div class="card"><div class="tbl" id="bose-t"></div></div>
   </section>
 
+  <section class="sec" id="soundbars">
+    <p class="eyebrow">Soundbars · sold and shipped by Best Buy</p>
+    <h2>High-end soundbar systems, brand by brand.</h2>
+    <p class="muted">The flagship and the step-down bar from each top TV and audio brand, with what ships in the box and the brand's own wireless sub and rear kits. Prices are what bestbuy.com showed on Nov 15, 2026; confirm before you quote. Build any of them with a budget in the <a href="family.html?kind=bar">Family builder</a>.</p>
+    <div class="card"><div class="tbl" id="bars-list"></div></div>
+  </section>
+
   <section>
     <div class="row">
       <a class="btn primary" href="family.html">Build a family</a>
+      <a class="btn" href="family.html?kind=bar">Build a soundbar system</a>
       <a class="btn" href="series.html">Compare in the guide</a>
     </div>
   </section>
@@ -413,6 +422,19 @@
         (r[2] ? "<div class='f'><a href='" + bby(r[0], id) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" : "") + "</div>";
     }).join("");
   });
+  // Soundbars come from bars.js so the builder, the Finder and this sheet agree.
+  const bars = window.SF_BARS || [];
+  const money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
+  document.getElementById("bars-list").innerHTML = bars.length ? bars.map(function (b) {
+    const pic = window.SF_IMG ? window.SF_IMG.thumb(b.brand + " " + b.m, "bar") : "";
+    const box = [b.subIn ? "sub" : null, b.rearsIn ? "rears" : null].filter(Boolean);
+    const adds = [!b.subIn && b.sub ? "sub " + b.sub.m + " " + money(b.sub.price) : null, !b.rearsIn && b.rears ? "rears " + b.rears.m + " " + money(b.rears.price) : null].filter(Boolean);
+    const d = b.cfg + (b.atmos ? ", Dolby Atmos" : "") + (box.length ? ", " + box.join(" and ") + " in the box" : ", bar only in the box") + (b.hdmi ? ", " + b.hdmi + " HDMI in" + (b.pass ? " with " + b.pass : "") : b.hdmi === 0 ? ", eARC only" : "") + ". " + (b.tech || "") + (b.tv ? " Pairs with " + b.tv + "." : "") + (adds.length ? " Add-ons: " + adds.join("; ") + "." : "");
+    const link = b.sku ? "https://www.bestbuy.com/site/" + b.sku + ".p" : "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(b.brand + " " + b.m);
+    return "<div class='trow'>" + pic + "<div class='m'>" + esc(b.brand + " " + b.m) + "</div><div class='p'>" + money(b.price) + "</div>" +
+      "<div class='d'>" + esc(d) + "</div>" + (b.comp ? "<div class='c'>" + esc(b.comp) + "</div>" : "") +
+      "<div class='f'><a href='" + link + "' target='_blank' rel='noopener'>" + (b.sku ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + (b.sku ? " <span class='muted'>SKU " + esc(b.sku) + "</span>" : "") + "</div></div>";
+  }).join("") : "<p class='muted'>No soundbars loaded yet.</p>";
   if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
 })();
 </script>

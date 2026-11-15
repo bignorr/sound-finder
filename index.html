@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
 <script src="images.js"></script>
+<script src="bars.js"></script>
 <script src="sales.js"></script>
 </head>
 <body>
@@ -419,7 +420,7 @@
   function famBudget(a) { return a.budget === "b4" ? "all" : (a.budget || "all"); }
   function famLink(tier, a, r) {
     const t = TIERS[tier];
-    if (!t.fam) return null;
+    if (!t.fam) return "family.html?kind=bar&budget=" + famBudget(a) + "&rears=" + (tier === "bar-flagship" ? 1 : 0) + "&tier=" + (tier === "bar-entry" ? "value" : "all");
     const famCfg = configFor(tier, a, r.subs);
     const famFronts = (a.tv === "t3" || tier !== "avr-core") ? "tower" : "bookshelf";
     return "family.html?cfg=" + famCfg + "&tier=" + t.fam + "&fronts=" + famFronts + "&budget=" + famBudget(a);
@@ -479,7 +480,9 @@
     const famTier = rec.b <= 1 ? "value" : rec.b === 2 ? "mid" : "premium";
     const famCfg = rec.path === "avr" ? rec.config : (rec.b <= 1 ? "5.1.2" : "5." + rec.subs + ".4");
     const famFronts = (a.tv === "t3" || rec.b >= 2) ? "tower" : "bookshelf";
-    $("familyLink").href = "family.html?cfg=" + famCfg + "&tier=" + famTier + "&fronts=" + famFronts + "&budget=" + famBudget(a);
+    $("familyLink").href = rec.path === "bar" ? famLink(rec.tier, a, rec) : "family.html?cfg=" + famCfg + "&tier=" + famTier + "&fronts=" + famFronts + "&budget=" + famBudget(a);
+    $("familyLink").textContent = rec.path === "bar" ? "Build the soundbar system" : "Build the speaker family";
+    $("familyLink").nextElementSibling.textContent = rec.path === "bar" ? "Bar, sub and rears from one brand, with prices" : "Matched set from one series, with prices";
     $("leadErr").hidden = true;
     $("sendRow").hidden = !lastSaved;
     show("result");

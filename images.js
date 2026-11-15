@@ -76,6 +76,17 @@
     ["architectural in-ceiling", 6325620], ["architectural in-wall", 11446051], ["in-ceiling 8", 6635492], ["in-ceiling 6 in", 6325620], ["sub (gen 3)", 6411140], ["sub mini", 6520132], ["sonos amp", 6312857],
     // Russound
     ["enhanced-performance in-ceiling", 10884916], ["all-purpose in-ceiling", 10884996],
+    // Soundbars and their kits (Nov 15, 2026)
+    ["hw-q990h", 6670431], ["hw-q930h", 6670433], ["theater trio", 6676688], ["ht-a9000", 6577855], ["ht-a8000", 6577858],
+    ["rear 9 (sa-rs9)", 6673696], ["sub 9 (sa-sw9)", 6673694], ["rear 8 (sa-rs8)", 6629536], ["sub 8 (sa-sw8)", 6673697],
+    ["s95ar", 6620448], ["s90tr", 6577957], ["q85h", 6580777],
+    ["lifestyle ultra soundbar", 6667620], ["lifestyle ultra home speaker", 12624616], ["lifestyle ultra wireless subwoofer", 12646154],
+    ["smart ultra soundbar", 12333037], ["bose surround speakers", 12333035], ["bass module 700", 6280563],
+    ["arc ultra", 6597167], ["arc (gen 1)", 6411129], ["era 300", 6535189], ["sonos sub 4", 6597168],
+    ["bar 1300mk2", 6643311], ["bar 1000mk2", 6643308],
+    ["flexus core 300", 12186013], ["core 300 5.1.2", 12186013], ["flexus core 200", 6580304], ["flexus surr 200", 11519492], ["flexus sub 200", 12167989],
+    ["ambeo soundbar max", 6401975], ["ambeo soundbar plus", 6520427], ["ambeo sub", 6520426],
+    ["dragon 11.4.6", 10207946], ["shockwafe wireless", 10513210], ["true x bar 50a", 10110808],
     // Receivers
     ["avr-s670h", 6551304], ["avr-s770h", 6551305], ["avr-x2800h", 6518172], ["avr-x3800h", 6518170], ["avr-x6800h", 6563194], ["dra-900h", 6561384],
     ["cinema 70s", 6522069], ["cinema 60", 6522070], ["cinema 50", 6522072], ["cinema 30", 6573671],
@@ -104,7 +115,7 @@
     if (/module|atmos|elevation|-sa |sa ii|es90|r900|240h|dm90|alteco|ss-cse|r8 meta|q8 meta|rp-500sa|r-40sa/.test(t)) return "module";
     if (/center|vokal|htm|c100|c1\b|c2\b|c10\b|dc53|dc63|r400|r50c|r-50c|es35|245c|ss-cs8|q6 meta|r6 meta|rp-504c|c444|c210|dm30/.test(t)) return "center";
     if (/tower|floor|f100|f200|f2\b|f1\b|f20|f10|\b60[3]\b|\b70[34]\b|r700|r600|es60|280f|260f|r-800f|r-600f|rp-8000|rp-6000|rp-5000|q7|q11|r7 meta|r11|r5 meta|oberon [57]|opticon [68]|dm70|dm60|ns-555|ns-f210|df63|df53|pinnacle|ss-cs3|prime tower|evolution tower/.test(t)) return "tower";
-    if (/soundbar|sb46/.test(t)) return "bar";
+    if (/soundbar|sb46|hw-q9|theater trio|ht-a[89]0|s95ar|s90tr|q85h|arc ultra|arc \(gen|bar 1[03]00|flexus core|core 300|ambeo soundbar|dragon|shockwafe|true x bar/.test(t)) return "bar";
     return "bookshelf";
   }
   // Drawn silhouettes, in the page's own colors.
