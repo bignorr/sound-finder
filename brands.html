@@ -59,7 +59,7 @@
     <h2>Every in-wall and in-ceiling, line by line.</h2>
     <p class="muted">For each brand in the app, the in-wall and in-ceiling models Best Buy itself sells and ships, with the prices bestbuy.com showed when pulled (Nov 12 and 13, 2026; every open item re-checked on the product page Nov 13). Marketplace listings, discontinued models and anything Best Buy does not carry are left out entirely. Promo prices move weekly, so confirm before you quote.</p>
     <div class="jump">
-      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a><a href="#wiim">WiiM</a><a href="#soundbars">Soundbars</a>
+      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a><a href="#rel">REL</a><a href="#rotel">Rotel</a><a href="#arcam">Arcam</a><a href="#wiim">WiiM</a><a href="#soundbars">Soundbars</a>
     </div>
     <div class="use">
       <div><b>Reading the sheets</b><span>Every row is a model Best Buy itself sells and ships. "Verify" or "price in cart" means Best Buy lists it but the price was not on the page when pulled; a maker's price fills the gap where the note says so. Third-party marketplace listings on bestbuy.com are not here at all.</span></div>
@@ -186,6 +186,27 @@
     <h2>Bose, the one passive line.</h2>
     <p class="muted">Everything else Bose sells at Best Buy is wireless (Lifestyle Ultra, Surround Speakers, soundbars), so this is the only Bose row.</p>
     <div class="card"><div class="tbl" id="bose-t"></div></div>
+  </section>
+
+  <section class="sec" id="rel">
+    <p class="eyebrow">REL · sold and shipped by Best Buy</p>
+    <h2>REL subwoofers, bottom to top.</h2>
+    <p class="muted">Two lines: HT (sealed, Class D, built for theater) and T/x (down-firing with a passive radiator, the music REL), plus the Classic walnut models, the under-couch Planar and the Carbon Special at the top. The builder's REL chip picks the HT model at each level and names the T/x alternative. Prices from bestbuy.com, Nov 15, 2026; the S/812 and S/510 are gone.</p>
+    <div class="card"><div class="tbl" id="rel-list"></div></div>
+  </section>
+
+  <section class="sec" id="rotel">
+    <p class="eyebrow">Rotel and Michi · sold and shipped by Best Buy</p>
+    <h2>Rotel integrateds, separates and multichannel amps.</h2>
+    <p class="muted">Rotel is the two-channel brand with a full separates line: integrateds from the A8 to the RA-1592 MKII, the RC preamps and RB power amps, five- and seven-channel RMB amps for a processor, and Michi at the top. In the builder, Rotel appears as a tappable alternative under the receiver line on stereo, 5-, 7-, 9- and 11-channel builds.</p>
+    <div class="card"><div class="tbl" id="rotel-list"></div></div>
+  </section>
+
+  <section class="sec" id="arcam">
+    <p class="eyebrow">Arcam · sold and shipped by Best Buy</p>
+    <h2>Arcam receivers, the AVA15 and the Radia line.</h2>
+    <p class="muted">Four 7.1 receivers (AVR5 to AVR31, Class G at the top), the new AVA15 nine-channel AV amplifier and AVP45 processor, and the Radia stereo line. Arcam shows up in the builder as the alternative under the receiver line from Mid up.</p>
+    <div class="card"><div class="tbl" id="arcam-list"></div></div>
   </section>
 
   <section class="sec" id="wiim">
@@ -428,6 +449,18 @@
         "<div class='d'>" + esc(r[1]) + "</div>" + (r[3] ? "<div class='c'>" + esc(r[3]) + "</div>" : "") +
         (r[2] ? "<div class='f'><a href='" + bby(r[0], id) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" : "") + "</div>";
     }).join("");
+  });
+  // REL, Rotel and Arcam (SF_EXTRA in bars.js).
+  const X = window.SF_EXTRA || {};
+  const rowHtml = function (brand, w, hint) {
+    const pic = window.SF_IMG ? window.SF_IMG.thumb(brand + " " + w.m, w.kind || hint) : "";
+    const link = w.sku ? "https://www.bestbuy.com/site/" + w.sku + ".p" : "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(brand + " " + w.m);
+    return "<div class='trow'>" + pic + "<div class='m'>" + esc(brand + " " + w.m) + "</div><div class='p'>$" + Math.round(w.price).toLocaleString("en-US") + "</div>" +
+      "<div class='d'>" + esc(w.why || "") + "</div>" + (w.comp ? "<div class='c'>" + esc(w.comp) + "</div>" : "") +
+      "<div class='f'><a href='" + link + "' target='_blank' rel='noopener'>" + (w.sku ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + (w.sku ? " <span class='muted'>SKU " + esc(w.sku) + "</span>" : "") + "</div></div>";
+  };
+  [["rel-list", "REL", X.rel, "sub"], ["rotel-list", "Rotel", X.rotel, "avr"], ["arcam-list", "Arcam", X.arcam, "avr"]].forEach(function (t) {
+    document.getElementById(t[0]).innerHTML = (t[2] || []).length ? t[2].map(function (w) { return rowHtml(t[1], w, t[3]); }).join("") : "<p class='muted'>Nothing loaded yet.</p>";
   });
   // WiiM comes from bars.js too (SF_WIIM): the three amps the builder offers, then the rest of the line.
   const W = window.SF_WIIM || null;

@@ -95,6 +95,11 @@
     ["flexus core 300", 12186013], ["core 300 5.1.2", 12186013], ["flexus core 200", 6580304], ["flexus surr 200", 11519492], ["flexus sub 200", 12167989],
     ["ambeo soundbar max", 6401975], ["ambeo soundbar plus", 6520427], ["ambeo sub", 6520426],
     ["dragon 11.4.6", 10207946], ["shockwafe wireless", 10513210], ["true x bar 50a", 10110808],
+    // REL, Rotel, Arcam (Nov 15, 2026)
+    ["t/zero", 6492845], ["ht/1003", 6525869], ["t/5x", 6492848], ["ht/1205", 6525870], ["classic 98", 6563049], ["t/9x se", 6695022], ["classic 99", 6585797], ["ht/1510", 6526284], ["planar pl-1", 6680382], ["arrow wireless", 5714709], ["ht-air", 6560282],
+    ["rotel a8", 6604502], ["a10 mkii", 6571776], ["a11 mkii", 6571771], ["a12 mkii", 6557356], ["a14 mkii", 6557360], ["s14 ", 6635556], ["ra-1572 mkii", 6557369], ["ra-1592 mkii", 6557371], ["rc-1572 mkii", 6557373], ["rc-1590 mkii", 6557375],
+    ["rb-1552 mkii", 5708743], ["rb-1582 mkii", 5708736], ["rb-1590", 5708756], ["rmb-1555", 5708426], ["rmb-1585 mkii", 6571702], ["rmb-1587 mkii", 6571770], ["rmb-1506", 5708431], ["prestige x430", 6678050], ["michi s5", 6557361], ["michi m8", 6557394], ["cd11 mkii", 6571703],
+    ["avr5 ", 6473960], ["avr11 ", 6504708], ["avr21 ", 6504707], ["ava15", 6679268], ["avp45", 6679207], ["pa240", 6391969], ["radia a5+", 12972876], ["radia a15+", 6642223], ["radia a25+", 6642221], ["sa30 ", 6391974], ["radia sa35", 6622110], ["radia sa45", 6622108], ["radia st5", 6577695], ["radia cd5", 6571276],
     // WiiM (Nov 15, 2026)
     ["wiim amp", 6684568], ["amp ultra", 6684569], ["b1 × wiim", 6596730], ["wiim ultra (streamer)", 6684567], ["wiim pro plus", 6685646], ["wiim pro (streamer)", 6684566], ["wiim mini", 6684570], ["wiim sound (speaker)", 6684943], ["wiim sound lite", 6684942],
     // Receivers
@@ -118,9 +123,9 @@
   function kindFor(text, hint) {
     if (hint) return hint;
     const t = norm(text);
-    if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-|av 10|model 10|michi/.test(t)) return "avr";
+    if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-|av 10|model 10|michi|rotel|arcam|radia|integrated|preamplifier|power amplifier|processor/.test(t)) return "avr";
     if (/sonos amp|ua 2-125|amplifier|wiim amp|amp ultra|streamer/.test(t)) return "amp";
-    if (/sub|sw\d|kube|kc62|kc92|dynamo|descend|depth 21|hts |pb-|pb17|sb-1|sb-2|sb-3|ms10|impact i|bps6|db[13]d|reference 8b|carbon special/.test(t) && !/sb46/.test(t)) return "sub";
+    if (/sub|sw\d|kube|kc62|kc92|dynamo|descend|depth 21|hts |pb-|pb17|sb-1|sb-2|sb-3|ms10|impact i|bps6|db[13]d|reference 8b|carbon special|\bt\/\d|t\/zero|ht\/1|classic 9[89]|planar pl/.test(t) && !/sb46/.test(t)) return "sub";
     if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|791|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|2[68]0c\b|\d{3}w\b|\d{3}wl\b|\diw\b|studio 6|conceal|marine 6|i[cw]-d|installer/.test(t)) return "arch";
     if (/module|atmos|elevation|-sa |sa ii|es90|r900|240h|dm90|alteco|ss-cse|r8 meta|q8 meta|rp-500sa|r-40sa/.test(t)) return "module";
     if (/center|vokal|htm|c100|c1\b|c2\b|c10\b|dc53|dc63|r400|r50c|r-50c|es35|245c|ss-cs8|q6 meta|r6 meta|rp-504c|c444|c210|dm30|reference [24] meta|c34a|c18\b|esl c\b/.test(t)) return "center";
