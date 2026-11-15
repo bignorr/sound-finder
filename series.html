@@ -21,6 +21,7 @@
 <script src="theme.js"></script>
 <script src="data.js"></script>
 <script src="images.js"></script>
+<script src="sales.js"></script>
 <style>
 .rank { display: grid; grid-template-columns: 44px 56px minmax(0, 1fr); gap: 6px 12px; padding-block: 16px; border-top: 1px solid var(--line); }
 .rank .thumb { grid-row: 1 / span 2; width: 56px; height: 70px; }
@@ -67,7 +68,7 @@
   <section>
     <p class="eyebrow">Series guide</p>
     <h2>Every family in the builder, ranked.</h2>
-    <p class="muted">Ranked on sound and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Each family is scored 1 to 5 on five qualities; sort by any of them, filter by type, and tap Compare on two or three to see them side by side. The <a href="brands.html">Brands</a> page has every line with Best Buy prices.</p>
+    <p class="muted">Ranked on sound and engineering with price set aside, so the order is roughly what your ears would say in a blind demo. Each family is scored 1 to 5 on five qualities; sort by any of them, filter by type, and tap Compare on two or three to see them side by side. Every family now carries a one-line "what you're paying for" and a "how long it lasts" line (materials and the maker's warranty, checked Nov 15, 2026). The <a href="brands.html">Brands</a> page has every line with Best Buy prices.</p>
   </section>
 
   <section>
@@ -251,10 +252,46 @@
       sound: "Good ceiling speakers for the money, and that is the whole sentence. As a front left, center and right they fire at the floor, so dialog never comes from the screen.",
       pitch: "Heights and surrounds for any build at $149 a pair; the honest line is 'great for the ceiling, step up for the front wall.'" },
   ];
+  // What the money buys (materials, in one breath) and how long it lasts (materials that age, plus the maker's US warranty, checked Nov 15, 2026).
+  const PAY = {
+    "bw-700":        { pay: "Carbon Dome tweeter and Continuum woven cone, the same parts as the 800 Series Diamond studios buy, in furniture-grade cabinets.", lasts: "B&W: 5-year warranty on passive speakers, 2 years on powered subs. Woven composite and carbon: no paper to soften, no foam to rot." },
+    "kef-r":         { pay: "All-aluminum Uni-Q with MAT: metal cones that hold their shape, one driver doing the work of two.", lasts: "KEF: 5 years on drivers, 2 on electronics. Metal cones with rubber surrounds; nothing in the driver ages." },
+    "ml-xt":         { pay: "The XT Folded Motion tweeter, a pleated film 40% larger than the standard one, over aluminum woofers.", lasts: "MartinLogan: 5-year warranty on passive speakers, 3 on subs. The film tweeter has no dome to crack; aluminum cones do not fatigue." },
+    "dali-opticon":  { pay: "SMC magnet system, wood-fibre cones and a hybrid dome-plus-ribbon tweeter, built in Denmark.", lasts: "DALI: 5-year warranty (per the US dealer listing). Wood-fibre is paper-based but stiffened; rubber surrounds." },
+    "svs-ultra":     { pay: "Diamond-coated aluminum tweeter, glass-fiber cones and a time-aligned sloped baffle.", lasts: "SVS: 5-year unconditional warranty on speakers and subs, the strongest terms on the floor." },
+    "kef-q":         { pay: "The same aluminum Uni-Q and MAT as the R Series in a simpler cabinet.", lasts: "KEF: 5 years on drivers, 2 on electronics. Metal cones, nothing to sag." },
+    "bw-600":        { pay: "Titanium Dome tweeter from the 700 S3, Continuum midrange on the 603 tower.", lasts: "B&W: 5-year warranty. Titanium and composite; no paper, no foam." },
+    "ml-foundation": { pay: "A Folded Motion tweeter at the lowest price MartinLogan sells it.", lasts: "MartinLogan: 5-year warranty passive, 3 on subs." },
+    "klipsch-rp2":   { pay: "Tractrix horn with a titanium tweeter and Cerametallic (ceramic-coated aluminum) woofers; 94 to 98 dB efficient.", lasts: "Klipsch: 5-year warranty on passive speakers; subs 2 years electronics / 5 years woofer (RP subs 5 and 5). Metal cones and rubber surrounds." },
+    "polk-reserve":  { pay: "Pinnacle ring-radiator tweeter and the foam-core Turbine Cone from Polk's $6,000 Legend line.", lasts: "Polk: 5-year warranty passive; subs 3 years amp / 5 years woofer. Polypropylene cones shrug off humidity." },
+    "deftech-dym":   { pay: "BDSS drivers and a powered subwoofer built into each tower.", lasts: "Definitive: 5 years on drivers, crossovers and cabinets; 3 years on the built-in amps." },
+    "dali-oberon":   { pay: "SMC magnet trickled down from Opticon, wood-fibre cones, an oversized soft dome.", lasts: "DALI: 5-year warranty (per the US dealer listing)." },
+    "svs-prime":     { pay: "Aluminum dome tweeter, polypropylene cones, and a real height speaker in the Elevation.", lasts: "SVS: 5-year unconditional, speakers and subs." },
+    "klipsch-ref":   { pay: "The Tractrix horn and IMG (injection-molded graphite) woofers; 92 to 98 dB, so any receiver plays loud.", lasts: "Klipsch: 5-year warranty passive; subs 2 years electronics / 5 years woofer." },
+    "polk-es":       { pay: "Terylene dome tweeter, polypropylene-mica cones, Power Port venting.", lasts: "Polk: 5-year warranty passive; subs 3 years amp / 5 years woofer." },
+    "jbl-stage2":    { pay: "An HDI waveguide from JBL's cinema line around an aluminum dome; treated-paper (polycellulose) woofers.", lasts: "JBL: 5-year warranty on non-powered speakers, 1 year on powered subs. Treated paper with rubber surrounds; paper is the one cone material that softens over decades." },
+    "sony-core":     { pay: "A 3-way design with a super tweeter at the lowest price here; Mica-Reinforced Cellular cones.", lasts: "Sony: 1-year warranty. Sony's pitch is that the reinforced cellular cone holds its shape where plain paper sags; the short warranty is the trade." },
+    "bw-ci700":      { pay: "Carbon Dome tweeter and Continuum cone from the 700 S3 in a frame built for the wall.", lasts: "B&W: 5-year warranty; same materials as the towers." },
+    "kef-ci":        { pay: "Uni-Q in the ceiling; THX-certified in-walls with up to five woofers.", lasts: "KEF: 5 years on drivers, 2 on electronics." },
+    "ml-xtci":       { pay: "The XT Folded Motion tweeter in the wall, with back boxes available.", lasts: "MartinLogan: 5-year warranty." },
+    "ml-ci":         { pay: "A Folded Motion tweeter in a ceiling speaker; Installer Series underneath at half the price.", lasts: "MartinLogan: 5-year warranty." },
+    "deftech-ci":    { pay: "PRO and MAX driver grades and the bipolar in-wall surround nobody else makes at the price.", lasts: "Definitive: 5 years on drivers and cabinets." },
+    "klipsch-ci":    { pay: "Pivoting Tractrix horns and Cerametallic woofers in the ceiling.", lasts: "Klipsch: 5-year warranty on passive speakers." },
+    "jbl-ci":        { pay: "Aluminum dome in an acoustic lens; the Studio 6 step-up has the Synthesis compression tweeter.", lasts: "JBL: 5-year warranty on non-powered speakers." },
+    "polk-ci":       { pay: "3-way ceilings with angled mid and tweeter, thin paintable bezels.", lasts: "Polk: limited lifetime warranty on Vanishing RT and LS in-walls and in-ceilings, the longest on the floor." },
+    "bw-ci600":      { pay: "Aluminum tweeters and woven-glass cones; the 600 S3 voice, hidden.", lasts: "B&W: 5-year warranty." },
+    "sonance-vp":    { pay: "Installer-grade frames, pivoting tweeters, 90 dB sensitivity, LCR versions.", lasts: "Sonance: 5 years parts and labor (per the Best Buy listing; confirm on the box)." },
+    "sonance-is":    { pay: "Flat-panel drivers you plaster over; the only truly invisible speaker.", lasts: "Sonance: 5 years parts and labor. Once skimmed in they are a permanent part of the wall, so place them right the first time." },
+    "sonance-vx":    { pay: "The step between Mag and Visual Performance: better frames and drivers, an LCR option.", lasts: "Sonance: 5 years parts and labor." },
+    "sonance-mag":   { pay: "A magnetic flush grille and a working ceiling speaker for $149 a pair.", lasts: "Sonance: 5 years parts and labor. Honest value in the ceiling; the comp price is marketing." },
+    "sonos-arch":    { pay: "Sonance-built drivers that Sonos Amp tunes with Trueplay; shows up in the Sonos app.", lasts: "Warranty term unconfirmed for the US; check the box or the Sonos site before you quote." },
+    "russound":      { pay: "Toolless dog-ear install, pivoting silk tweeter, paintable grille.", lasts: "Russound: lifetime warranty on its architectural speakers." },
+    "bose-791":      { pay: "Stereo Everywhere: both channels from each speaker, almost no bezel.", lasts: "Bose: 1-year warranty." },
+  };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   const Q = window.SF_QUAL || {}; const QK = window.SF_QUAL_KEYS || [];
   const $ = function (id) { return document.getElementById(id); };
-  S.forEach(function (x, i) { x.rank = i + 1; x.q = Q[x.id] || { detail: 0, bass: 0, dyn: 0, imaging: 0, build: 0, form: "box", best: [] }; });
+  S.forEach(function (x, i) { x.rank = i + 1; x.q = Q[x.id] || { detail: 0, bass: 0, dyn: 0, imaging: 0, build: 0, form: "box", best: [] }; const p = PAY[x.id] || {}; x.pay = p.pay || ""; x.lasts = p.lasts || ""; });
   const st = { form: "all", tier: "all", sort: "rank", cmp: [] };
   try { Object.assign(st, JSON.parse(localStorage.getItem("sf-guide") || "{}")); } catch (e) {}
   if (!Array.isArray(st.cmp)) st.cmp = [];
@@ -281,7 +318,7 @@
         "<div class='head'><b>" + esc(x.brand) + " " + esc(x.series) + "</b><span class='chip'>" + esc(x.tier) + "</span><span class='chip quiet'>" + (x.q.form === "arch" ? "In-wall / in-ceiling" : "Towers and bookshelf") + "</span><span class='price'>" + esc(x.price) + "</span></div>" +
         "<div class='body'>" + bars(x.q) +
         "<div class='tags'>" + x.q.best.map(function (t) { return "<span class='chip quiet'>" + esc(t) + "</span>"; }).join("") + "</div>" +
-        "<dl><dt>Stands out</dt><dd>" + esc(x.tech) + "</dd><dt>Sounds like</dt><dd>" + esc(x.sound) + "</dd><dt>Pitch</dt><dd>" + esc(x.pitch) + "</dd></dl>" +
+        "<dl><dt>Paying for</dt><dd>" + esc(x.pay) + "</dd><dt>Stands out</dt><dd>" + esc(x.tech) + "</dd><dt>Sounds like</dt><dd>" + esc(x.sound) + "</dd><dt>Lasts</dt><dd>" + esc(x.lasts) + "</dd><dt class='coach'>Pitch</dt><dd class='coach'>" + esc(x.pitch) + "</dd></dl>" +
         "<div class='row'><button type='button' class='btn cmp' data-id='" + x.id + "' aria-pressed='" + on + "'>" + (on ? "In comparison" : "Compare") + "</button></div>" +
         "</div></div>";
     }).join("") : "<p class='muted'>Nothing matches both filters.</p>";
@@ -310,8 +347,10 @@
       h += "<div class='rl'>" + k[1] + "</div>" + picks.map(function (p) { const v = p.q[k[0]]; return "<div class='cv'><span class='track'><i style='width:" + (v * 20) + "%'></i></span><span class='n" + (v === best ? " top" : "") + "'>" + v + "</span></div>"; }).join("");
     });
     h += "<div class='rl'>Best for</div>" + picks.map(function (p) { return "<div class='cv small'>" + p.q.best.map(esc).join(" · ") + "</div>"; }).join("");
+    h += "<div class='rl'>Paying for</div>" + picks.map(function (p) { return "<div class='cv small'>" + esc(p.pay) + "</div>"; }).join("");
     h += "<div class='rl'>Tech</div>" + picks.map(function (p) { return "<div class='cv small'>" + esc(p.tech) + "</div>"; }).join("");
-    h += "<div class='rl'>Pitch</div>" + picks.map(function (p) { return "<div class='cv small'>" + esc(p.pitch) + "</div>"; }).join("");
+    h += "<div class='rl'>Lasts</div>" + picks.map(function (p) { return "<div class='cv small'>" + esc(p.lasts) + "</div>"; }).join("");
+    h += "<div class='rl coach'>Pitch</div>" + picks.map(function (p) { return "<div class='cv small coach'>" + esc(p.pitch) + "</div>"; }).join("");
     h += "</div>";
     const tot = picks.map(function (p) { return { p: p, t: QK.reduce(function (a, k) { return a + p.q[k[0]]; }, 0) }; }).sort(function (a, b) { return b.t - a.t; });
     h += "<p class='muted small'>Score out of 25: " + tot.map(function (x) { return esc(x.p.brand) + " " + esc(x.p.series) + " " + x.t; }).join(" · ") + ". Higher is better on sound; price is not in the score.</p>";

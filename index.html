@@ -19,6 +19,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
+<script src="images.js"></script>
+<script src="sales.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -28,7 +30,7 @@
       <a class="btn" href="family.html">Family</a>
       <a class="btn" href="series.html">Guide</a>
       <a class="btn" href="brands.html">Brands</a>
-      <button class="btn" id="leadsBtn" type="button">Leads <span id="leadCount" class="muted small"></span></button>
+      <button class="btn coach" id="leadsBtn" type="button">Leads <span id="leadCount" class="muted small"></span></button>
     </div>
   </header>
 
@@ -39,6 +41,18 @@
     <div class="row">
       <button class="btn primary" id="startBtn" type="button">Start</button>
       <span class="muted small">About 60 seconds</span>
+    </div>
+  </section>
+
+  <section id="introCoach" class="coach" hidden>
+    <div class="card">
+      <h3>Openers that can't be answered in one word</h3>
+      <p class="muted small">Read one before you walk up. Pick the one for where they're standing.</p>
+      <div class="openers" id="openers"></div>
+    </div>
+    <div class="card">
+      <h3>When they push back</h3>
+      <div id="objectionsIntro"></div>
     </div>
   </section>
 
@@ -57,32 +71,56 @@
     <p class="eyebrow">Recommended setup</p>
     <h2 id="rHead"></h2>
     <div class="spec" id="rSpec"></div>
+
+    <div class="card" id="priceCard">
+      <h3>The number to say out loud</h3>
+      <div id="rFin"></div>
+      <div class="inst"><span id="rInstLabel">Install, labor only</span><b id="rInst"></b></div>
+      <p class="muted small coach" id="rInstNote"></p>
+    </div>
+
     <div>
+      <p class="eyebrow">Good · Better · Best</p>
+      <div class="gbb" id="gbb"></div>
+    </div>
+
+    <div class="coach">
       <p class="eyebrow">Talk track</p>
       <p id="rWhy"></p>
     </div>
 
-    <div class="card">
+    <div class="card coach script">
+      <h3>Demo script</h3>
+      <p class="muted small">Same volume for every A/B. Ask the question, then stop talking.</p>
+      <ol id="rDemo"></ol>
+    </div>
+
+    <div class="card coach">
       <h3>What to check before you quote</h3>
       <ul class="checks" id="rChecks"></ul>
     </div>
 
-    <div class="card">
+    <div class="card coach">
       <h3>Gear to pull</h3>
       <p class="muted small">Best Buy brands that fit this tier. Lines, not SKUs; exact models change with the season.</p>
       <div class="gear" id="rGear"></div>
     </div>
 
-    <div class="card alt" id="rAlt"></div>
+    <div class="card alt coach" id="rAlt"></div>
+
+    <div class="card coach">
+      <h3>When they push back</h3>
+      <div id="objectionsResult"></div>
+    </div>
 
     <div class="row">
       <a class="btn primary" id="familyLink" href="family.html">Build the speaker family</a>
       <span class="muted small">Matched set from one series, with prices</span>
     </div>
 
-    <div class="card">
+    <div class="card coach">
       <h3>Save this customer</h3>
-      <p class="muted">Leads save on this phone. Copy summary puts their answers and the setup on your clipboard for a quote or a follow-up text.</p>
+      <p class="muted">Leads save on this phone. Text or email the summary to yourself so it survives a cleared Safari.</p>
       <form id="leadForm" class="form" novalidate>
         <div class="grid2">
           <label>Name <input id="leadName" name="name" autocomplete="off" required></label>
@@ -106,10 +144,15 @@
             <button type="button" data-v="Just looking" aria-pressed="false">Just looking</button>
           </div>
         </div>
-        <label>Notes <textarea id="leadNotes" name="notes" placeholder="Existing gear, TV model, ceiling height, install needs"></textarea></label>
+        <label>Notes <textarea id="leadNotes" name="notes" placeholder="Existing gear, TV model, ceiling height, install needs, the price they'd buy at"></textarea></label>
         <div class="row">
           <button class="btn primary" type="submit" id="saveBtn">Save lead</button>
           <button class="btn" type="button" id="copyBtn">Copy summary</button>
+        </div>
+        <div class="row" id="sendRow" hidden>
+          <button class="btn" type="button" id="smsBtn">Text me this lead</button>
+          <button class="btn" type="button" id="mailBtn">Email me this lead</button>
+          <button class="btn" type="button" id="calBtn">Follow-up on calendar</button>
         </div>
         <p class="small" id="leadErr" style="color:var(--accent)" hidden></p>
       </form>
@@ -123,21 +166,26 @@
       <h2>Saved leads</h2>
       <button class="btn" id="leadsBack" type="button">Back</button>
     </div>
+    <div class="lstats" id="leadStats"></div>
     <div class="row">
       <button class="btn" id="exportBtn" type="button">Export CSV</button>
       <button class="btn" id="copyAllBtn" type="button">Copy all as text</button>
+      <button class="btn" id="mailAllBtn" type="button">Email all to me</button>
     </div>
-    <p class="muted small">Saved on this phone only. Export before you switch phones or clear Safari data.</p>
+    <p class="muted small">Saved on this phone only. Email the list to yourself before you switch phones or clear Safari data.</p>
     <div id="leadsList" style="display:flex;flex-direction:column;gap:12px"></div>
   </section>
 
-  <footer>Price ranges are typical retail for equipment only. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
+  <footer>Price ranges are typical retail for equipment only. Install ranges are labor-only starting points; Budget Builder sets the real quote. Financing figures are equal-payment estimates; confirm the current offer.</footer>
 </div>
 <textarea class="offscreen" id="clip" aria-hidden="true" tabindex="-1"></textarea>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (function () {
+  const SALES = window.SF_SALES;
+  const esc = SALES.esc;
+  const money = SALES.money;
   const Q = [
     { key: "room", q: "What kind of room is it?", hint: "Open rooms and closed rooms need different things.", opts: [
       ["small", "Bedroom or small den", "Under about 150 sq ft"],
@@ -160,34 +208,46 @@
   Q.forEach(function (q) { q.opts.forEach(function (o) { LABEL[q.key + ":" + o[0]] = o[1]; }); });
 
   const TIERS = {
-    "bar-entry": { approach: "Soundbar", install: "Plug in", range: "$400 to 900",
+    "bar-entry": { approach: "Soundbar", install: "Plug in", range: "$400 to 900", lo: 400, hi: 900, path: "bar", fam: null,
       head: "A soundbar with a real subwoofer",
+      gains: ["One bar and a sub, nothing to run", "Clear dialogue and real bass", "Add wireless rears later"],
       gear: [["Bar + sub", "Samsung Q-series bar with sub, Sony Bravia Theater Bar 6 or 8 with sub, Polk MagniFi or Signa with sub, JBL Bar 500-class, or Sonos Beam with Sub Mini"],
              ["Add later", "Wireless rears from the same system: Samsung, Sony, JBL, or a pair of Sonos Era 100"]] },
-    "bar-flagship": { approach: "Soundbar", install: "Plug in", range: "$1,000 to 2,200",
+    "bar-flagship": { approach: "Soundbar", install: "Plug in", range: "$1,000 to 2,200", lo: 1000, hi: 2200, path: "bar", fam: null,
       head: "A flagship soundbar system with rears",
+      gains: ["Rears and height channels in the box", "Atmos from one system", "Still nothing running across the room"],
       gear: [["Bar", "Samsung Q990-series, Sony Bravia Theater Bar 9, Sonos Arc Ultra, JBL Bar 1300-class, or Klipsch Flexus Core 300"],
              ["Sub", "Samsung and Sony include theirs; Sonos Sub; Klipsch Flexus Sub"],
              ["Rears", "Wireless rears from the same system; Sonos Era 300 pair if they want Atmos from the back row"]] },
-    "avr-core": { approach: "AVR + speakers", install: "Light", range: "$1,200 to 2,500",
+    "avr-core": { approach: "AVR + speakers", install: "Light", range: "$1,200 to 2,500", lo: 1200, hi: 2500, path: "avr", fam: "value",
       head: "An AVR with real speakers",
+      gains: ["A real center channel for dialogue", "Room correction built in", "Upgrade one piece at a time"],
       gear: [["Receiver", "Denon AVR-S or X1800-class, Yamaha RX-V, Onkyo TX-NR, or Sony STR-AN 7-channel"],
              ["Fronts + center", "Klipsch Reference or Reference Premiere bookshelves, Polk Signature Elite or Reserve, JBL Stage 2, KEF Q, or DALI Oberon, with the matching center"],
              ["Sub", "One 10 to 12 in powered sub: Klipsch R-series, Polk, or SVS SB-1000 / PB-1000"],
              ["Heights", "Klipsch or Polk Atmos modules on the fronts, or a pair of in-ceilings: Sonance MAG6R or Yamaha NS-IC600 (about $150 a pair) are the value picks, Klipsch CDT-5650-C II ($169.99 each) or Polk 70-RT ($199 each) the step up"]] },
-    "avr-performance": { approach: "AVR + speakers", install: "Pro", range: "$2,500 to 6,000",
+    "avr-performance": { approach: "AVR + speakers", install: "Pro", range: "$2,500 to 6,000", lo: 2500, hi: 6000, path: "avr", fam: "mid",
       head: "A full AVR theater",
+      gains: ["Two subs: even bass at every seat", "Towers with scale for a big screen", "Surrounds in the wall, heights in the ceiling"],
       gear: [["Receiver", "Denon X3800-class, Marantz Cinema 50 or 60, Yamaha RX-A, or Onkyo TX-RZ 9-channel with room correction"],
              ["Fronts + center", "Klipsch Reference Premiere, MartinLogan Motion, KEF Q or R, Polk Reserve, or DALI Oberon towers, with the matching center"],
              ["Subs", "Two subs for even bass across the seats: SVS 1000 or 2000-class, MartinLogan Dynamo, or REL T-series"],
              ["Surround + heights", "In-wall surrounds and in-ceiling heights from the same brand as the fronts: Klipsch R-5502-W II and CDT ceilings, Polk Vanishing, MartinLogan Motion CI, Definitive Dymension CI, KEF Ci, or Sonance Visual Performance; or matching bookshelves on Sanus stands"]] },
-    "avr-reference": { approach: "AVR + speakers", install: "Pro", range: "$6,000 to 12,000+",
+    "avr-reference": { approach: "AVR + speakers", install: "Pro", range: "$6,000 to 12,000+", lo: 6000, hi: 12000, path: "avr", fam: "premium",
       head: "A reference-grade theater",
+      gains: ["Reference speakers with separate power", "Calibrated by an installer", "The room becomes the theater"],
       gear: [["Receiver", "Marantz Cinema 40, Denon X4800 to X6800-class, or Yamaha RX-A8A; add a separate power amp for the fronts if the room is large"],
              ["Fronts + center", "MartinLogan Motion XT or ESL hybrids, KEF R series, Bowers & Wilkins 700 series, or DALI Opticon or Rubikore, with the matching center"],
              ["Subs", "Two SVS 3000-class, REL S-series, or MartinLogan BalancedForce, placed and calibrated for the room"],
              ["Surround + heights", "In-ceiling heights and in-wall surrounds from the same brand: MartinLogan Motion XT CI, KEF Ci THX, or Bowers & Wilkins CI700 S2, plus a few acoustic panels at the first reflection points"]] },
   };
+  const LADDER = ["bar-entry", "bar-flagship", "avr-core", "avr-performance", "avr-reference"];
+
+  function configFor(tier, a, subs) {
+    if (TIERS[tier].path === "bar") return tier === "bar-entry" ? (a.room === "small" ? "3.1" : "5.1") : "7.1.4";
+    const wide = (a.seats === "s6" || a.room === "open" || a.tv === "t3");
+    return tier === "avr-core" ? "5." + subs + ".2" : (tier === "avr-reference" || wide) ? "7." + subs + ".4" : "5." + subs + ".4";
+  }
 
   function recommend(a) {
     const b = ["b1", "b2", "b3", "b4"].indexOf(a.budget);
@@ -200,17 +260,16 @@
     score += b - 1;
     const path = b === 0 ? "bar" : (score >= 2 ? "avr" : "bar");
     const subs = (a.room === "open" || a.seats === "s6" || a.tv === "t3") ? 2 : 1;
-    let tier, config;
-    if (path === "bar") {
-      tier = b === 0 ? "bar-entry" : "bar-flagship";
-      config = tier === "bar-entry" ? (a.room === "small" ? "3.1" : "5.1") : "7.1.4";
-    } else {
-      tier = b === 1 ? "avr-core" : b === 2 ? "avr-performance" : "avr-reference";
-      const wide = (a.seats === "s6" || a.room === "open" || a.tv === "t3");
-      config = tier === "avr-core" ? "5." + subs + ".2" : (tier === "avr-reference" || wide) ? "7." + subs + ".4" : "5." + subs + ".4";
-    }
+    let tier;
+    if (path === "bar") tier = b === 0 ? "bar-entry" : "bar-flagship";
+    else tier = b === 1 ? "avr-core" : b === 2 ? "avr-performance" : "avr-reference";
+    const config = configFor(tier, a, subs);
     const altTier = path === "bar" ? (b <= 1 ? "avr-core" : b === 2 ? "avr-performance" : "avr-reference") : "bar-flagship";
-    return { path: path, tier: tier, config: config, subs: subs, altTier: altTier, b: b };
+    // Good / better / best: the recommendation and its neighbors on the ladder.
+    let i = LADDER.indexOf(tier);
+    let lo = Math.max(0, Math.min(i - 1, LADDER.length - 3));
+    const ladder = LADDER.slice(lo, lo + 3);
+    return { path: path, tier: tier, config: config, subs: subs, altTier: altTier, b: b, ladder: ladder };
   }
 
   function whyText(a, r) {
@@ -250,6 +309,7 @@
       c.push("At least 7 amplified channels so they can add heights; 5.1.2 is the floor for Atmos");
       c.push("Room correction built in (Audyssey, Dirac Live or YPAO); it matters more than any single speaker upgrade");
       c.push("A center channel from the same series as the fronts so voices match from every seat");
+      c.push("Speaker load vs. receiver: KEF Q and R are 4 ohm, B&W 607 dips to 3 ohm; the Family builder flags it");
       if (a.use === "movies") c.push("HDMI 2.1 inputs with 4K at 120 Hz and VRR for a console");
       if (r.subs === 2) c.push("Two subwoofers; a second sub evens out bass across the seats more than one bigger sub");
       if (a.wiring === "install") c.push("In-ceiling heights and in-wall surrounds that disappear into the room");
@@ -268,23 +328,63 @@
       body: "About " + t.range + " for the bar, sub and rears. It covers most of what a system does, but dialog clarity and bass in a room like theirs will not match separate speakers, and it cannot be upgraded piece by piece." };
   }
 
+  // Demo script: the order to play things, which of your clips to use, and the question to ask after each.
+  const CLIP_FALLBACK = {
+    dialog: "a quiet two-person scene with music under it",
+    bass: "a scene with a long low rumble, not an explosion",
+    height: "a scene with rain or a helicopter overhead",
+    imaging: "a live concert track with the band spread wide",
+    music: "a track they named when you asked what they listen to",
+  };
+  function clip(k) { const c = SALES.get().clips[k]; return c ? "<b>" + esc(c) + "</b>" : "<b>" + esc(CLIP_FALLBACK[k]) + "</b> <em class='hint'>(or your own clip, set in Settings)</em>"; }
+  function demoSteps(a, r) {
+    const s = [];
+    const mo = SALES.plan(TIERS[r.tier].lo);
+    if (r.path === "bar") {
+      s.push("Start on the TV's own speakers: " + clip("dialog") + ". Sit them where they'd sit at home.<span>Ask: can you make out every word?</span>");
+      s.push("Same scene, same volume, on the bar with the sub.<span>Say nothing. Let the sub do the talking.</span>");
+      s.push("Bass: " + clip("bass") + ". Put a hand on the sub.<span>Ask: where do you want this in the room?</span>");
+      if (r.tier === "bar-flagship") s.push("Height and rears: " + clip("height") + ". Do not announce it.<span>Watch for them to look up. Then ask: did you catch where that came from?</span>");
+      if (a.use === "music") s.push("Music: " + clip("music") + ".<span>Ask: is this what you'd play on a Tuesday night?</span>");
+    } else {
+      s.push("Dialogue first: " + clip("dialog") + ". Stand them at the farthest seat.<span>Ask: whose voice is that coming from, the screen or the speakers?</span>");
+      s.push("Width: " + clip("imaging") + ". Walk them from one end of the couch to the other while it plays.<span>Ask: did the band move when you did?</span>");
+      s.push("Bass: " + clip("bass") + (r.subs === 2 ? ". Sit them in the worst seat, the one by the wall." : ".") + "<span>" + (r.subs === 2 ? "Ask: same bass as the middle seat? That is what the second sub is for." : "Ask: do you feel that in the seat or just hear it?") + "</span>");
+      if (/\.\d$/.test(r.config)) s.push("Heights: " + clip("height") + ". Do not announce it.<span>Let them look up on their own. Then: that is the ceiling speakers.</span>");
+      if (a.use === "music") s.push("Music: " + clip("music") + " in stereo, surrounds off.<span>Ask: would you listen to this with the TV off?</span>");
+    }
+    s.push("Close: turn the phone around to Good, Better, Best." + (mo ? "<span>Say the monthly number first: about " + money(mo.per) + " a month gets them started.</span>" : "<span>Say the monthly number first, then the total.</span>"));
+    return s;
+  }
+
   // ---------- state ----------
   let state = { step: 0, answers: {}, contact: "Text", timeframe: "This month" };
   let rec = null;
+  let lastSaved = null;
   const $ = function (id) { return document.getElementById(id); };
   const sections = ["intro", "quiz", "result", "leads"];
-  function show(id) { sections.forEach(function (s) { $(s).hidden = s !== id; }); window.scrollTo({ top: 0 }); }
+  function show(id) { sections.forEach(function (s) { $(s).hidden = s !== id; }); $("introCoach").hidden = id !== "intro"; window.scrollTo({ top: 0 }); }
   function persist() { try { localStorage.setItem("sf-state", JSON.stringify(state)); } catch (e) {} }
   function toast(msg) {
     const t = $("toast"); t.textContent = msg; t.classList.add("show");
     clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove("show"); }, 2200);
   }
-  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
+  window.SF_TOAST = toast;
+
+  // ---------- floor cards ----------
+  function renderOpeners() {
+    $("openers").innerHTML = SALES.OPENERS.map(function (o) { return "<div><small>" + esc(o.where) + "</small>" + esc(o.line) + "</div>"; }).join("");
+  }
+  function objectionsHtml() {
+    return SALES.OBJECTIONS.map(function (o) {
+      return "<details class='obj'><summary>“" + esc(o.say) + "”</summary><p>" + esc(o.answer) + "</p><p class='proof'>Then: " + esc(o.proof) + "</p></details>";
+    }).join("");
+  }
 
   // ---------- leads (on-device) ----------
   function loadLeads() { try { const v = JSON.parse(localStorage.getItem("sf-leads") || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
   function storeLeads(list) { try { localStorage.setItem("sf-leads", JSON.stringify(list)); return true; } catch (e) { return false; } }
-  function updateCount() { const n = loadLeads().length; $("leadCount").textContent = n ? "(" + n + ")" : ""; }
+  function updateCount() { const n = loadLeads().filter(function (x) { return (x.outcome || "pending") === "pending"; }).length; $("leadCount").textContent = n ? "(" + n + ")" : ""; }
 
   // ---------- quiz ----------
   function renderQuestion() {
@@ -315,6 +415,21 @@
     if (state.step >= Q.length) renderResult(); else renderQuestion();
   }
 
+  function famLink(tier, a, r) {
+    const t = TIERS[tier];
+    if (!t.fam) return null;
+    const famCfg = configFor(tier, a, r.subs);
+    const famFronts = (a.tv === "t3" || tier !== "avr-core") ? "tower" : "bookshelf";
+    return "family.html?cfg=" + famCfg + "&tier=" + t.fam + "&fronts=" + famFronts;
+  }
+  function installKindFor(tier, a, r) {
+    const t = TIERS[tier];
+    if (t.path === "bar") return "bar";
+    const cfg = configFor(tier, a, r.subs).split(".");
+    return SALES.installKind({ path: "avr", around: parseInt(cfg[0], 10), heights: parseInt(cfg[2] || "0", 10),
+      heightType: a.wiring === "install" ? "inceiling" : "module", surroundType: a.wiring === "install" && tier !== "avr-core" ? "inwall" : "series" });
+  }
+
   function renderResult() {
     const a = state.answers;
     rec = recommend(a);
@@ -325,18 +440,49 @@
       "<div><small>Est. gear</small><strong>" + esc(t.range) + "</strong></div>" +
       "<div><small>Approach</small><strong>" + esc(t.approach) + "</strong></div>" +
       "<div><small>Install</small><strong>" + esc(t.install) + "</strong></div>";
+    // the number to say out loud
+    const p = SALES.plan(t.lo);
+    $("rFin").innerHTML = p
+      ? "<div class='fin'><b>from " + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the Best Buy card<br><em>equal payments on " + money(t.lo) + " of gear · confirm this week's terms</em></span></div>"
+      : "<p class='muted small'>No financing promo covers this total. Turn one on in Settings.</p>";
+    const ik = installKindFor(rec.tier, a, rec);
+    const band = SALES.installBand(ik);
+    $("rInst").textContent = SALES.installText(ik);
+    $("rInstLabel").textContent = "Install, labor only";
+    $("rInstNote").textContent = band.label + ". Your Settings number; Budget Builder sets the real quote.";
+    // good / better / best
+    const names = ["Good", "Better", "Best"];
+    $("gbb").innerHTML = rec.ladder.map(function (tier, i) {
+      const x = TIERS[tier]; const pick = tier === rec.tier;
+      const mo = SALES.plan(x.lo);
+      const link = famLink(tier, a, rec);
+      const gains = x.gains.slice();
+      if (x.path === "bar") gains.push(x.gear[0][1].split(",")[0] + " and others");
+      return "<div class='col" + (pick ? " pick" : "") + "'>" +
+        "<div class='lvl'><span>" + names[i] + "</span>" + (pick ? "<span>Our pick</span>" : "") + "</div>" +
+        "<h3>" + esc(x.head) + "</h3>" +
+        "<div class='range'>" + esc(x.range) + "</div>" +
+        "<div class='cfg'>" + esc(configFor(tier, a, rec.subs)) + " · " + esc(x.approach) + (mo ? " · from <b>" + money(mo.per) + "/mo</b>" : "") + "</div>" +
+        "<ul>" + gains.map(function (g) { return "<li>" + esc(g) + "</li>"; }).join("") + "</ul>" +
+        (link ? "<a class='btn" + (pick ? " primary" : "") + "' href='" + link + "'>Build it</a>" : "") +
+        "</div>";
+    }).join("");
     $("rWhy").textContent = whyText(a, rec);
+    $("rDemo").innerHTML = demoSteps(a, rec).map(function (s) { return "<li>" + s + "</li>"; }).join("");
     $("rChecks").innerHTML = checks(a, rec).map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("");
     $("rGear").innerHTML = t.gear.map(function (g) { return "<div><small>" + esc(g[0]) + "</small><span>" + esc(g[1]) + "</span></div>"; }).join("");
     const alt = altText(a, rec);
     $("rAlt").innerHTML = "<p class='eyebrow'>The other way to go</p><h3>" + esc(alt.title) + "</h3><p>" + esc(alt.body) + "</p>";
+    $("objectionsResult").innerHTML = objectionsHtml();
     const famTier = rec.b <= 1 ? "value" : rec.b === 2 ? "mid" : "premium";
     const famCfg = rec.path === "avr" ? rec.config : (rec.b <= 1 ? "5.1.2" : "5." + rec.subs + ".4");
     const famFronts = (a.tv === "t3" || rec.b >= 2) ? "tower" : "bookshelf";
     $("familyLink").href = "family.html?cfg=" + famCfg + "&tier=" + famTier + "&fronts=" + famFronts;
     $("leadErr").hidden = true;
+    $("sendRow").hidden = !lastSaved;
     show("result");
   }
+  document.addEventListener("sf-settings", function () { if (!$("result").hidden && rec) renderResult(); });
 
   function summaryLines(answers) {
     return Q.map(function (q) { return q.q.replace(/\?$/, "") + ": " + (answers[q.key] || ""); });
@@ -350,15 +496,24 @@
     if (lead.phone) reach.push(lead.phone);
     if (lead.email) reach.push(lead.email);
     lines.push("Reach by: " + lead.contact + (reach.length ? " (" + reach.join(", ") + ")" : ""));
-    lines.push("Buying: " + lead.timeframe);
-    lines.push("Setup: " + lead.rec.headline + " (" + lead.rec.config + "), est. " + lead.rec.range);
+    lines.push("Buying: " + lead.timeframe + (lead.followUp ? " · follow up " + fmtDate(lead.followUp) : ""));
+    lines.push("Setup: " + lead.rec.headline + " (" + lead.rec.config + "), est. " + lead.rec.range + (lead.rec.monthly ? ", " + lead.rec.monthly : ""));
+    if (lead.outcome && lead.outcome !== "pending") lines.push("Outcome: " + lead.outcome + (lead.soldAmount ? " " + money(lead.soldAmount) : "") + (lead.lostWhy ? " (" + lead.lostWhy + ")" : ""));
     lines.push(summaryLines(lead.answers).join("\n"));
     if (lead.notes) lines.push("Notes: " + lead.notes);
     return lines.join("\n");
   }
 
+  function followUpFor(timeframe, from) {
+    const days = { "Today": 1, "This week": 3, "This month": 10, "Just looking": 21 }[timeframe] || 7;
+    const d = new Date(from || Date.now()); d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  }
+  function fmtDate(iso) { if (!iso) return ""; const p = iso.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
+
   function readLead() {
     const t = TIERS[rec.tier];
+    const p = SALES.plan(t.lo);
     return {
       name: $("leadName").value.trim(),
       phone: $("leadPhone").value.trim(),
@@ -367,7 +522,9 @@
       timeframe: state.timeframe,
       notes: $("leadNotes").value.trim(),
       answers: labelAnswers(state.answers),
-      rec: { headline: t.head, config: rec.config, range: t.range, approach: t.approach },
+      rec: { headline: t.head, config: rec.config, range: t.range, approach: t.approach, monthly: p ? "from " + money(p.per) + "/mo × " + p.months : "" },
+      outcome: "pending",
+      followUp: followUpFor(state.timeframe),
       createdAt: new Date().toISOString(),
     };
   }
@@ -382,6 +539,40 @@
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done, fallback);
     } else { fallback(); }
+  }
+
+  // Send a lead to yourself. Uses the phone and email from Settings.
+  function smsSelf(text) {
+    const me = SALES.get().phone.replace(/[^\d+]/g, "");
+    if (!me) { toast("Add your mobile in Settings first"); SALES.openSettings(); return; }
+    location.href = "sms:" + me + "?&body=" + encodeURIComponent(text);
+  }
+  function mailSelf(subject, text) {
+    const me = SALES.get().email.trim();
+    if (!me) { toast("Add your email in Settings first"); SALES.openSettings(); return; }
+    location.href = "mailto:" + encodeURIComponent(me) + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(text);
+  }
+  function calendarFor(lead) {
+    const d = lead.followUp || followUpFor(lead.timeframe, lead.createdAt);
+    const ymd = d.replace(/-/g, "");
+    const title = "Follow up: " + (lead.name || "customer") + " (" + (lead.rec ? lead.rec.headline : "Sound Finder") + ")";
+    const details = leadText(lead);
+    const g = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(title) + "&dates=" + ymd + "T100000/" + ymd + "T101500&details=" + encodeURIComponent(details);
+    const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sound Finder//EN", "BEGIN:VEVENT", "UID:" + (lead.id || Date.now()) + "@sound-finder", "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
+      "DTSTART:" + ymd + "T100000", "DTEND:" + ymd + "T101500", "SUMMARY:" + title.replace(/,/g, "\\,"), "DESCRIPTION:" + details.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,"), "BEGIN:VALARM", "TRIGGER:-PT0M", "ACTION:DISPLAY", "DESCRIPTION:" + title.replace(/,/g, "\\,"), "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+    return { google: g, ics: ics, title: title };
+  }
+  function addToCalendar(lead) {
+    const c = calendarFor(lead);
+    // Google Calendar opens anywhere; the .ics is the fallback for Apple Calendar.
+    const useIcs = /iPhone|iPad|Macintosh/.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent);
+    if (useIcs) {
+      const blob = new Blob([c.ics], { type: "text/calendar" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = "follow-up.ics"; document.body.appendChild(a); a.click();
+      setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+      toast("Open the .ics to add it to Calendar");
+    } else window.open(c.google, "_blank", "noopener");
   }
 
   function segInit(id, key) {
@@ -406,8 +597,10 @@
     lead.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     list.unshift(lead);
     if (storeLeads(list)) {
+      lastSaved = lead;
       toast("Lead saved");
       $("leadName").value = ""; $("leadPhone").value = ""; $("leadEmail").value = ""; $("leadNotes").value = "";
+      $("sendRow").hidden = false;
       updateCount();
     } else {
       err.textContent = "Could not save on this phone (storage is off or full). Copy the summary instead."; err.hidden = false;
@@ -415,32 +608,67 @@
   });
 
   $("copyBtn").addEventListener("click", function () { copyText(leadText(readLead()), "Summary copied"); });
+  $("smsBtn").addEventListener("click", function () { if (lastSaved) smsSelf(leadText(lastSaved)); });
+  $("mailBtn").addEventListener("click", function () { if (lastSaved) mailSelf("Lead: " + (lastSaved.name || "customer"), leadText(lastSaved)); });
+  $("calBtn").addEventListener("click", function () { if (lastSaved) addToCalendar(lastSaved); });
 
   // ---------- leads page ----------
+  const LOST_WHY = ["Price", "Spouse", "Bought elsewhere", "Went soundbar", "No response", "Other"];
   function renderLeads() {
     const list = loadLeads();
     const el = $("leadsList");
+    const today = new Date().toISOString().slice(0, 10);
+    const pending = list.filter(function (x) { return (x.outcome || "pending") === "pending"; });
+    const sold = list.filter(function (x) { return x.outcome === "sold"; });
+    const due = pending.filter(function (x) { return x.followUp && x.followUp <= today; });
+    const soldTotal = sold.reduce(function (a, x) { return a + (+x.soldAmount || 0); }, 0);
+    $("leadStats").innerHTML = "<div><small>Open</small><strong>" + pending.length + "</strong></div><div><small>Due today</small><strong>" + due.length + "</strong></div><div><small>Sold</small><strong>" + sold.length + (soldTotal ? "<span class='muted small'> · " + money(soldTotal) + "</span>" : "") + "</strong></div>";
     if (!list.length) {
       el.innerHTML = "<div class='card'><p>No saved leads yet.</p><p class='muted'>Run a customer through the finder and tap Save lead.</p></div>";
       return;
     }
-    el.innerHTML = list.map(function (x) {
+    const sorted = list.slice().sort(function (a, b) {
+      const ap = (a.outcome || "pending") === "pending", bp = (b.outcome || "pending") === "pending";
+      if (ap !== bp) return ap ? -1 : 1;
+      if (ap && a.followUp && b.followUp && a.followUp !== b.followUp) return a.followUp < b.followUp ? -1 : 1;
+      return (b.createdAt || "") < (a.createdAt || "") ? -1 : 1;
+    });
+    el.innerHTML = sorted.map(function (x) {
       const when = x.createdAt ? new Date(x.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "";
       const ans = x.answers ? Object.keys(x.answers).map(function (k) { return x.answers[k]; }).filter(Boolean).join(" · ") : "";
       const r = x.rec || {};
-      return "<div class='card lead' data-id='" + esc(x.id) + "'>" +
+      const out = x.outcome || "pending";
+      const fu = x.followUp || followUpFor(x.timeframe, x.createdAt);
+      const overdue = out === "pending" && fu <= today;
+      return "<div class='card lead " + out + "' data-id='" + esc(x.id) + "'>" +
         "<div class='row' style='justify-content:space-between'><span class='name'>" + esc(x.name) + "</span><span class='muted small'>" + esc(when) + "</span></div>" +
-        "<div class='row'><span class='chip'>" + esc(x.timeframe || "") + "</span><span class='muted small'>Prefers " + esc((x.contact || "").toLowerCase()) + "</span></div>" +
+        "<div class='row'><span class='chip'>" + esc(x.timeframe || "") + "</span>" +
+          (out === "pending" ? "<span class='chip" + (overdue ? " due" : " quiet") + "'>Follow up " + esc(fmtDate(fu)) + (overdue ? " · due" : "") + "</span>" : "<span class='chip " + out + "'>" + out + (x.soldAmount ? " " + money(x.soldAmount) : "") + (x.lostWhy ? " · " + esc(x.lostWhy) : "") + "</span>") +
+          "<span class='muted small'>Prefers " + esc((x.contact || "").toLowerCase()) + "</span></div>" +
         (x.phone ? "<p class='sel'>" + esc(x.phone) + "</p>" : "") +
         (x.email ? "<p class='sel'>" + esc(x.email) + "</p>" : "") +
-        "<p><b>" + esc(r.headline || "") + (r.config ? " (" + esc(r.config) + ")" : "") + "</b> · " + esc(r.range || "") + "</p>" +
+        "<p><b>" + esc(r.headline || "") + (r.config ? " (" + esc(r.config) + ")" : "") + "</b> · " + esc(r.range || "") + (r.monthly ? " · " + esc(r.monthly) : "") + "</p>" +
         "<p class='muted small'>" + esc(ans) + "</p>" +
         (x.notes ? "<p>" + esc(x.notes) + "</p>" : "") +
-        "<div class='row'><button class='btn link copy1' type='button'>Copy</button><button class='btn link del' type='button'>Delete</button></div>" +
+        "<div class='seg out'>" + ["pending", "sold", "lost"].map(function (o) { return "<button type='button' data-out='" + o + "' aria-pressed='" + (out === o) + "'>" + (o === "pending" ? "Open" : o === "sold" ? "Sold" : "Lost") + "</button>"; }).join("") + "</div>" +
+        (out === "sold" ? "<label>Sold for $ <input type='number' inputmode='numeric' class='soldAmt' value='" + (x.soldAmount || "") + "' placeholder='System total'></label>" : "") +
+        (out === "lost" ? "<div class='seg why'>" + LOST_WHY.map(function (w) { return "<button type='button' data-why='" + esc(w) + "' aria-pressed='" + (x.lostWhy === w) + "'>" + esc(w) + "</button>"; }).join("") + "</div>" : "") +
+        (out === "pending" ? "<label>Follow up on <input type='date' class='fuDate' value='" + esc(fu) + "'></label>" : "") +
+        "<div class='acts'><button class='btn link copy1' type='button'>Copy</button><button class='btn link sms1' type='button'>Text me</button><button class='btn link mail1' type='button'>Email me</button>" +
+          (x.phone ? "<a class='btn link' href='sms:" + esc(x.phone.replace(/[^\d+]/g, "")) + "'>Text them</a>" : "") +
+          (out === "pending" ? "<button class='btn link cal1' type='button'>Calendar</button>" : "") +
+          "<button class='btn link del' type='button'>Delete</button></div>" +
         "</div>";
     }).join("");
   }
 
+  function updateLead(id, fn) {
+    const list = loadLeads();
+    const lead = list.find(function (x) { return x.id === id; });
+    if (!lead) return;
+    fn(lead);
+    storeLeads(list); updateCount(); renderLeads();
+  }
   $("leadsList").addEventListener("click", function (e) {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -449,21 +677,38 @@
     const lead = list.find(function (x) { return x.id === card.dataset.id; });
     if (!lead) return;
     if (btn.classList.contains("copy1")) { copyText(leadText(lead)); return; }
+    if (btn.classList.contains("sms1")) { smsSelf(leadText(lead)); return; }
+    if (btn.classList.contains("mail1")) { mailSelf("Lead: " + (lead.name || "customer"), leadText(lead)); return; }
+    if (btn.classList.contains("cal1")) { addToCalendar(lead); return; }
+    if (btn.dataset.out) { updateLead(lead.id, function (l) { l.outcome = btn.dataset.out; if (l.outcome !== "lost") l.lostWhy = ""; }); toast(btn.dataset.out === "sold" ? "Nice." : "Updated"); return; }
+    if (btn.dataset.why) { updateLead(lead.id, function (l) { l.lostWhy = btn.dataset.why; }); return; }
     if (btn.classList.contains("del")) {
       if (btn.dataset.armed !== "1") { btn.dataset.armed = "1"; btn.textContent = "Tap again to delete"; setTimeout(function () { btn.dataset.armed = ""; btn.textContent = "Delete"; }, 3000); return; }
       storeLeads(list.filter(function (x) { return x.id !== lead.id; }));
       updateCount(); renderLeads(); toast("Deleted");
     }
   });
+  // Inputs on a lead card: save on change, and re-render after the input has let go of focus.
+  $("leadsList").addEventListener("change", function (e) {
+    const card = e.target.closest(".lead"); if (!card) return;
+    const id = card.dataset.id; const el = e.target; const v = el.value;
+    const list = loadLeads(); const lead = list.find(function (x) { return x.id === id; }); if (!lead) return;
+    if (el.classList.contains("soldAmt")) lead.soldAmount = Math.max(0, parseInt(v, 10) || 0);
+    else if (el.classList.contains("fuDate")) { if (!v) return; lead.followUp = v; }
+    else return;
+    storeLeads(list); updateCount();
+    const later = function () { clearTimeout(renderLeads.t); renderLeads.t = setTimeout(renderLeads, 0); };
+    if (document.activeElement !== el) later(); else el.addEventListener("blur", later, { once: true });
+  });
 
   function csvCell(v) { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
   $("exportBtn").addEventListener("click", function () {
     const list = loadLeads();
     if (!list.length) { toast("Nothing to export yet"); return; }
-    const head = ["Saved", "Name", "Phone", "Email", "Reach by", "Buying", "Setup", "Config", "Est. gear"].concat(Q.map(function (q) { return q.q.replace(/\?$/, ""); })).concat(["Notes"]);
+    const head = ["Saved", "Name", "Phone", "Email", "Reach by", "Buying", "Follow up", "Outcome", "Sold for", "Lost why", "Setup", "Config", "Est. gear", "Monthly"].concat(Q.map(function (q) { return q.q.replace(/\?$/, ""); })).concat(["Notes"]);
     const rows = list.map(function (x) {
       const r = x.rec || {};
-      return [x.createdAt, x.name, x.phone, x.email, x.contact, x.timeframe, r.headline, r.config, r.range]
+      return [x.createdAt, x.name, x.phone, x.email, x.contact, x.timeframe, x.followUp || "", x.outcome || "pending", x.soldAmount || "", x.lostWhy || "", r.headline, r.config, r.range, r.monthly || ""]
         .concat(Q.map(function (q) { return x.answers ? x.answers[q.key] : ""; })).concat([x.notes]).map(csvCell).join(",");
     });
     const blob = new Blob([head.map(csvCell).join(",") + "\n" + rows.join("\n")], { type: "text/csv" });
@@ -476,6 +721,11 @@
     if (!list.length) { toast("Nothing to copy yet"); return; }
     copyText(list.map(leadText).join("\n\n---\n\n"), "All leads copied");
   });
+  $("mailAllBtn").addEventListener("click", function () {
+    const list = loadLeads();
+    if (!list.length) { toast("Nothing to send yet"); return; }
+    mailSelf("Sound Finder leads · " + new Date().toLocaleDateString(), list.map(leadText).join("\n\n---\n\n"));
+  });
 
   // ---------- navigation ----------
   $("startBtn").addEventListener("click", function () { state.step = 0; state.answers = {}; persist(); renderQuestion(); });
@@ -483,12 +733,14 @@
     if (state.step === 0) { show("intro"); return; }
     state.step -= 1; delete state.answers[Q[state.step].key]; persist(); renderQuestion();
   });
-  $("restartBtn").addEventListener("click", function () { state.step = 0; state.answers = {}; persist(); show("intro"); });
+  $("restartBtn").addEventListener("click", function () { state.step = 0; state.answers = {}; lastSaved = null; persist(); show("intro"); });
   $("brandLink").addEventListener("click", function () { if (state.step >= Q.length) show("result"); else show("intro"); });
   $("leadsBtn").addEventListener("click", function () { renderLeads(); show("leads"); });
   $("leadsBack").addEventListener("click", function () { if (state.step >= Q.length) show("result"); else show("intro"); });
   segInit("contactSeg", "contact");
   segInit("timeSeg", "timeframe");
+  renderOpeners();
+  $("objectionsIntro").innerHTML = objectionsHtml();
 
   (function start() {
     let saved = null;

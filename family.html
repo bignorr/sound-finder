@@ -21,6 +21,7 @@
 <script src="theme.js"></script>
 <script src="data.js"></script>
 <script src="images.js"></script>
+<script src="sales.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -122,7 +123,7 @@
       <div class="total"><span class="muted">Speakers subtotal</span><strong id="total"></strong></div>
       <p class="muted small" id="totalNote"></p>
     </div>
-    <div class="card alt" id="kitNote" hidden></div>
+    <div class="card alt coach" id="kitNote" hidden></div>
     <div class="card" id="avrCard">
       <div class="row between">
         <p class="eyebrow">Receiver</p>
@@ -138,19 +139,46 @@
         </div>
         <p class="muted small" id="avrAuto"></p>
       </div>
+      <div id="loadWarn" hidden></div>
       <div class="lines" id="avrLines"></div>
+    </div>
+    <div class="card" id="accCard">
+      <div class="row between">
+        <p class="eyebrow">Cables and accessories</p>
+        <span class="muted small coach">Tap to leave one off</span>
+      </div>
+      <p class="muted small">Every cable the install needs, sized to this build. Prices are typical Best Buy house-brand; swap in the exact SKU at the register.</p>
+      <div class="lines" id="accLines"></div>
+      <div class="total"><span class="muted">Accessories subtotal</span><strong id="accTotal"></strong></div>
     </div>
     <div class="card">
       <p class="eyebrow">Finalized list</p>
       <div class="sums">
         <div><span class="muted">Speakers</span><b id="sumSpk"></b></div>
         <div><span class="muted" id="sumAvrLabel">Receiver</span><b id="sumAvr"></b></div>
+        <div><span class="muted">Cables and accessories</span><b id="sumAcc"></b></div>
         <div class="grand"><span>System total</span><b id="sumTotal"></b></div>
       </div>
+      <div id="sumFin"></div>
+      <div class="inst"><span>Install, labor only <span class="muted small coach" id="instKind"></span></span><b id="sumInst"></b></div>
       <p class="muted small" id="sumNote"></p>
+    </div>
+    <div class="card coach sowbox" id="sowCard" hidden>
+      <div class="row between">
+        <p class="eyebrow">Scope of work draft</p>
+        <button class="btn link" type="button" id="sowClose">Close</button>
+      </div>
+      <label>Room name <input id="sowRoom" type="text" placeholder="Media Room" autocomplete="off"></label>
+      <textarea id="sowText" readonly></textarea>
+      <div class="row">
+        <button class="btn primary" type="button" id="sowCopy">Copy SOW</button>
+        <span class="muted small">Custom SOW Fill Out format. Room Control is left out unless the job has automation.</span>
+      </div>
     </div>
     <div class="sticky-bar">
       <button class="btn primary" type="button" id="copyBtn">Copy finalized list</button>
+      <button class="btn coach" type="button" id="skuBtn">Copy SKUs</button>
+      <button class="btn coach" type="button" id="sowBtn">Draft SOW</button>
       <button class="btn" type="button" id="bbyBtn">Open series on bestbuy.com</button>
     </div>
   </section>
@@ -167,83 +195,87 @@
   // Brands with no architectural line at Best Buy (Sony, SVS, DALI) get these Klipsch swaps, and the line says so.
   const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 322, note: "Klipsch swap: this brand has no in-ceiling sold by Best Buy. Sonance MAG6R ($149 pair) is the budget swap" };
   const INWALL_FALLBACK = { brand: "Klipsch", m: "R-5502-W II in-wall LCR", pair: 440, note: "Klipsch swap: this brand has no in-wall sold by Best Buy. Sonance VX62 ($550 pair) is the other option" };
+  // load: what the series asks of a receiver (maker specs, Nov 15, 2026). ohm = nominal, min = published minimum, sens = dB at 2.83 V/1 m
+  // for the least efficient main speaker. 4-ohm or sub-4-ohm-minimum families need a receiver rated for 4 ohms; under 86 dB wants real power.
   const SERIES = [
-    { id: "sony-core", brand: "Sony", series: "Core", tier: "value",
+    { id: "sony-core", brand: "Sony", series: "Core", tier: "value", load: { ohm: 6, sens: 87 },
       tower: { m: "SS-CS3", pair: 460 }, bookshelf: { m: "SS-CS5", pair: 180 }, center: { m: "SS-CS8", each: 150 },
       height: { m: "SS-CSE", pair: 200, kind: "module" }, sub: { m: "SS-CS9", each: 200 } },
-    { id: "jbl-stage2", brand: "JBL", series: "Stage 2", tier: "value",
+    { id: "jbl-stage2", brand: "JBL", series: "Stage 2", tier: "value", load: { ohm: 6, sens: 86 },
       tower: { m: "Stage 2 280F", pair: 1200 }, bookshelf: { m: "Stage 2 250B", pair: 500 }, center: { m: "Stage 2 245C", each: 400 },
       height: { m: "Stage 2 240H", pair: 500, kind: "module" }, inceiling: { m: "Stage 260C in-ceiling", pair: 420, note: "$209.95 each; 260CSA angled is the same price, 280C 8 in $309.95" },
       inwall: { m: "Stage 260W in-wall", pair: 420, note: "$209.95 each; Studio 6 6IW ($609.95) is the step up" },
       sub: { m: "Stage 2 220P", each: 400 } },
-    { id: "klipsch-ref", brand: "Klipsch", series: "Reference", tier: "value",
-      tower: { m: "R-800F", pair: 1100 }, bookshelf: { m: "R-600M", pair: 450 }, center: { m: "R-50C", each: 250 },
+    { id: "klipsch-ref", brand: "Klipsch", series: "Reference", tier: "value", load: { ohm: 8, sens: 92 },
+      tower: { m: "R-800F", pair: 1100 }, bookshelf: { m: "R-50M", pair: 450 }, center: { m: "R-50C", each: 250 },
       height: { m: "R-40SA", pair: 300, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322, note: "$160.99 each (comp $429.99)" },
       inwall: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each" },
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 } },
-    { id: "polk-es", brand: "Polk Audio", series: "Signature Elite", tier: "value",
+    { id: "polk-es", brand: "Polk Audio", series: "Signature Elite", tier: "value", load: { ohm: 8, sens: 86 },
       tower: { m: "ES60", pair: 1000 }, bookshelf: { m: "ES20", pair: 400 }, center: { m: "ES35", each: 400 },
-      height: { m: "ES90", pair: 450, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the old RC80i rounds are gone from Best Buy" },
+      height: { m: "ES90", pair: 450, kind: "module", note: "Not found on bestbuy.com Nov 15; verify in Tyler, or use 70-RT in-ceilings" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the old RC80i rounds are gone from Best Buy" },
       inwall: { m: "265-RT dual 6.5 in in-wall", pair: 448, note: "$223.99 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 } },
-    { id: "svs-prime", brand: "SVS", series: "Prime", tier: "value",
+    { id: "svs-prime", brand: "SVS", series: "Prime", tier: "value", load: { ohm: 8, sens: 87 },
       tower: { m: "Prime Tower", pair: 1200 }, bookshelf: { m: "Prime Bookshelf", pair: 650 }, center: { m: "Prime Center", each: 450 },
       surround: { m: "Prime Satellite", pair: 300 }, height: { m: "Prime Elevation", pair: 500, kind: "speaker" },
       sub: { m: "SB-1000 Pro", each: 600 }, subAlt: { m: "PB-1000 Pro", each: 700 } },
-    { id: "klipsch-rp2", brand: "Klipsch", series: "Reference Premiere II", tier: "mid",
+    { id: "klipsch-rp2", brand: "Klipsch", series: "Reference Premiere II", tier: "mid", load: { ohm: 8, sens: 94 },
       tower: { m: "RP-8000F II", pair: 2400 }, towerAlt: { m: "RP-6000F II", pair: 1800 }, bookshelf: { m: "RP-600M II", pair: 750 }, center: { m: "RP-504C II", each: 1000 },
       surround: { m: "RP-502S II", pair: 1000 }, height: { m: "RP-500SA II", pair: 700, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322, note: "$160.99 each; CDT-5800-C II 8 in is $199.99 each for a big room" },
       inwall: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each; the only Reference in-wall Best Buy sells" },
       sub: { m: "RP-1200SW", each: 1300 }, subAlt: { m: "RP-1000SW", each: 900 } },
-    { id: "polk-reserve", brand: "Polk Audio", series: "Reserve", tier: "mid",
+    { id: "polk-reserve", brand: "Polk Audio", series: "Reserve", tier: "mid", load: { ohm: 6, min: 3.6, sens: 86 },
       tower: { m: "R700", pair: 2500 }, towerAlt: { m: "R600", pair: 1800 }, bookshelf: { m: "R200", pair: 800 }, center: { m: "R400", each: 900 },
       height: { m: "R900", pair: 500, kind: "module" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; 90-RT 9 in is $299 each" },
       inwall: { m: "265-LS 6.5 in 3-way in-wall", pair: 758, note: "$379 each; 265-RT saves $155 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "MXT12", each: 500 } },
-    { id: "kef-q", brand: "KEF", series: "Q Series Meta", tier: "mid",
+    { id: "kef-q", brand: "KEF", series: "Q Series Meta", tier: "mid", load: { ohm: 4, min: 3.2, sens: 87 },
       tower: { m: "Q11 Meta", pair: 2000 }, towerAlt: { m: "Q7 Meta", pair: 1500 }, bookshelf: { m: "Q3 Meta", pair: 800 }, center: { m: "Q6 Meta", each: 700 },
       surround: { m: "Q8 Meta", pair: 1000 }, height: { m: "Q8 Meta", pair: 1000, kind: "module" }, inceiling: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000, note: "$499.99 each, the Q Series ceiling; Ci160ES is $399.99 a pair if the budget is tight" },
       inwall: { m: "Ci160QL Uni-Q in-wall", pair: 1000, note: "$499.99 each; Ci160QS square is the same price" },
       sub: { m: "Kube 12 MIE", each: 900 }, subAlt: { m: "Kube 10 MIE", each: 700 } },
-    { id: "dali-oberon", brand: "DALI", series: "Oberon", tier: "mid",
+    { id: "dali-oberon", brand: "DALI", series: "Oberon", tier: "mid", load: { ohm: 6, sens: 87 },
       tower: { m: "Oberon 7", pair: 1700 }, towerAlt: { m: "Oberon 5", pair: 1200 }, bookshelf: { m: "Oberon 3", pair: 700 }, center: { m: "Oberon Vokal", each: 500 },
       surround: { m: "Oberon On-Wall", pair: 700 }, height: { m: "Alteco C-1", pair: 600, kind: "module" },
-      sub: { m: "Sub E-12 F", each: 900 }, subAlt: { m: "Sub E-9 F", each: 700 } },
-    { id: "ml-foundation", brand: "MartinLogan", series: "Motion Foundation", tier: "mid",
+      sub: { m: "Sub E-12 F", each: 900 }, subAlt: { m: "Sub E-9 F", each: 700 },
+      kit: "Verify in Tyler before quoting: a Nov 15, 2026 check found only Oberon 1, 3, 5, 7 and Vokal on bestbuy.com; the On-Wall, Alteco C-1 and Sub E series did not come up. Swap in Oberon 1 surrounds, Klipsch CDT ceilings and an SVS sub if they are gone." },
+    { id: "ml-foundation", brand: "MartinLogan", series: "Motion Foundation", tier: "mid", load: { ohm: 4, sens: 90 },
       tower: { m: "Motion Foundation F2", pair: 2300 }, towerAlt: { m: "Motion Foundation F1", pair: 1700 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at Best Buy ($439.99 on promo); the bigger C2 if it is stocked" },
       inceiling: { m: "Installer Series IC6 in-ceiling", pair: 500, note: "$249.99 each; Motion CI MC6 ($499.99 each) adds the Folded Motion tweeter" },
       inwall: { m: "Installer Series IW6 in-wall", pair: 560, note: "$279.99 each; Motion CI MW6 ($599.99 each) adds the Folded Motion tweeter" },
       sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 } },
-    { id: "deftech-dym", brand: "Definitive Technology", series: "Dymension", tier: "mid",
+    { id: "deftech-dym", brand: "Definitive Technology", series: "Dymension", tier: "mid", load: { ohm: 4, sens: 87 },
       tower: { m: "DM70", pair: 3400 }, towerAlt: { m: "DM60", pair: 2600 }, bookshelf: { m: "DM40", pair: 1200 }, center: { m: "DM30", each: 1249, note: "Flagship center with its own powered 8 in sub; $949 on sale when pulled. DM20 slim center ($599) for a low console" },
       surround: { m: "DM80", pair: 1000 }, height: { m: "DM90", pair: 600, kind: "module" }, inceiling: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758, note: "$379 each; DC-65 MAX is $479 each" },
       inwall: { m: "Dymension CI DW-65 PRO in-wall", pair: 758, note: "$379 each; DW MAX SUR bipolar surround is $679 each" },
       sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 } },
-    { id: "bw-600", brand: "Bowers & Wilkins", series: "600 S3", tier: "mid",
+    { id: "bw-600", brand: "Bowers & Wilkins", series: "600 S3", tier: "mid", load: { ohm: 8, min: 3.0, sens: 88 },
       tower: { m: "603 S3", pair: 2500 }, bookshelf: { m: "606 S3", pair: 1200 }, center: { m: "HTM6 S3", each: 900 },
       inceiling: { m: "CI600 CCM665 in-ceiling", pair: 750, note: "Pair price; CCM664 ($475 each) has the better tweeter" },
       inwall: { m: "CI600 CWM664 in-wall", pair: 900, note: "Pair price" },
       sub: { m: "ASW610", each: 900 }, subAlt: { m: "ASW608", each: 700 } },
-    { id: "ml-xt", brand: "MartinLogan", series: "Motion XT", tier: "premium",
+    { id: "ml-xt", brand: "MartinLogan", series: "Motion XT", tier: "premium", load: { ohm: 4, sens: 92 },
       tower: { m: "Motion XT F200", pair: 4000 }, towerAlt: { m: "Motion XT F100", pair: 3000 }, bookshelf: { m: "Motion XT B100", pair: 1500 }, center: { m: "Motion XT C100", each: 1300 },
-      surround: { m: "Motion XT FX100", pair: 1700 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000, note: "$499.99 each with the Folded Motion tweeter; XT CI XTC8 is $1,099.99 each" },
+      surround: { m: "Motion XT FX100", pair: 1700, note: "Not found on bestbuy.com Nov 15; verify in Tyler, or use B100 bookshelves" }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000, note: "$499.99 each with the Folded Motion tweeter; XT CI XTC8 is $1,099.99 each" },
       inwall: { m: "Motion XT CI XTW6 in-wall", pair: 1800, note: "$899.99 each; Motion CI MW6 saves $300 each" },
-      sub: { m: "Dynamo 1000X", each: 1300 }, subAlt: { m: "Dynamo 800X", each: 1000 } },
-    { id: "kef-r", brand: "KEF", series: "R Series Meta", tier: "premium",
+      sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 1100X", each: 1300, note: "showed as no longer available new on bestbuy.com Nov 15" } },
+    { id: "kef-r", brand: "KEF", series: "R Series Meta", tier: "premium", load: { ohm: 4, min: 3.2, sens: 87 },
       tower: { m: "R7 Meta", pair: 5000 }, towerAlt: { m: "R5 Meta", pair: 3500 }, bookshelf: { m: "R3 Meta", pair: 2200 }, center: { m: "R6 Meta", each: 1800 },
       height: { m: "R8 Meta", pair: 1300, kind: "module" }, inceiling: { m: "Ci160RR-THX in-ceiling", pair: 2000, note: "$999.99 each; Ci200RR-THX 8 in is $1,199.99 each, Ci160QR saves $500 each" },
       inwall: { m: "Ci4100QL-THX in-wall LCR", pair: 1400, note: "$699.99 each" },
       sub: { m: "Kube 15 MIE", each: 1200 }, subAlt: { m: "KC62", each: 1700 } },
-    { id: "bw-700", brand: "Bowers & Wilkins", series: "700 S3", tier: "premium",
+    { id: "bw-700", brand: "Bowers & Wilkins", series: "700 S3", tier: "premium", load: { ohm: 8, min: 3.1, sens: 88 },
       tower: { m: "703 S3", pair: 5000 }, towerAlt: { m: "704 S3", pair: 3600 }, bookshelf: { m: "706 S3", pair: 2200 }, center: { m: "HTM71 S3", each: 2200 },
       inceiling: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500, note: "$1,250 each, Carbon Dome tweeter; CI600 CCM664 ($475 each) if heights only" },
       inwall: { m: "CI700 S2 CWM7.5 S2 in-wall", pair: 2700, note: "$1,350 each" },
       sub: { m: "DB4S", each: 2500 }, subAlt: { m: "ASW610", each: 900 } },
-    { id: "dali-opticon", brand: "DALI", series: "Opticon Mk2", tier: "premium",
+    { id: "dali-opticon", brand: "DALI", series: "Opticon Mk2", tier: "premium", load: { ohm: 4, sens: 86.5 },
       tower: { m: "Opticon 8 Mk2", pair: 4000 }, towerAlt: { m: "Opticon 6 Mk2", pair: 2800 }, bookshelf: { m: "Opticon 2 Mk2", pair: 1500 }, center: { m: "Opticon Vokal Mk2", each: 1000 },
       height: { m: "Alteco C-1", pair: 600, kind: "module" },
-      sub: { m: "Sub E-12 F", each: 900 } },
-    { id: "svs-ultra", brand: "SVS", series: "Ultra Evolution", tier: "premium",
+      sub: { m: "Sub E-12 F", each: 900 },
+      kit: "Verify in Tyler before quoting: a Nov 15, 2026 check could not find Opticon Mk2, Alteco C-1 or the Sub E series on bestbuy.com (only the Oberon line came up). If they are gone, Oberon is the DALI to quote." },
+    { id: "svs-ultra", brand: "SVS", series: "Ultra Evolution", tier: "premium", load: { ohm: 6, sens: 87 },
       tower: { m: "Ultra Evolution Tower", pair: 3600 }, bookshelf: { m: "Ultra Evolution Bookshelf", pair: 1600 }, center: { m: "Ultra Evolution Center", each: 1000 },
       surround: { m: "Ultra Evolution Nano", pair: 700 }, height: { m: "Ultra Evolution Elevation", pair: 800, kind: "speaker" },
       sub: { m: "SB-3000", each: 1100 }, subAlt: { m: "PB-3000", each: 1500 } },
@@ -322,7 +354,7 @@
       surround: { m: "VP62R SST/SUR thin-line in-ceiling", pair: 990 }, inceiling: { m: "VP66R in-ceiling (each)", pair: 865 },
       sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
       kit: "VP62 rectangle in-wall pair on clearance at $162.99 (comp $479.98). VP66R $432.49 each; VP62R SST/SUR TL $495 each. Sonance has retired the VP68R and VP88R (no longer sold new at Best Buy); VX is the current line, VP stays for the LCR and Thin-line pieces." },
-    { id: "sonance-is", brand: "Sonance", series: "Invisible Series", tier: "premium", arch: true,
+    { id: "sonance-is", brand: "Sonance", series: "Invisible Series", tier: "premium", arch: true, load: { ohm: 8, sens: 85 },
       tower: { m: "IS8 8 in invisible (pair)", pair: 2120, note: "$1,060 each; plastered over, needs a finisher" }, bookshelf: { m: "IS6 6.5 in invisible (pair)", pair: 1515 },
       center: { m: "IS6 invisible (each)", each: 757.5 },
       surround: { m: "IS6 invisible (pair)", pair: 1515 }, inceiling: { m: "IS6 invisible (pair)", pair: 1515 },
@@ -351,16 +383,17 @@
   const SUB_PICKS = {
     value: [{ brand: "SVS", m: "SB-1000 Pro", each: 600 }, { brand: "Polk Audio", m: "HTS 12", each: 500 }],
     mid: [{ brand: "SVS", m: "PB-2000 Pro", each: 1000 }, { brand: "REL", m: "T/7x", each: 1100 }, { brand: "MartinLogan", m: "Dynamo 800X", each: 1000 }],
-    premium: [{ brand: "SVS", m: "PB-3000", each: 1500 }, { brand: "REL", m: "T/9x", each: 1450 }, { brand: "MartinLogan", m: "Dynamo 1000X", each: 1300 }],
+    premium: [{ brand: "SVS", m: "PB-3000", each: 1500 }, { brand: "REL", m: "T/9x", each: 1450 }, { brand: "MartinLogan", m: "Dynamo 800X", each: 1000 }],
   };
   // Receivers Best Buy sells and ships, one per price level for each channel count. Prices are bestbuy.com list on Nov 13, 2026.
+  // ohm4: rated for 4-ohm speakers per the maker's manual (Denon, Marantz, Onkyo, Pioneer: 4 to 16 ohms). The Sony STR-DH590 is 6 to 16 ohms.
   const AVRS = {
     2: { need: "2 amplified channels",
-      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later" },
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, ohm4: false, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later" },
       mid: { brand: "Denon", m: "DRA-900H 2.2-ch stereo receiver", price: 799, why: "True two-channel, 100 W, 8K HDMI, HEOS streaming, two sub outs" },
       premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "HDAM amplification for a premium stereo pair, with five channels in reserve for a full theater" } },
     5: { need: "5 amplified channels",
-      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration" },
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration" },
       mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", price: 649, why: "8K HDMI, HEOS, Audyssey room correction, phono input, Alexa" },
       premium: { brand: "Marantz", m: "Cinema 70s 7.2-ch slim receiver", price: 1300, why: "Slim Marantz with Dolby Atmos and two spare channels for heights" } },
     7: { need: "7 amplified channels",
@@ -382,18 +415,21 @@
     Klipsch: "klipsch", "Polk Audio": "polk", KEF: "kef", MartinLogan: "martinlogan", "Definitive Technology": "deftech", "Bowers & Wilkins": "bw", JBL: "jbl" };
   const $ = function (id) { return document.getElementById(id); };
   const IMG = window.SF_IMG;
-  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto" };
+  const SALES = window.SF_SALES;
+  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
+    acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "" };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
   function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove("show"); }, 2200); }
+  window.SF_TOAST = toast;
   function persist() { try { localStorage.setItem("sf-family", JSON.stringify(state)); } catch (e) {} }
 
   // Deep link from the finder: family.html?cfg=5.2.4&tier=mid
   (function fromQuery() {
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem("sf-family") || "null"); } catch (e) {}
-    if (saved && typeof saved === "object") Object.assign(state, saved);
+    if (saved && typeof saved === "object") { const acc = Object.assign({}, state.acc, saved.acc || {}); Object.assign(state, saved); state.acc = acc; }
     const q = new URLSearchParams(location.search);
     const cfg = (q.get("cfg") || "").split(".");
     if (cfg.length >= 2) {
@@ -484,6 +520,7 @@
       sideNote = where + " beside the seats, installer-mounted" + extra;
       rearNote = where + " behind the seats" + (own && own.note ? "" : extra);
     }
+    if (surType === "series" && !s.arch && s.surround && s.surround.note) sideNote += "; " + s.surround.note;
     if (state.around >= 5) add("Surrounds (sides)", surBrand, sur.m, 2, sur.pair / 2, sideNote, surKind);
     if (state.around >= 7) add("Surrounds (rear)", surBrand, rear.m, 2, rear.pair / 2, rearNote, surKind);
     // heights
@@ -492,14 +529,14 @@
       const h = useCeil ? (s.inceiling || INCEIL_FALLBACK) : s.height;
       const hb = useCeil && !s.inceiling ? INCEIL_FALLBACK.brand : s.brand;
       const roleName = state.heights === 4 ? "Heights (front + rear pairs)" : "Heights (front pair)";
-      const note = useCeil ? ("In-ceiling, installer-mounted" + (s.inceiling ? (s.inceiling.note ? "; " + s.inceiling.note : "") : "; " + INCEIL_FALLBACK.note)) : (s.height.kind === "module" ? "Atmos modules that sit on the fronts" + (state.heights === 4 ? " and surrounds" : "") : "Height speakers, wall or stand");
+      const note = useCeil ? ("In-ceiling, installer-mounted" + (s.inceiling ? (s.inceiling.note ? "; " + s.inceiling.note : "") : "; " + INCEIL_FALLBACK.note)) : ((s.height.kind === "module" ? "Atmos modules that sit on the fronts" + (state.heights === 4 ? " and surrounds" : "") : "Height speakers, wall or stand") + (s.height.note ? "; " + s.height.note : ""));
       add(roleName, hb, h.m, state.heights, h.pair / 2, note, useCeil ? "arch" : "module");
     }
     // subs
     if (state.subs > 0) {
       const picks = SUB_PICKS[s.tier];
       add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", s.sub.brand || s.brand, s.sub.m, state.subs, s.sub.each,
-        (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "), "sub");
+        (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + (s.subAlt.note ? "; " + s.subAlt.note : "") + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "), "sub");
     }
     // stands
     if (!s.arch && state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional", "stand");
@@ -517,20 +554,81 @@
     if (s.id === "sonos-arch") {
       if (tier === "none") return null;
       const amps = Math.ceil(n / 2);
-      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp" };
+      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp", ohm4: true };
     }
     if (tier === "none") return null;
     const key = avrNeedKey(n); const a = AVRS[key][tier];
-    return { role: "Receiver · " + tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: AVRS[key].need, tier: tier, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, "") };
+    return { role: "Receiver · " + tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: AVRS[key].need, tier: tier, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: a.ohm4 !== false };
+  }
+  // Does this series need a receiver rated for 4 ohms, or real power? Returns the warning to show, if any.
+  function loadCheck(s, rc) {
+    const L = s.load; if (!L) return null;
+    const needs4 = L.ohm <= 4 || (L.min && L.min < 4);
+    const lowSens = L.sens < 86;
+    if (!needs4 && !lowSens) return null;
+    const spec = (L.ohm ? L.ohm + " ohm nominal" : "") + (L.min ? ", " + L.min + " ohm minimum" : "") + (L.sens ? " · " + L.sens + " dB" : "");
+    const name = s.brand + " " + s.series;
+    if (needs4 && rc && !rc.ohm4) return { bad: true, html: "<b>Receiver mismatch.</b> " + esc(name) + " is a 4-ohm load (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " is rated for 6 to 16 ohms. Pick the Mid or Premium receiver; every Denon, Marantz, Onkyo and Pioneer here is rated 4 to 16 ohms." };
+    if (needs4 && !rc) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms, and set its speaker-impedance menu to 4 ohms." };
+    if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " handles it; set the speaker-impedance menu to 4 ohms during setup." + (lowSens ? " It is also only " + L.sens + " dB, so do not go below the Mid receiver in a big room." : "") };
+    return { bad: false, html: "<b>Power-hungry.</b> " + esc(name) + " is " + L.sens + " dB, among the least sensitive here. It sounds its best on the Mid or Premium receiver" + (rc && rc.tier === "value" ? ", not the " + esc(rc.brand + " " + rc.short) : "") + "." };
+  }
+  function skuHtml(l) {
+    const key = l.brand + " " + l.model;
+    const k = SALES.sku(key);
+    return "<span class='sku coach'>" + (k ? "SKU " + esc(k) : "no SKU on file") + " <button type='button' data-skukey='" + esc(key) + "'>" + (k ? "edit" : "add") + "</button></span>";
   }
   function lineHtml(l) {
-    return "<div class='line'>" + (IMG ? IMG.thumb(l.brand + " " + l.model, l.kind) : "") +
+    const key = l.brand + " " + l.model;
+    return "<div class='line'>" + (IMG ? IMG.thumb(key, l.kind) : "") +
       "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
       "<div class='qty'>" + l.qty + " × " + money(l.each) + (l.note ? " · " + esc(l.note) : "") + "</div></div>" +
       "<div class='price'>" + money(l.total) + "</div>" +
-      "<div class='find'><a href='" + bby(l.q || (l.brand + " " + l.model)) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" +
+      "<div class='find'><a href='" + SALES.bbyUrl(key, l.q || key) + "' target='_blank' rel='noopener'>" + (SALES.sku(key) ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + skuHtml(l) + "</div>" +
       "</div>";
   }
+  // Inline SKU editor on a line: tap edit, type the SKU, it saves on this phone and the link goes straight to the product page.
+  document.addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-skukey]"); if (!b) return;
+    const span = b.parentNode; const key = b.dataset.skukey;
+    span.innerHTML = "SKU <input type='text' inputmode='numeric' pattern='[0-9]*' value='" + esc(SALES.sku(key) || "") + "' placeholder='1234567' aria-label='Best Buy SKU'> <button type='button' data-skusave='" + esc(key) + "'>save</button>";
+    span.querySelector("input").focus();
+  });
+  document.addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-skusave]"); if (!b) return;
+    const v = SALES.setSku(b.dataset.skusave, b.parentNode.querySelector("input").value);
+    toast(v ? "SKU saved on this phone" : "SKU cleared"); render();
+  });
+
+  // Cables and accessories sized to the build. Typical Best Buy house-brand prices; the exact SKU goes in at the register.
+  function accessories(r, rc) {
+    const s = r.series; const out = [];
+    const arch = s.arch || surroundType() !== "series" || (state.heights > 0 && (state.heightType === "inceiling" || !s.height));
+    let ft = 2 * 20; // fronts
+    if (state.around >= 3) ft += 10;
+    if (state.around >= 5) ft += 2 * 40;
+    if (state.around >= 7) ft += 2 * 50;
+    if (state.heights > 0) ft += state.heights * (state.heightType === "inceiling" || !s.height || s.arch ? 45 : 6);
+    const spools = Math.ceil(ft / 100);
+    const wire = arch ? { m: "14 AWG CL2/CL3 in-wall speaker wire, 100 ft", each: 60 } : { m: "16 AWG speaker wire, 100 ft", each: 40 };
+    out.push({ id: "wire", role: "Speaker wire", brand: "Rocketfish / AudioQuest", model: wire.m, qty: spools, each: wire.each, note: "about " + ft + " ft of runs" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : "") });
+    if (state.subs > 0) out.push({ id: "subcable", role: "Subwoofer cable", brand: "Rocketfish / AudioQuest", model: "Subwoofer RCA cable, 25 ft", qty: state.subs, each: 25, note: state.subs === 2 ? "one per sub" : "" });
+    const hdmiQty = rc && rc.sonos ? 1 : 2;
+    out.push({ id: "hdmi", role: "HDMI", brand: "Rocketfish / AudioQuest", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", qty: hdmiQty, each: 25, note: rc && rc.sonos ? "TV eARC to the Amp" : "TV eARC to receiver, plus the main source" });
+    const ch = channels();
+    out.push({ id: "banana", role: "Connectors", brand: "Rocketfish", model: "Banana plugs, 12-pack", qty: Math.ceil(ch / 3), each: 25, note: "4 per channel, " + ch + " channels" });
+    out.push({ id: "surge", role: "Power", brand: "Rocketfish", model: "8-outlet surge protector", qty: 1, each: 60, note: "receiver, subs, display" });
+    out.forEach(function (a) { a.on = state.acc[a.id] !== false; a.total = a.qty * a.each; });
+    return out;
+  }
+  function accHtml(a) {
+    return "<div class='aline" + (a.on ? "" : " off") + "'><input type='checkbox' data-acc='" + a.id + "'" + (a.on ? " checked" : "") + " aria-label='Include " + esc(a.model) + "'>" +
+      "<div><div class='role'>" + esc(a.role) + "</div><div class='model'>" + esc(a.model) + "</div><div class='qty'>" + a.qty + " × " + money(a.each) + (a.note ? " · " + esc(a.note) : "") + "</div></div>" +
+      "<div class='price'>" + money(a.total) + "</div></div>";
+  }
+  $("accLines").addEventListener("change", function (e) { const i = e.target.closest("input[data-acc]"); if (!i) return; state.acc[i.dataset.acc] = i.checked; persist(); render(); });
+  function accTotal(list) { return list.reduce(function (a, x) { return a + (x.on ? x.total : 0); }, 0); }
+  function installKind() { const s = currentSeries(); return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
 
   function render() {
     syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs();
@@ -573,16 +671,32 @@
         : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Match the series</button>"
         : "Set to <b>" + esc(tier) + "</b> by hand. <button type='button' class='btn link' id='avrReset'>Match the series (" + esc(s.tier) + ")</button>");
     $("avrLines").innerHTML = rc ? lineHtml(rc) : "";
+    // speaker load vs. receiver
+    const warn = loadCheck(s, rc);
+    $("loadWarn").hidden = !warn;
+    $("loadWarn").innerHTML = warn ? "<div class='warn" + (warn.bad ? " bad" : "") + "'>" + warn.html + "</div>" : "";
+    // cables and accessories
+    const acc = accessories(r, rc);
+    $("accLines").innerHTML = acc.map(accHtml).join("");
+    const accSum = accTotal(acc);
+    $("accTotal").textContent = money(accSum);
     // finalized totals
-    const grand = r.total + (rc ? rc.total : 0);
+    const grand = r.total + (rc ? rc.total : 0) + accSum;
     $("sumSpk").textContent = money(r.total);
     $("sumAvrLabel").textContent = rc ? (rc.sonos ? "Sonos Amp" + (rc.qty > 1 ? "s (" + rc.qty + ")" : "") : rc.brand + " " + rc.short) : "Receiver";
     $("sumAvr").textContent = rc ? money(rc.total) : "Customer's own";
+    $("sumAcc").textContent = money(accSum);
     $("sumTotal").textContent = money(grand);
-    $("sumNote").textContent = (r.lines.length + (rc ? 1 : 0)) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Copy the list to text it or paste it into the quote.";
+    $("sumFin").innerHTML = SALES.monthlyHtml(grand) || "<p class='muted small'>No financing promo covers " + money(grand) + ". Check the promo table in Settings.</p>";
+    const ik = installKind();
+    $("sumInst").textContent = SALES.installText(ik);
+    $("instKind").textContent = "· " + SALES.installBand(ik).label;
+    $("sumNote").textContent = (r.lines.length + (rc ? 1 : 0) + acc.filter(function (a) { return a.on; }).length) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Install is your Settings range; Budget Builder sets the quote.";
     $("bbyBtn").onclick = function () { window.open(bby(s.brand + " " + s.series), "_blank", "noopener"); };
+    if (!$("sowCard").hidden) $("sowText").value = sowText();
     persist();
   }
+  document.addEventListener("sf-settings", render);
 
   // Finalized list for the clipboard: speakers, receiver, system total, with the date and a verify line.
   function listText() {
@@ -594,7 +708,11 @@
     const surr = s.arch || st === "series" ? "" : " · " + (st === "inwall" ? "in-wall" : "in-ceiling") + " surrounds";
     const hts = state.heights && !s.arch ? " · " + (state.heightType === "inceiling" || !s.height ? "in-ceiling heights" : "Atmos modules") : "";
     const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    const line = function (l) { return "  " + l.role.replace(/ · .*$/, "") + ": " + l.brand + " " + l.model + " — " + l.qty + " × " + money(l.each) + " = " + money(l.total); };
+    const skuTag = function (l) { const k = SALES.sku(l.brand + " " + l.model); return k ? " [SKU " + k + "]" : ""; };
+    const line = function (l) { return "  " + l.role.replace(/ · .*$/, "") + ": " + l.brand + " " + l.model + skuTag(l) + " — " + l.qty + " × " + money(l.each) + " = " + money(l.total); };
+    const acc = accessories(r, rc).filter(function (a) { return a.on; });
+    const accSum = accTotal(acc);
+    const grand = r.total + (rc ? rc.total : 0) + accSum;
     const out = ["SOUND FINDER — FINALIZED LIST · " + today, s.brand + " " + s.series + " · " + configString() + " · " + fronts + surr + hts, "", "SPEAKERS"];
     r.lines.forEach(function (l) { out.push(line(l)); });
     out.push("  Speakers subtotal: " + money(r.total), "");
@@ -603,11 +721,75 @@
       out.push(line(rc));
       if (rc.note) out.push("  " + rc.note);
     } else out.push("RECEIVER: customer's own");
-    out.push("", "SYSTEM TOTAL: " + money(r.total + (rc ? rc.total : 0)), "", "Best Buy list prices as of " + today + "; confirm today's price and stock in store. Mounts, wire, in-wall work and calibration quoted separately.");
+    const warn = loadCheck(s, rc);
+    if (warn) out.push("  NOTE: " + warn.html.replace(/<[^>]+>/g, ""));
+    out.push("", "CABLES AND ACCESSORIES");
+    acc.forEach(function (a) { out.push("  " + a.role + ": " + a.model + " — " + a.qty + " × " + money(a.each) + " = " + money(a.total)); });
+    out.push("  Accessories subtotal: " + money(accSum));
+    out.push("", "SYSTEM TOTAL: " + money(grand));
+    const p = SALES.plan(grand);
+    if (p) out.push("Financing: about " + money(p.per) + "/mo for " + p.months + " months on the Best Buy card (equal payments; confirm current terms)");
+    const ik = installKind();
+    out.push("Install, labor only: " + SALES.installText(ik) + " (" + SALES.installBand(ik).label + "; Budget Builder sets the quote)");
+    out.push("", "Best Buy list prices as of " + today + "; confirm today's price and stock in store. Mounting, in-wall work and calibration quoted separately.");
     return out.join("\n");
   }
-  function copyText(text) {
-    const done = function () { toast("List copied"); };
+  // SKUs only, for keying the order.
+  function skuText() {
+    const r = build(); const rc = receiver();
+    const all = r.lines.concat(rc ? [rc] : []);
+    const out = ["SKUs · " + r.series.brand + " " + r.series.series + " · " + configString()];
+    const missing = [];
+    all.forEach(function (l) { const k = SALES.sku(l.brand + " " + l.model); if (k) out.push(k + "  × " + l.qty + "  " + l.brand + " " + l.model); else missing.push(l.brand + " " + l.model); });
+    if (missing.length) out.push("", "No SKU on file (add it on the line): " + missing.join("; "));
+    out.push("", "Cables: " + accessories(r, rc).filter(function (a) { return a.on; }).map(function (a) { return a.qty + " × " + a.model; }).join("; "));
+    return out.join("\n");
+  }
+  // Scope of work in the Custom SOW Fill Out format: Room Name, Equipment, Scope, Watch, Listen, Disclaimers. Room Control only when there is automation.
+  function sowText() {
+    const r = build(); const s = r.series; const rc = receiver();
+    const acc = accessories(r, rc).filter(function (a) { return a.on; });
+    const room = (state.room || "").trim() || "Media Room";
+    const st = surroundType();
+    const ceilHeights = state.heights > 0 && (state.heightType === "inceiling" || !s.height || s.arch);
+    const b = function (t) { return "- " + t; };
+    const out = ["ROOM NAME", b(room), "", "EQUIPMENT"];
+    r.lines.forEach(function (l) { const k = SALES.sku(l.brand + " " + l.model); out.push(b(l.qty + " × " + l.brand + " " + l.model + (k ? " (SKU " + k + ")" : "") + " — " + l.role.replace(/ · .*$/, "").toLowerCase())); });
+    if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : ""))); else out.push(b("Receiver: customer's existing unit (confirm channel count and 4-ohm rating)"));
+    acc.forEach(function (a) { out.push(b(a.qty + " × " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
+    out.push("", "SCOPE");
+    if (s.arch) {
+      out.push(b(state.fronts === "tower" ? "Cut in and mount L/R in-wall speakers flanking the display at ear height; aim toward main seat" : "Cut in L/R in-ceiling speakers above the display wall; aim pivoting drivers toward main seat"));
+      if (state.around >= 3) out.push(b("Cut in center in-wall LCR below (or above) the display; aim toward main seat"));
+    } else {
+      out.push(b(state.fronts === "tower" ? "Place L/R towers flanking the display, tweeters at ear height, toe-in toward main seat" : "Place L/R bookshelf speakers on stands or console flanking the display, tweeters at ear height"));
+      if (state.around >= 3) out.push(b("Place center below the display, aim toward main seat; add a riser if the console is low"));
+    }
+    if (state.around >= 5) out.push(b(s.arch || st === "inceiling" ? "Cut in side surrounds in the ceiling beside the seating (90 to 110 degrees from main seat)" : st === "inwall" ? "Cut in side surrounds in the walls beside the seating, 2 ft above ear height" : "Mount side surrounds on brackets or stands beside the seating, about 2 ft above ear height"));
+    if (state.around >= 7) out.push(b(s.arch || st !== "series" ? "Cut in rear surrounds behind the seating (135 to 150 degrees from main seat)" : "Mount rear surrounds behind the seating on brackets or stands"));
+    if (state.heights > 0) out.push(b(ceilHeights ? "Cut in " + state.heights + " in-ceiling height speakers per Dolby Atmos layout (" + (state.heights === 4 ? "front and rear pairs" : "front pair") + ", about 45 degrees elevation from main seat); confirm joist layout first" : "Set Atmos modules on top of the fronts" + (state.heights === 4 ? " and surrounds" : "") + "; angle toward the ceiling; confirm flat ceiling under 12 ft"));
+    if (state.subs > 0) out.push(b("Place " + (state.subs === 2 ? "two subwoofers (front corner and opposite side wall or rear)" : "subwoofer in the front corner nearest the receiver") + "; sub crawl for best spot; crossover at 80 Hz"));
+    out.push(b("Run all speaker wire concealed" + (ceilHeights || st !== "series" || s.arch ? "; CL2/CL3 in-wall rated inside walls and ceiling; brush plates at exits" : " along baseboards and behind furniture; raceway where exposed") + "; label both ends"));
+    if (rc) out.push(b(rc.sonos ? "Mount and connect Sonos Amp(s); add to the customer's Sonos app; run Trueplay" : "Connect all speakers; HDMI sources into the receiver, receiver HDMI out to TV eARC; run room correction; set distances, levels, crossovers; label inputs"));
+    out.push(b("Walk the customer through the remote, input switching and the app; play a Dolby Atmos demo before leaving"));
+    out.push("", "WATCH");
+    out.push(b("Cable or streaming box and game console to receiver HDMI inputs; receiver HDMI out to the TV eARC port"));
+    out.push(b("TV apps return audio to the receiver over eARC; set TV audio output to pass-through / bitstream"));
+    out.push("", "LISTEN");
+    out.push(b((state.heights > 0 ? "Dolby Atmos and DTS:X" : "Dolby Digital and DTS surround") + " from streaming apps and disc; " + configString() + " layout"));
+    out.push(b(rc && rc.sonos ? "Music through the Sonos app, AirPlay and Spotify Connect" : "Music through the receiver's app (HEOS, MusicCast or Sonos-compatible), AirPlay, Bluetooth and Spotify Connect; stereo for two-channel music"));
+    out.push("", "DISCLAIMERS");
+    out.push(b("Equipment at Best Buy list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
+    out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText(installKind()) + " range for this kind of job)"));
+    if (ceilHeights || st !== "series" || s.arch) out.push(b("In-wall and in-ceiling work assumes drywall with accessible attic or crawl space; plaster, brick, fire blocking or blown insulation add time and may change placement"));
+    out.push(b("Customer to confirm wall type, stud and joist layout, and that any new outlets are installed by a licensed electrician"));
+    out.push(b("Mounts, back boxes, wall plates and extra wire billed as used"));
+    const warn = loadCheck(s, rc);
+    if (warn) out.push(b(warn.html.replace(/<[^>]+>/g, "")));
+    return out.join("\n");
+  }
+  function copyText(text, msg) {
+    const done = function () { toast(msg || "List copied"); };
     const fallback = function () {
       const ta = $("clip"); ta.value = text; ta.classList.remove("offscreen"); ta.focus(); ta.select();
       try { document.execCommand("copy"); done(); } catch (e) { toast("Select the text and copy"); }
@@ -616,6 +798,11 @@
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
   }
   $("copyBtn").addEventListener("click", function () { copyText(listText()); });
+  $("skuBtn").addEventListener("click", function () { copyText(skuText(), "SKUs copied"); });
+  $("sowBtn").addEventListener("click", function () { $("sowRoom").value = state.room || ""; $("sowText").value = sowText(); $("sowCard").hidden = false; $("sowCard").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  $("sowClose").addEventListener("click", function () { $("sowCard").hidden = true; });
+  $("sowRoom").addEventListener("input", function () { state.room = $("sowRoom").value; persist(); $("sowText").value = sowText(); });
+  $("sowCopy").addEventListener("click", function () { copyText(sowText(), "SOW copied"); });
 
   render();
   if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
