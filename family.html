@@ -36,31 +36,22 @@
 
   <section>
     <p class="eyebrow">Speaker family builder</p>
-    <h2>Pick the series, size the build, pull the set.</h2>
-    <p class="muted">Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by Best Buy. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
+    <h2>Budget, build size, brand. Pull the set.</h2>
+    <p class="muted">Start with what the customer wants to spend, size the build, and the app shows which brands can do it for the money, with the system total on every card. Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by Best Buy. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
   </section>
 
   <section>
     <div class="ctl">
-      <span>Price level</span>
-      <div class="chips" id="tierChips">
-        <button type="button" data-v="all" aria-pressed="true">All</button>
-        <button type="button" data-v="value" aria-pressed="false">Value</button>
-        <button type="button" data-v="mid" aria-pressed="false">Mid</button>
-        <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+      <span>What the customer wants to spend, whole system</span>
+      <div class="chips" id="budgetChips">
+        <button type="button" data-v="all" aria-pressed="true">No limit</button>
+        <button type="button" data-v="b1" aria-pressed="false">Up to $1,000</button>
+        <button type="button" data-v="b2" aria-pressed="false">Up to $2,500</button>
+        <button type="button" data-v="b3" aria-pressed="false">Up to $6,000</button>
+        <button type="button" data-v="b4" aria-pressed="false">Up to $12,000</button>
       </div>
-    </div>
-    <div class="ctl">
-      <span>Type</span>
-      <div class="chips" id="formChips">
-        <button type="button" data-v="all" aria-pressed="true">All</button>
-        <button type="button" data-v="box" aria-pressed="false">Towers and bookshelf</button>
-        <button type="button" data-v="arch" aria-pressed="false">In-wall and in-ceiling</button>
-      </div>
-    </div>
-    <div class="ctl">
-      <span>Series</span>
-      <div class="series" id="seriesList"></div>
+      <label class="maxlbl">Or type a ceiling <input id="budgetMax" type="number" inputmode="numeric" min="0" step="100" placeholder="e.g. 4000"></label>
+      <p class="muted small" id="budgetNote">Speakers, the matched receiver and the cables below, for the build size you pick next.</p>
     </div>
   </section>
 
@@ -111,6 +102,35 @@
         <button type="button" data-v="1" aria-pressed="true">1</button>
         <button type="button" data-v="2" aria-pressed="false">2</button>
       </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="ctl" id="brandCtl" hidden>
+      <span>Brands that build it for the money</span>
+      <div class="chips" id="brandChips"></div>
+    </div>
+    <div class="ctl">
+      <span>Price level</span>
+      <div class="chips" id="tierChips">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="value" aria-pressed="false">Value</button>
+        <button type="button" data-v="mid" aria-pressed="false">Mid</button>
+        <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span>Type</span>
+      <div class="chips" id="formChips">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="box" aria-pressed="false">Towers and bookshelf</button>
+        <button type="button" data-v="arch" aria-pressed="false">In-wall and in-ceiling</button>
+      </div>
+    </div>
+    <div class="ctl">
+      <span id="seriesLabel">Series</span>
+      <div class="series" id="seriesList"></div>
+      <p class="muted small" id="overNote" hidden></p>
     </div>
   </section>
 
@@ -417,7 +437,9 @@
   const IMG = window.SF_IMG;
   const SALES = window.SF_SALES;
   const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
-    acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "" };
+    acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all" };
+  // Budget ceilings for the whole system (speakers + matched receiver + cables). The Finder's budget answer deep-links to the same keys.
+  const BUDGETS = { b1: 1000, b2: 2500, b3: 6000, b4: 12000 };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
@@ -438,8 +460,11 @@
       if ([0, 1, 2].indexOf(subs) >= 0) state.subs = subs;
       if ([0, 2, 4].indexOf(heights) >= 0) state.heights = heights;
     }
+    const bq = q.get("budget");
+    if (bq && (bq === "all" || BUDGETS[bq])) { state.budget = bq; state.max = 0; state.brand = "all"; }
     const tier = q.get("tier");
-    if (tier && ["value", "mid", "premium"].indexOf(tier) >= 0) {
+    if (bq && BUDGETS[bq]) state.tier = "all"; // a real ceiling does the filtering; every price level that fits should show
+    else if (tier && ["value", "mid", "premium"].indexOf(tier) >= 0) {
       state.tier = tier;
       const cur = SERIES.find(function (s) { return s.id === state.series; });
       if (!cur || cur.tier !== tier) state.series = SERIES.find(function (s) { return s.tier === tier; }).id;
@@ -458,6 +483,14 @@
     return sync;
   }
   const syncTier = chips("tierChips", "tier", false);
+  const syncBudget = chips("budgetChips", "budget", false);
+  $("budgetChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.max = 0; $("budgetMax").value = ""; state.brand = "all"; persist(); render(); } });
+  // Typed ceiling: apply as they type (debounced) so a tap elsewhere right after does not land on a re-rendered page.
+  function applyMax() { const v = Math.max(0, parseInt($("budgetMax").value, 10) || 0); if (v === state.max) return; state.max = v; if (v) state.budget = "all"; state.brand = "all"; persist(); render(); }
+  $("budgetMax").addEventListener("input", function () { clearTimeout(applyMax.t); applyMax.t = setTimeout(applyMax, 350); });
+  $("budgetMax").addEventListener("change", function () { clearTimeout(applyMax.t); applyMax(); });
+  $("brandChips").addEventListener("click", function (e) { const b = e.target.closest("button"); if (!b) return; state.brand = b.dataset.v; persist(); render(); });
+  function budgetCap() { return state.max > 0 ? state.max : (BUDGETS[state.budget] || 0); }
   const syncForm = chips("formChips", "form", false);
   const syncFronts = chips("frontsChips", "fronts", false);
   const syncAround = chips("aroundChips", "around", true);
@@ -466,8 +499,11 @@
   const syncHeightType = chips("heightTypeChips", "heightType", false);
   const syncSubs = chips("subsChips", "subs", true);
   // Receiver level: "auto" follows the series' price level until a chip is tapped.
-  function avrTier() { return state.avr === "auto" ? currentSeries().tier : state.avr; }
+  function tierFor(s) { return state.avr === "auto" ? s.tier : state.avr; }
+  function avrTier() { return tierFor(currentSeries()); }
   function currentSeries() { return SERIES.find(function (x) { return x.id === state.series; }); }
+  // The whole-system price for any family at the current build size: speakers, the matched receiver, and the cables that are switched on.
+  function systemTotal(s) { const r = build(s); const rc = receiver(s); return r.total + (rc ? rc.total : 0) + accTotal(accessories(r, rc)); }
   const avrBtns = $("avrChips").querySelectorAll("button");
   const syncAvr = function () { Array.prototype.forEach.call(avrBtns, function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === avrTier())); }); };
   Array.prototype.forEach.call(avrBtns, function (b) { b.addEventListener("click", function () { state.avr = b.dataset.v; persist(); render(); }); });
@@ -475,27 +511,57 @@
 
   function renderSeries() {
     const list = $("seriesList");
-    const shown = SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "all" || (state.form === "arch") === !!s.arch); });
-    if (!shown.length) { list.innerHTML = "<p class='muted small'>No families match both filters.</p>"; return; }
+    const cap = budgetCap();
+    let pool = SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "all" || (state.form === "arch") === !!s.arch); });
+    pool.forEach(function (s) { s.sys = systemTotal(s); });
+    let fits = pool, over = [];
+    if (cap) {
+      fits = pool.filter(function (s) { return s.sys <= cap; }).sort(function (a, b) { return b.sys - a.sys; });
+      over = pool.filter(function (s) { return s.sys > cap; }).sort(function (a, b) { return a.sys - b.sys; }).slice(0, 4);
+    }
+    // brands that can build it for the money
+    const brands = [];
+    fits.forEach(function (s) { if (brands.indexOf(s.brand) < 0) brands.push(s.brand); });
+    if (state.brand !== "all" && brands.indexOf(state.brand) < 0) state.brand = "all";
+    $("brandCtl").hidden = !cap;
+    if (cap) {
+      $("brandChips").innerHTML = "<button type='button' data-v='all' aria-pressed='" + (state.brand === "all") + "'>All (" + fits.length + ")</button>" +
+        brands.map(function (b) { const n = fits.filter(function (s) { return s.brand === b; }).length; return "<button type='button' data-v='" + esc(b) + "' aria-pressed='" + (state.brand === b) + "'>" + esc(b) + (n > 1 ? " (" + n + ")" : "") + "</button>"; }).join("");
+    }
+    const shown = state.brand === "all" ? fits : fits.filter(function (s) { return s.brand === state.brand; });
+    $("seriesLabel").textContent = cap ? "Series that fit, closest to the budget first" : "Series";
+    $("budgetNote").textContent = cap
+      ? fits.length + " of " + pool.length + " families build a " + configString() + " for " + money(cap) + " or less" + (fits.length ? "." : ". Try bookshelf fronts, fewer speakers, one sub, or a higher ceiling.")
+      : "Speakers, the matched receiver and the cables below, for the build size you pick next.";
+    $("overNote").hidden = !(cap && over.length);
+    $("overNote").innerHTML = cap && over.length ? "Just over: " + over.map(function (s) { return "<button type='button' class='btn link' data-pick='" + s.id + "'>" + esc(s.brand + " " + s.series) + " " + money(s.sys) + "</button>"; }).join(" · ") : "";
+    if (!shown.length) { list.innerHTML = "<p class='muted small'>" + (cap ? "Nothing builds this size for " + money(cap) + ". Change the size above or raise the ceiling." : "No families match both filters.") + "</p>"; return; }
     if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
     list.innerHTML = shown.map(function (s) {
       const q = (window.SF_QUAL || {})[s.id];
       const dots = function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
       const mini = q ? "<span class='mini'><span>Detail</span>" + dots(q.detail) + "<span>Bass</span>" + dots(q.bass) + "<span>Dynamics</span>" + dots(q.dyn) + "</span>" : "";
+      const room = cap ? cap - s.sys : 0;
       return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
         (IMG ? IMG.lead(s.id) : "") + "<span class='txt'>" +
         "<span class='tier'>" + esc(s.tier) + (s.arch ? " · in-wall / in-ceiling" : "") + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
+        "<span class='sys'>System " + money(s.sys) + " · " + configString() + (cap ? (room >= 500 ? " · " + money(room) + " under" : " · fits") : "") + "</span>" +
         (s.arch ? "<span>" + (s.frontLabels ? s.frontLabels[0] : "In-wall") + " " + money(s.tower.pair) + " pair · " + (s.frontLabels ? s.frontLabels[1] : "In-ceiling") + " " + money(s.bookshelf.pair) + " pair</span>"
                 : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + mini + "</span></button>";
     }).join("");
   }
+  $("overNote").addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-pick]"); if (!b) return;
+    state.series = b.dataset.pick; state.budget = "all"; state.max = 0; $("budgetMax").value = ""; state.brand = "all"; persist(); render();
+    toast("Budget cleared to show it");
+  });
   $("seriesList").addEventListener("click", function (e) {
     const b = e.target.closest(".ser"); if (!b) return;
     state.series = b.dataset.id; persist(); render();
   });
 
-  function build() {
-    const s = currentSeries();
+  function build(sArg) {
+    const s = sArg || currentSeries();
     const lines = [];
     const add = function (role, brand, model, qty, each, note, kind) { lines.push({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }); };
     // fronts
@@ -549,8 +615,8 @@
   function channels() { return state.around + state.heights; }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11].find(function (c) { return n <= c; }) || 11; }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
-  function receiver() {
-    const s = currentSeries(); const tier = avrTier(); const n = channels();
+  function receiver(sArg) {
+    const s = sArg || currentSeries(); const tier = tierFor(s); const n = channels();
     if (s.id === "sonos-arch") {
       if (tier === "none") return null;
       const amps = Math.ceil(n / 2);
@@ -631,7 +697,8 @@
   function installKind() { const s = currentSeries(); return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
 
   function render() {
-    syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs();
+    syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs(); syncBudget();
+    if (state.max > 0 && String($("budgetMax").value) !== String(state.max)) $("budgetMax").value = state.max;
     renderSeries();
     const s = SERIES.find(function (x) { return x.id === state.series; });
     const fc = $("frontsChips");

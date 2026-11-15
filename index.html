@@ -415,12 +415,14 @@
     if (state.step >= Q.length) renderResult(); else renderQuestion();
   }
 
+  // The Finder's budget answer becomes the builder's ceiling: under $1,000 / $2,500 / $6,000; "$6,000 and up" is no limit.
+  function famBudget(a) { return a.budget === "b4" ? "all" : (a.budget || "all"); }
   function famLink(tier, a, r) {
     const t = TIERS[tier];
     if (!t.fam) return null;
     const famCfg = configFor(tier, a, r.subs);
     const famFronts = (a.tv === "t3" || tier !== "avr-core") ? "tower" : "bookshelf";
-    return "family.html?cfg=" + famCfg + "&tier=" + t.fam + "&fronts=" + famFronts;
+    return "family.html?cfg=" + famCfg + "&tier=" + t.fam + "&fronts=" + famFronts + "&budget=" + famBudget(a);
   }
   function installKindFor(tier, a, r) {
     const t = TIERS[tier];
@@ -477,7 +479,7 @@
     const famTier = rec.b <= 1 ? "value" : rec.b === 2 ? "mid" : "premium";
     const famCfg = rec.path === "avr" ? rec.config : (rec.b <= 1 ? "5.1.2" : "5." + rec.subs + ".4");
     const famFronts = (a.tv === "t3" || rec.b >= 2) ? "tower" : "bookshelf";
-    $("familyLink").href = "family.html?cfg=" + famCfg + "&tier=" + famTier + "&fronts=" + famFronts;
+    $("familyLink").href = "family.html?cfg=" + famCfg + "&tier=" + famTier + "&fronts=" + famFronts + "&budget=" + famBudget(a);
     $("leadErr").hidden = true;
     $("sendRow").hidden = !lastSaved;
     show("result");
