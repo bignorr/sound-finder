@@ -57,6 +57,7 @@
         <button type="button" data-v="b2" aria-pressed="false">Up to $2,500</button>
         <button type="button" data-v="b3" aria-pressed="false">Up to $6,000</button>
         <button type="button" data-v="b4" aria-pressed="false">Up to $12,000</button>
+        <button type="button" data-v="b5" aria-pressed="false">Up to $50,000</button>
       </div>
       <label class="maxlbl">Or type a ceiling <input id="budgetMax" type="number" inputmode="numeric" min="0" step="100" placeholder="e.g. 4000"></label>
       <p class="muted small" id="budgetNote">Speakers, the matched receiver and the cables below, for the build size you pick next.</p>
@@ -150,6 +151,7 @@
         <button type="button" data-v="value" aria-pressed="false">Value</button>
         <button type="button" data-v="mid" aria-pressed="false">Mid</button>
         <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+        <button type="button" data-v="reference" aria-pressed="false">Reference</button>
       </div>
     </div>
     <div class="ctl" id="formCtl">
@@ -189,6 +191,7 @@
           <button type="button" data-v="value" aria-pressed="false">Value</button>
           <button type="button" data-v="mid" aria-pressed="false">Mid</button>
           <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+          <button type="button" data-v="reference" aria-pressed="false">Reference</button>
           <button type="button" data-v="wiim" aria-pressed="false" hidden>WiiM amp</button>
         </div>
         <p class="muted small" id="avrAuto"></p>
@@ -333,6 +336,37 @@
       tower: { m: "Ultra Evolution Tower", pair: 3600 }, bookshelf: { m: "Ultra Evolution Bookshelf", pair: 1600 }, center: { m: "Ultra Evolution Center", each: 1000 },
       surround: { m: "Ultra Evolution Nano", pair: 700 }, height: { m: "Ultra Evolution Elevation", pair: 800, kind: "speaker" },
       sub: { m: "SB-3000", each: 1100 }, subAlt: { m: "PB-3000", each: 1500 } },
+    // Reference tier: the best Best Buy itself sells (bestbuy.com, Nov 15, 2026; list prices from the product pages). Models that showed
+    // "no longer available in new condition" that day are left out: B&W 801/802 D4 and HTM81/82 D4, ML Classic ESL 9 and BalancedForce subs, KEF KF92.
+    { id: "bw-800", brand: "Bowers & Wilkins", series: "800 Series Diamond", tier: "reference", load: { ohm: 8, min: 3.0, sens: 88 },
+      tower: { m: "803 D4", pair: 27000 }, towerAlt: { m: "804 D4", pair: 16000 }, bookshelf: { m: "805 D4", pair: 10000, note: "On FS-805 D4 stands (price in Tyler)" }, stands: null,
+      center: { m: "805 D4 (third, as center)", each: 5000, note: "HTM81 D4 and HTM82 D4 showed no longer available at Best Buy Nov 15; a third 805 D4 under the screen, or HTM71 S3 ($2,200) as the step-down" },
+      surround: { m: "805 D4", pair: 10000 }, inceiling: { m: "CI800 CCM8.5 D in-ceiling", pair: 8500, note: "$4,250 each, Diamond tweeter, angled" },
+      inwall: { m: "CI800 CWM8.5 D in-wall", pair: 6500, note: "$3,250 each; CWM8.3 D 3-way is $6,300 each" },
+      sub: { m: "DB1D dual 12 in", each: 5041, note: "showed $5,040.99 against a $7,200 comp; verify" }, subAlt: { m: "DB3D dual 8 in", each: 4500 },
+      kit: "The 800 Series Diamond is the speaker Abbey Road mixes on. 803 D4 is the biggest 800 Best Buy showed live (801 and 802 D4 were marked no longer available Nov 15). 702 S3 Signature ($4,950 each) and 705 S3 Signature ($5,200 pair) sit between 700 S3 and 800 D4. Reference stands: FS-805 D4 for the 805." },
+    { id: "kef-reference", brand: "KEF", series: "Reference Meta", tier: "reference", load: { ohm: 4, min: 3.2, sens: 85 },
+      tower: { m: "Reference 5 Meta", pair: 25000 }, towerAlt: { m: "Reference 3 Meta", pair: 16000 }, bookshelf: { m: "Reference 1 Meta", pair: 10000 }, stands: { m: "S1-RF1 stands", pair: 1500 },
+      center: { m: "Reference 4 Meta", each: 9000, note: "Reference 2 Meta ($5,999.99) for a smaller screen wall" },
+      surround: { m: "Reference 1 Meta", pair: 10000 }, inceiling: { m: "Ci200RR-THX in-ceiling", pair: 2400, note: "$1,199.99 each, the THX reference ceiling" },
+      inwall: { m: "Ci5160REFM-THX in-wall", pair: 24000, note: "$11,999.99 each, the Reference Meta in the wall; Ci5160RLM-THX ($3,299.99 each) is the R-grade version" },
+      sub: { m: "KC92 dual 9 in", each: 2500 }, subAlt: { m: "Reference 8b dual 9 in", each: 7650, note: "showed $7,649.99 against $8,999.99 comp" },
+      kit: "KEF's flagship Uni-Q with the MAT absorber: the Reference 1 Meta is 85 dB and 4 ohms, so give it real power. Sold each; prices above are per pair." },
+    { id: "kef-blade", brand: "KEF", series: "Blade Meta", tier: "reference", load: { ohm: 4, min: 3.2, sens: 90 },
+      tower: { m: "Blade One Meta", pair: 35000 }, towerAlt: { m: "Blade Two Meta", pair: 28000 }, bookshelf: { m: "Reference 1 Meta", pair: 10000, note: "Blade has no bookshelf; KEF pairs it with Reference Meta" }, stands: { m: "S1-RF1 stands", pair: 1500 },
+      center: { m: "Reference 4 Meta", each: 9000, note: "KEF's own match for a Blade front pair" },
+      surround: { m: "Reference 1 Meta", pair: 10000 }, inceiling: { m: "Ci200RR-THX in-ceiling", pair: 2400, note: "$1,199.99 each" },
+      inwall: { m: "Ci5160REFM-THX in-wall", pair: 24000, note: "$11,999.99 each" },
+      sub: { m: "KC92 dual 9 in", each: 2500 }, subAlt: { m: "Reference 8b dual 9 in", each: 7650 },
+      kit: "Single Apparent Source: four force-cancelling woofers around one Uni-Q, so the whole speaker acts as a point source. The most expensive speaker on the floor and the one that sells itself in a demo." },
+    { id: "ml-esl", brand: "MartinLogan", series: "Masterpiece ESL", tier: "reference", load: { ohm: 4, min: 0.6, sens: 91 }, frontLabels: ["Big panel", "ElectroMotion ESL X"],
+      loadNote: "Electrostatic panels dip under 1 ohm at the top of the band: use a high-current amp (Marantz AMP 10, Michi, the AVR-A1H), never a budget receiver.",
+      tower: { m: "Renaissance ESL 15A", pair: 29000 }, towerAlt: { m: "Expression ESL 13A", pair: 18000 }, bookshelf: { m: "ElectroMotion ESL X", pair: 4500, note: "The smallest electrostatic tower; the ESL line has no bookshelf. Impression ESL 11A ($12,000 pair) sits between it and the Expression" }, stands: null,
+      center: { m: "Illusion ESL C34A", each: 9500, note: "Focus ESL C18 ($4,899.99) or ElectroMotion ESL C ($1,999.99) for a smaller wall" },
+      surround: { m: "Motion XT B100", pair: 1500, note: "Folded Motion tweeter voice-matches the panels; MartinLogan's own pairing" },
+      inceiling: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200, note: "$1,099.99 each" }, inwall: { m: "Tribute 5XW in-wall", pair: 7000, note: "$3,499.99 each, the Masterpiece CI in-wall; XTW6-LCR ($1,699.99 each) is the Motion XT version" },
+      sub: { m: "Depth 212 dual 12 in", each: 5500, note: "BalancedForce technology; the BalancedForce 212 and 210 showed no longer available" }, subAlt: { m: "Dynamo 800X", each: 1000 },
+      kit: "The electrostatic panel is a film the thickness of a hair driven across its whole surface: no cone, no breakup, dialogue that sounds like a person in the room. Each tower has a powered woofer section with ARC room correction. Classic ESL 9 showed no longer available Nov 15." },
     // Architectural (in-wall / in-ceiling) families. "tower" = in-wall fronts, "bookshelf" = in-ceiling fronts.
     // Every model below is sold and shipped by Best Buy; prices are what bestbuy.com showed on Nov 13, 2026, each unless the model says pair.
     { id: "jbl-ci", brand: "JBL", series: "Stage Architectural", tier: "value", arch: true,
@@ -389,6 +423,31 @@
       surround: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500 }, inceiling: { m: "CI600 CCM664 in-ceiling", pair: 950 },
       sub: { m: "DB4S", each: 2500 }, subAlt: { m: "ASW610", each: 900 },
       kit: "Heights drop to CI600 CCM664 ($475 each); swap to CCM7.5 S2 for all-700. CCM7.3 S2 3-way ceiling $2,550, CWM7.4 S2 $1,550, CWM7.3 S2 $2,800. CI800 CWM8.5D with the Diamond tweeter is $3,250 each." },
+    // Reference in-wall and in-ceiling (bestbuy.com, Nov 15, 2026).
+    { id: "bw-ci800", brand: "Bowers & Wilkins", series: "CI800 Diamond", tier: "reference", arch: true, load: { ohm: 8, min: 3.0, sens: 89 },
+      tower: { m: "CI800 CWM8.5 D in-wall", pair: 6500, note: "$3,250 each, Diamond dome tweeter; CWM8.3 D 3-way ($6,300 each) for a big screen wall" }, bookshelf: { m: "CI800 CCM8.5 D angled in-ceiling", pair: 8500, note: "$4,250 each; angled toward the seats" },
+      center: { m: "CI800 CWM8.5 D in-wall", each: 3250, note: "Same in-wall as the fronts" },
+      surround: { m: "CI800 CCM8.5 D in-ceiling", pair: 8500 }, inceiling: { m: "CI800 CCM8.5 D in-ceiling", pair: 8500 },
+      sub: { m: "DB1D dual 12 in", each: 5041 }, subAlt: { m: "DB3D dual 8 in", each: 4500 },
+      kit: "The 800 Series Diamond tweeter in the wall. CI700 S2 ($1,350 each) covers heights if the budget needs a break." },
+    { id: "kef-ci-ref", brand: "KEF", series: "Ci Reference THX", tier: "reference", arch: true, load: { ohm: 4, min: 3.2, sens: 90 },
+      tower: { m: "Ci5160REFM-THX in-wall", pair: 24000, note: "$11,999.99 each: the Reference Meta Uni-Q and four woofers in the wall. Ci5160RLM-THX ($3,299.99 each) is the R-grade step-down" }, bookshelf: { m: "Ci200RR-THX in-ceiling", pair: 2400, note: "$1,199.99 each" },
+      center: { m: "Ci5160RLM-THX in-wall", each: 3300, note: "The REFM as center if the wall allows ($11,999.99)" },
+      surround: { m: "Ci200RR-THX in-ceiling", pair: 2400 }, inceiling: { m: "Ci200RR-THX in-ceiling", pair: 2400 },
+      sub: { m: "KC92 dual 9 in", each: 2500 }, subAlt: { m: "Reference 8b dual 9 in", each: 7650 },
+      kit: "THX Ultra certified front stage with nothing showing. Ci200RR-THX ceilings carry the Uni-Q overhead." },
+    { id: "ml-ci-ref", brand: "MartinLogan", series: "Masterpiece CI", tier: "reference", arch: true, load: { ohm: 4, sens: 90 },
+      tower: { m: "Tribute 5XW in-wall", pair: 7000, note: "$3,499.99 each, the XT Folded Motion tweeter with five woofers; Icon 3XW ($2,199.99 each) below it" }, bookshelf: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200, note: "$1,099.99 each" },
+      center: { m: "Motion XT CI XTW6-LCR in-wall", each: 1700, note: "Dual 6.5 in LCR; a third Tribute 5XW ($3,499.99) if the wall allows" },
+      surround: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 }, inceiling: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 },
+      sub: { m: "Depth 212 dual 12 in", each: 5500 }, subAlt: { m: "Dynamo 800X", each: 1000 },
+      kit: "MartinLogan's top in-wall line; Statement 40XW and Monument 7XW did not show on bestbuy.com Nov 15." },
+    { id: "sonance-ref", brand: "Sonance", series: "Reference", tier: "reference", arch: true, frontLabels: ["R2 in-wall", "R1 in-wall"],
+      tower: { m: "Reference R2 3-way in-wall", pair: 6600, note: "$3,300 each, Sonance's flagship in-wall" }, bookshelf: { m: "Reference R1 3-way in-wall", pair: 3300, note: "$1,650 each" },
+      center: { m: "Reference R1 in-wall", each: 1650 },
+      surround: { m: "Reference R1 in-wall (R1SUR is the dedicated surround; price in Tyler)", pair: 3300 }, inceiling: { m: "Reference R1C-SUR in-ceiling (price in Tyler)", pair: 3300, note: "Listed at Best Buy without a rendered price; verify" },
+      sub: { m: "SVS PB17-Ultra R|Evolution", each: 3000, brand: "SVS" }, subAlt: { m: "REL Carbon Special", each: 4999, brand: "REL" },
+      kit: "The Sonance line above Visual Performance: 3-way in-walls built as a front stage, not a ceiling speaker. No Sonance reference sub at Best Buy; pair with SVS or REL." },
     // Sonance. Prices are what bestbuy.com showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
     { id: "sonance-mag", brand: "Sonance", series: "Mag Series", tier: "value", arch: true, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
       tower: { m: "MAG8R 8 in in-ceiling (pair)", pair: 249, note: "Comp. value $1,099; sold in pairs only" }, bookshelf: { m: "MAG6R 6.5 in in-ceiling (pair)", pair: 149, note: "Comp. value $749; sold in pairs only" },
@@ -438,6 +497,7 @@
     value: [{ brand: "SVS", m: "SB-1000 Pro", each: 600 }, { brand: "Polk Audio", m: "HTS 12", each: 500 }],
     mid: [{ brand: "SVS", m: "PB-2000 Pro", each: 1000 }, { brand: "REL", m: "T/7x", each: 1100 }, { brand: "MartinLogan", m: "Dynamo 800X", each: 1000 }],
     premium: [{ brand: "SVS", m: "PB-3000", each: 1500 }, { brand: "REL", m: "T/9x", each: 1450 }, { brand: "MartinLogan", m: "Dynamo 800X", each: 1000 }],
+    reference: [{ brand: "SVS", m: "PB17-Ultra R|Evolution", each: 3000 }, { brand: "REL", m: "Carbon Special", each: 4999 }, { brand: "MartinLogan", m: "Depth 212", each: 5500 }],
   };
   // Receivers Best Buy sells and ships, one per price level for each channel count. Prices are bestbuy.com list on Nov 13, 2026.
   // ohm4: rated for 4-ohm speakers per the maker's manual (Denon, Marantz, Onkyo, Pioneer: 4 to 16 ohms). The Sony STR-DH590 is 6 to 16 ohms.
@@ -445,23 +505,28 @@
     2: { need: "2 amplified channels",
       value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, ohm4: false, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later" },
       mid: { brand: "Denon", m: "DRA-900H 2.2-ch stereo receiver", price: 799, why: "True two-channel, 100 W, 8K HDMI, HEOS streaming, two sub outs" },
-      premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "HDAM amplification for a premium stereo pair, with five channels in reserve for a full theater" } },
+      premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "HDAM amplification for a premium stereo pair, with five channels in reserve for a full theater" },
+      reference: { brand: "Marantz", m: "Model 10 2.0-ch integrated amplifier", price: 15000, why: "250 W x 2 into 8 ohms, the flagship Marantz integrated; Michi X5 Series 2 ($9,499, 350 W x 2) and X3 Series 2 ($7,499) are the Rotel alternatives" } },
     5: { need: "5 amplified channels",
       value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration" },
       mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", price: 649, why: "8K HDMI, HEOS, Audyssey room correction, phono input, Alexa" },
-      premium: { brand: "Marantz", m: "Cinema 70s 7.2-ch slim receiver", price: 1300, why: "Slim Marantz with Dolby Atmos and two spare channels for heights" } },
+      premium: { brand: "Marantz", m: "Cinema 70s 7.2-ch slim receiver", price: 1300, why: "Slim Marantz with Dolby Atmos and two spare channels for heights" },
+      reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", price: 7199, why: "150 W x 15, four independent sub outs, Dirac-ready; the one receiver that belongs under reference speakers. Marantz AV 10 + AMP 10 separates ($16,000) above it" } },
     7: { need: "7 amplified channels",
       value: { brand: "Denon", m: "AVR-S770H 7.2-ch receiver", price: 749, why: "Dolby Atmos and DTS:X, 8K HDMI, HEOS; promoted around $599 to $649 most weeks" },
       mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", price: 1299, why: "95 W, pre-outs, Audyssey MultEQ XT; the step up in amplifier quality" },
-      premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "100 W HDAM amplification and the Marantz voicing for music-first rooms" } },
+      premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "100 W HDAM amplification and the Marantz voicing for music-first rooms" },
+      reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", price: 7199, why: "150 W x 15 with room to grow to 7.4.6; Arcam AVR31 ($6,900, 180 W x 7) is the two-channel-purist alternative; Marantz AV 10 + AMP 10 ($16,000) for separates" } },
     9: { need: "9 amplified channels",
       value: { brand: "Onkyo", m: "TX-RZ30 9.2-ch receiver", price: 1000, why: "Dirac Live room correction included, IMAX Enhanced, THX; comp value $1,249.99" },
       mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", price: 1799, why: "Four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse. Denon lists it at $1,399, so ask for a match" },
-      premium: { brand: "Marantz", m: "Cinema 50 9.4-ch receiver", price: 2800, why: "110 W HDAM, 9.4 channels; the premium pick under B&W, KEF R and Motion XT" } },
+      premium: { brand: "Marantz", m: "Cinema 50 9.4-ch receiver", price: 2800, why: "110 W HDAM, 9.4 channels; the premium pick under B&W, KEF R and Motion XT" },
+      reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", price: 16000, why: "$8,000 + $8,000: 15.4 processing, 200 W x 16 at 8 ohms, high-current enough for electrostatics and 4-ohm Blades. Denon AVR-A1H ($7,199) if it has to be one box" } },
     11: { need: "11 amplified channels",
       value: { brand: "Pioneer Elite", m: "VSX-LX805 11.4-ch receiver", price: 1699, why: "150 W x 11, Dirac Live, balanced pre-outs; comp value $2,999" },
       mid: { brand: "Denon", m: "AVR-X6800H 11.4-ch receiver", price: 3799, why: "Made in Japan, 140 W x 11; drives a 7.2.4 with no outboard amp" },
-      premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", price: 4800, why: "The reference Marantz: 140 W x 11, 13.4 pre-outs, HDAM SA-2 modules" } },
+      premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", price: 4800, why: "The reference Marantz: 140 W x 11, 13.4 pre-outs, HDAM SA-2 modules" },
+      reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", price: 16000, why: "$8,000 + $8,000: the top of the Marantz line, 200 W x 16, drives a 7.4.4 with channels to spare. Denon AVR-A1H ($7,199, 15 channels) is the one-box option" } },
   };
   const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
@@ -480,7 +545,7 @@
   const BARS = window.SF_BARS || [];
   BARS.forEach(function (b) { b.bar = true; b.series = b.m; });
   // Budget ceilings for the whole system (speakers + matched receiver + cables). The Finder's budget answer deep-links to the same keys.
-  const BUDGETS = { b1: 1000, b2: 2500, b3: 6000, b4: 12000 };
+  const BUDGETS = { b1: 1000, b2: 2500, b3: 6000, b4: 12000, b5: 50000 };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
@@ -507,7 +572,7 @@
     if (bq && (bq === "all" || BUDGETS[bq])) { state.budget = bq; state.max = 0; state.brand = "all"; }
     const tier = q.get("tier");
     if (bq && BUDGETS[bq]) state.tier = "all"; // a real ceiling does the filtering; every price level that fits should show
-    else if (tier && ["value", "mid", "premium"].indexOf(tier) >= 0) {
+    else if (tier && ["value", "mid", "premium", "reference"].indexOf(tier) >= 0) {
       state.tier = tier;
       const cur = SERIES.find(function (s) { return s.id === state.series; });
       if (!cur || cur.tier !== tier) state.series = SERIES.find(function (s) { return s.tier === tier; }).id;
@@ -533,12 +598,13 @@
   const syncBarRears = chips("barRearsChips", "barRears", true);
   const syncBarMount = chips("barMountChips", "barMount", false);
   function isBar() { return state.kind === "bar" && BARS.length > 0; }
-  $("budgetChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.max = 0; $("budgetMax").value = ""; state.brand = "all"; persist(); render(); } });
+  function pickTop() { state.series = ""; state.bar = ""; }
+  $("budgetChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.max = 0; $("budgetMax").value = ""; state.brand = "all"; pickTop(); persist(); render(); } });
   // Typed ceiling: apply as they type (debounced) so a tap elsewhere right after does not land on a re-rendered page.
-  function applyMax() { const v = Math.max(0, parseInt($("budgetMax").value, 10) || 0); if (v === state.max) return; state.max = v; if (v) state.budget = "all"; state.brand = "all"; persist(); render(); }
+  function applyMax() { const v = Math.max(0, parseInt($("budgetMax").value, 10) || 0); if (v === state.max) return; state.max = v; if (v) state.budget = "all"; state.brand = "all"; pickTop(); persist(); render(); }
   $("budgetMax").addEventListener("input", function () { clearTimeout(applyMax.t); applyMax.t = setTimeout(applyMax, 350); });
   $("budgetMax").addEventListener("change", function () { clearTimeout(applyMax.t); applyMax(); });
-  $("brandChips").addEventListener("click", function (e) { const b = e.target.closest("button"); if (!b) return; state.brand = b.dataset.v; persist(); render(); });
+  $("brandChips").addEventListener("click", function (e) { const b = e.target.closest("button"); if (!b) return; state.brand = b.dataset.v; pickTop(); persist(); render(); });
   function budgetCap() { return state.max > 0 ? state.max : (BUDGETS[state.budget] || 0); }
   const syncForm = chips("formChips", "form", false);
   const syncFronts = chips("frontsChips", "fronts", false);
@@ -550,7 +616,7 @@
   // Receiver level: "auto" follows the series' price level until a chip is tapped.
   function tierFor(s) { return state.avr === "auto" || state.avr === "wiim" ? s.tier : state.avr; }
   function wiimOK() { return !!WIIM && channels() <= 2 && !currentSeries().bar && currentSeries().id !== "sonos-arch"; }
-  function wiimPick(s) { const lvl = state.wiim === "auto" ? s.tier : state.wiim; return WIIM[lvl] || (lvl === "mid" ? WIIM.premium : null) || WIIM.premium || WIIM.value; }
+  function wiimPick(s) { const lvl = state.wiim === "auto" ? s.tier : state.wiim; return WIIM[lvl] || (lvl === "mid" || lvl === "reference" ? WIIM.premium : null) || WIIM.premium || WIIM.value; }
   function avrTier() { return tierFor(currentSeries()); }
   function currentSeries() {
     if (isBar()) return BARS.find(function (x) { return x.id === state.bar; }) || BARS[0];
@@ -618,8 +684,7 @@
         (IMG ? IMG.lead(s.id) : "") + "<span class='txt'>" +
         "<span class='tier'>" + esc(s.tier) + (s.arch ? " · in-wall / in-ceiling" : "") + "</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
         "<span class='sys'>System " + money(s.sys) + " · " + configString() + (cap ? (room >= 500 ? " · " + money(room) + " under" : " · fits") : "") + "</span>" +
-        (s.arch ? "<span>" + (s.frontLabels ? s.frontLabels[0] : "In-wall") + " " + money(s.tower.pair) + " pair · " + (s.frontLabels ? s.frontLabels[1] : "In-ceiling") + " " + money(s.bookshelf.pair) + " pair</span>"
-                : "<span>Towers " + money(s.tower.pair) + " pair · Bookshelf " + money(s.bookshelf.pair) + " pair</span>") + mini + "</span></button>";
+        "<span>" + (s.frontLabels ? s.frontLabels[0] : s.arch ? "In-wall" : "Towers") + " " + money(s.tower.pair) + " pair · " + (s.frontLabels ? s.frontLabels[1] : s.arch ? "In-ceiling" : "Bookshelf") + " " + money(s.bookshelf.pair) + " pair</span>" + mini + "</span></button>";
     }).join("");
   }
   $("overNote").addEventListener("click", function (e) {
@@ -651,7 +716,7 @@
       const f = state.fronts === "tower" ? s.tower : s.bookshelf;
       add("Front left + right", s.brand, f.m, 2, f.pair / 2, f.note || (state.fronts === "tower" && !s.frontLabels ? "In-wall, flanking the screen; installer-mounted" : "In-ceiling above the screen wall; aim the tweeters at the seats"), "arch");
     } else if (state.fronts === "tower") add("Front left + right", s.brand, s.tower.m, 2, s.tower.pair / 2, s.towerAlt ? "Smaller room: " + s.towerAlt.m + " (" + money(s.towerAlt.pair) + " pair)" : "", "tower");
-    else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, "Needs stands or a console; see Sanus line below", "bookshelf");
+    else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, s.bookshelf.note || (s.stands === null ? "" : "Needs stands or a console; see the stands line below"), s.frontLabels ? "tower" : "bookshelf");
     // center
     if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, s.center.note || (s.arch ? "In-wall LCR under or above the screen; same driver as the fronts" : "Same series as the fronts so dialog matches"), s.arch ? "arch" : "center");
     // surrounds: the series' own, or the brand's in-wall / in-ceiling (a Klipsch swap when the brand has none at Best Buy)
@@ -682,12 +747,12 @@
     }
     // subs
     if (state.subs > 0) {
-      const picks = SUB_PICKS[s.tier];
+      const picks = SUB_PICKS[s.tier] || SUB_PICKS.premium;
       add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", s.sub.brand || s.brand, s.sub.m, state.subs, s.sub.each,
         (s.subAlt ? "Series alternative: " + s.subAlt.m + " (" + money(s.subAlt.each) + (s.subAlt.note ? "; " + s.subAlt.note : "") + "). " : "") + "Also fits: " + picks.map(function (p) { return p.brand + " " + p.m; }).join(", "), "sub");
     }
     // stands
-    if (!s.arch && state.fronts === "bookshelf") add("Speaker stands", "Sanus", "BF31 / HTBS stands", 1, 150, "Pair, for bookshelf fronts; optional", "stand");
+    if (!s.arch && state.fronts === "bookshelf" && s.stands !== null) { const st = s.stands || { m: "BF31 / HTBS stands", pair: 150 }; add("Speaker stands", s.stands ? s.brand : "Sanus", st.m, 1, st.pair, (s.stands ? "Pair, the maker's own stands" : "Pair, for bookshelf fronts; optional") + (st.note ? "; " + st.note : ""), "stand"); }
     if (!s.arch && state.around >= 5 && !s.surround && surroundType() === "series") add("Surround stands or brackets", "Sanus", "HTBS stands / WSS mounts", 1, 100, "Pair; optional", "stand");
     return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
   }
@@ -709,7 +774,7 @@
       const w = wiimPick(s);
       return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8 };
     }
-    const key = avrNeedKey(n); const a = AVRS[key][tier];
+    const key = avrNeedKey(n); const a = AVRS[key][tier] || AVRS[key].premium;
     return { role: "Receiver · " + tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: AVRS[key].need, tier: tier, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: a.ohm4 !== false };
   }
   // Does this series need a receiver rated for 4 ohms, or real power? Returns the warning to show, if any.
@@ -726,9 +791,11 @@
       if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The WiiM " + esc(rc.short) + " is rated for 4 ohms and roughly doubles its power into them, so this is a good match." + (lowSens && rc.tier !== "premium" ? " It is also only " + L.sens + " dB: step up to the " + esc(ultra) + " for a bigger room." : "") };
       return { bad: rc.tier === "value", html: "<b>Power-hungry.</b> " + esc(name) + " is " + L.sens + " dB. " + (rc.tier === "premium" ? "The " + esc(rc.short) + " has the headroom for it." : "On the WiiM " + esc(rc.short) + " it will run out of steam in a big room; pick the " + esc(ultra) + ".") };
     }
+    const extra = s.loadNote ? " " + esc(s.loadNote) : "";
     if (needs4 && rc && !rc.ohm4) return { bad: true, html: "<b>Receiver mismatch.</b> " + esc(name) + " is a 4-ohm load (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " is rated for 6 to 16 ohms. Pick the Mid or Premium receiver; every Denon, Marantz, Onkyo and Pioneer here is rated 4 to 16 ohms." };
-    if (needs4 && !rc) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms, and set its speaker-impedance menu to 4 ohms." };
-    if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " handles it; set the speaker-impedance menu to 4 ohms during setup." + (lowSens ? " It is also only " + L.sens + " dB, so do not go below the Mid receiver in a big room." : "") };
+    if (needs4 && !rc) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms, and set its speaker-impedance menu to 4 ohms." + extra };
+    if (needs4 && s.loadNote && rc.tier !== "reference") return { bad: true, html: "<b>Demanding load</b> (" + esc(spec) + ")." + extra + " Pick the Reference electronics." };
+    if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " handles it; set the speaker-impedance menu to 4 ohms during setup." + (lowSens ? " It is also only " + L.sens + " dB, so do not go below the Mid receiver in a big room." : "") + extra };
     return { bad: false, html: "<b>Power-hungry.</b> " + esc(name) + " is " + L.sens + " dB, among the least sensitive here. It sounds its best on the Mid or Premium receiver" + (rc && rc.tier === "value" ? ", not the " + esc(rc.brand + " " + rc.short) : "") + "." };
   }
   function lineSku(l) { if (l.nosku) return null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }

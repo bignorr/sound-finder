@@ -2,7 +2,8 @@
 // Prices and SKUs are what bestbuy.com showed on Nov 15, 2026 (holiday pricing was rolling in; "comp" is the regular or comparable value).
 // price = the bar as sold. subIn / rearsIn = ships in the box. sub / rears = the brand's own wireless add-on when it does not.
 // hdmi = number of HDMI inputs on the bar (0 = eARC only, sources stay on the TV; left out = not confirmed, check the spec sheet).
-// Not sold new at Best Buy on Nov 15: Bowers & Wilkins Panorama 3, Denon Home 550 / DHT bars, Polk MagniFi Max AX, Yamaha True X 40A, Marantz (no bar).
+// Not sold new at Best Buy on Nov 15: Bowers & Wilkins Panorama 3, Denon Home 550 / DHT bars, Polk MagniFi Max AX, Yamaha True X 40A, Marantz (no bar), Bang & Olufsen.
+// Nakamichi Dragon and Shockwafe showed "Unavailable from this seller" on 8-digit marketplace-style listings, so they are out until Tyler shows a Best Buy SKU.
 window.SF_BARS = [
   // ---- TV brands ----
   { id: "samsung-q990h", brand: "Samsung", m: "HW-Q990H 11.1.4 Q-Series", tier: "premium", price: 1499, comp: "Reg. $1,999.99; verify today's price", sku: "6670431",
@@ -79,12 +80,9 @@ window.SF_BARS = [
     cfg: "7.1.4", atmos: true, subIn: false, rearsIn: false,
     sub: { m: "AMBEO Sub", price: 850, sku: "6520426" },
     tech: "The Max's virtualization in a smaller bar with dual built-in woofers. Same AMBEO Sub; no rears offered." },
-  { id: "nakamichi-dragon", brand: "Nakamichi", m: "DRAGON 11.4.6", tier: "premium", price: 2288, comp: "Comp $3,299.99; seller line not shown Nov 15, confirm it is sold by Best Buy", sku: "10207946",
-    cfg: "11.4.6", atmos: true, subIn: true, rearsIn: true, hdmi: 3, pass: "4K/120 (verify)",
-    tech: "Two 8 in subs and real surround speakers with their own height drivers, 3,000 W; the closest a bar system gets to separates. DTS:X Pro." },
-  { id: "nakamichi-shockwafe", brand: "Nakamichi", m: "Shockwafe Wireless 11.2.6", tier: "premium", price: 1677, comp: "Comp $2,499.99; confirm it is sold by Best Buy", sku: "10513210",
-    cfg: "11.2.6", atmos: true, subIn: true, rearsIn: true, hdmi: 2,
-    tech: "Dual 10 in subs and discrete rears with height drivers in the box, 2,300 W. The Dragon's step-down." },
+  { id: "devialet-dione", brand: "Devialet", m: "Dione", tier: "reference", price: 2399, sku: "6505720",
+    cfg: "5.1.2", atmos: true, subIn: false, rearsIn: false, hdmi: 0,
+    tech: "Seventeen drivers including eight woofers in one sealed bar, a center sphere that rotates so it works on a console or on the wall, and Devialet's SAM bass processing. No sub, no rears offered: it is the whole system, and the most expensive bar Best Buy sells." },
   { id: "yamaha-x50a", brand: "Yamaha", m: "True X Bar 50A", tier: "value", price: 500, sku: "10110808",
     cfg: "4.1.2 with sub", atmos: true, subIn: true, rearsIn: false,
     tech: "Sub in the box and Yamaha's Clear Voice; the battery True X rear speaker is no longer sold new at Best Buy, so quote it bar and sub." },

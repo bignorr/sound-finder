@@ -77,7 +77,7 @@
   function monthlyHtml(total, cls) {
     const p = plan(total);
     if (!p) return "";
-    return "<div class='fin " + (cls || "") + "'><b>" + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the Best Buy card<br><em>equal payments on " + money(total) + " · confirm this week's terms</em></span></div>";
+    return "<div class='fin " + (cls || "") + "'><b>" + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the Best Buy card<br><em>equal payments on " + money(total) + " · confirm this week's terms" + (total > 20000 ? " · a purchase this size depends on the customer's credit line" : "") + "</em></span></div>";
   }
 
   // ---------- install ----------

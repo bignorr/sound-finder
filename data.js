@@ -3,6 +3,14 @@
 // imaging = how well it holds the picture off-axis; build = cabinet, finish and driver materials.
 // form: box (towers and bookshelf) or arch (in-wall and in-ceiling). best: the jobs each family wins.
 window.SF_QUAL = {
+  "bw-800":        { detail: 5, bass: 5, dyn: 5, imaging: 5, build: 5, form: "box",  best: ["Reference rooms", "Music", "The best Best Buy sells"] },
+  "kef-blade":     { detail: 5, bass: 5, dyn: 5, imaging: 5, build: 5, form: "box",  best: ["Imaging", "Big rooms", "Showpiece"] },
+  "kef-reference": { detail: 5, bass: 5, dyn: 4, imaging: 5, build: 5, form: "box",  best: ["Wide seating", "Reference theater", "Music"] },
+  "ml-esl":        { detail: 5, bass: 5, dyn: 4, imaging: 5, build: 5, form: "box",  best: ["Dialogue", "Music", "Two-channel rooms"] },
+  "bw-ci800":      { detail: 5, bass: 4, dyn: 4, imaging: 4, build: 5, form: "arch", best: ["Hidden 800 D4 room", "Diamond tweeter"] },
+  "kef-ci-ref":    { detail: 5, bass: 4, dyn: 4, imaging: 5, build: 5, form: "arch", best: ["THX reference in-wall", "Overhead imaging"] },
+  "ml-ci-ref":     { detail: 5, bass: 4, dyn: 4, imaging: 4, build: 5, form: "arch", best: ["Hidden Masterpiece room", "Detail"] },
+  "sonance-ref":   { detail: 4, bass: 4, dyn: 4, imaging: 3, build: 5, form: "arch", best: ["Sonance front stage", "Install jobs"] },
   "bw-700":        { detail: 5, bass: 4, dyn: 4, imaging: 4, build: 5, form: "box",  best: ["Music", "Reference rooms", "Finish"] },
   "kef-r":         { detail: 5, bass: 4, dyn: 4, imaging: 5, build: 5, form: "box",  best: ["Wide seating", "Music", "Imaging"] },
   "ml-xt":         { detail: 5, bass: 4, dyn: 5, imaging: 4, build: 4, form: "box",  best: ["Big rooms", "Movies", "Detail"] },

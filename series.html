@@ -81,6 +81,7 @@
     <div class="ctl"><span>Tier</span>
       <div class="chips" id="tierChips">
         <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="Reference" aria-pressed="false">Reference</button>
         <button type="button" data-v="Premium" aria-pressed="false">Premium</button>
         <button type="button" data-v="Mid" aria-pressed="false">Mid</button>
         <button type="button" data-v="Value" aria-pressed="false">Value</button>
@@ -119,6 +120,22 @@
 <script>
 (function () {
   const S = [
+    { id: "bw-800", pn: 27000, brand: "Bowers & Wilkins", series: "800 Series Diamond", tier: "Reference", price: "$27,000 towers (803 D4)",
+      tech: "Diamond dome tweeter in a solid-aluminum pod, Continuum midrange in the Turbine Head, Aerofoil bass cones, Matrix-braced reverse-wrap cabinets. The 805 D4 is the bookshelf; CI800 carries the Diamond tweeter into the wall and ceiling.",
+      sound: "The reference: Abbey Road and Skywalker mix on these. Nothing added, nothing missing, at any volume.",
+      pitch: "This is the speaker the studio used to make the movie. Everything else on the floor is trying to sound like it." },
+    { id: "kef-blade", pn: 28000, brand: "KEF", series: "Blade Meta", tier: "Reference", price: "$28,000 towers (Blade Two)",
+      tech: "Single Apparent Source: a 12th-generation Uni-Q with MAT and four 9 in force-cancelling woofers mounted back to back around it, so the whole speaker behaves as one point. Parabolic cabinet, built to order in finishes.",
+      sound: "Imaging you can walk around; bass that comes from nowhere. The one speaker that stops traffic on the floor.",
+      pitch: "Close your eyes and you cannot point at the speaker. That is the whole design." },
+    { id: "kef-reference", pn: 25000, brand: "KEF", series: "Reference Meta", tier: "Reference", price: "$25,000 towers (Reference 5)",
+      tech: "Flagship 12th-gen Uni-Q with MAT, aluminum bass drivers, 4-ohm with a 3.2-ohm minimum. Reference 1 Meta bookshelf, Reference 4 and 2 Meta LCR centers; Ci5160REFM-THX puts the same driver in the wall.",
+      sound: "R Series taken as far as KEF can take it: wider, deeper, more effortless, and the same from every seat.",
+      pitch: "Same point-source idea as the KEF Q you demoed, built with no budget." },
+    { id: "ml-esl", pn: 29000, brand: "MartinLogan", series: "Masterpiece ESL", tier: "Reference", price: "$29,000 towers (Renaissance 15A)",
+      tech: "Curvilinear electrostatic panels, a film thinner than a hair driven over its whole surface, over powered woofer sections with Anthem Room Correction. Renaissance 15A, Expression 13A, Impression 11A; ElectroMotion ESL X is the entry panel; Illusion C34A and Focus C18 are electrostatic centers.",
+      sound: "Voices and strings with no box between you and them. Needs a high-current amp (the panel dips under 1 ohm) and some room behind it.",
+      pitch: "There is no cone in there. A film the thickness of a hair makes the sound, which is why a voice sounds like a person." },
     { id: "bw-700", pn: 5000, brand: "Bowers & Wilkins", series: "700 S3", tier: "Premium", price: "$5,000 towers",
       tech: "Carbon Dome tweeter in a solid-body pod on top of the cabinet (703, 705), Continuum woven-composite midrange, Aerofoil-profile bass cones. All three came down from the 800 Series.",
       sound: "The most refined and detailed set on the floor. Vocals and strings sound like the real thing. Wants a good receiver or a power amp.",
@@ -167,6 +184,22 @@
       tech: "Soft Magnetic Compound woofer magnet trickled down from Opticon, wood-fibre cones, oversized 29 mm soft-dome tweeter for wide dispersion. Easy load on any receiver.",
       sound: "Warm and wide; the music-first choice in the mid tier.",
       pitch: "Danish design, and it sounds good even when you're not sitting in the sweet spot." },
+    { id: "bw-ci800", pn: 6500, brand: "Bowers & Wilkins", series: "CI800 Diamond", tier: "Reference", price: "$3,250 per in-wall",
+      tech: "The 800 Series Diamond dome tweeter in a 7 in in-wall (CWM8.5 D), a 3-way in-wall (CWM8.3 D) and an angled in-ceiling (CCM8.5 D). Sold singly.",
+      sound: "The 800 D4 voice from inside the wall; the most refined hidden front stage on the floor.",
+      pitch: "A Diamond tweeter behind the paint." },
+    { id: "kef-ci-ref", pn: 24000, brand: "KEF", series: "Ci Reference THX", tier: "Reference", price: "$11,999.99 per in-wall (REFM)",
+      tech: "Ci5160REFM-THX: the Reference Meta Uni-Q and four woofers in a THX Ultra in-wall; Ci5160RLM-THX is the R-grade version; Ci200RR-THX ceilings overhead.",
+      sound: "A reference theater with nothing in the room. The widest, most even overhead imaging you can hide.",
+      pitch: "KEF Reference, in the wall, THX certified." },
+    { id: "ml-ci-ref", pn: 7000, brand: "MartinLogan", series: "Masterpiece CI", tier: "Reference", price: "$3,499.99 per in-wall",
+      tech: "Tribute 5XW: the XT Folded Motion tweeter with five woofers in a sealed in-wall; Icon 3XW below it; Motion XT CI XTC8 ceilings and the XTW6-LCR center round it out.",
+      sound: "The Motion XT sound at reference scale, hidden. Fast and detailed with real weight.",
+      pitch: "The biggest Folded Motion speaker MartinLogan puts in a wall." },
+    { id: "sonance-ref", pn: 6600, brand: "Sonance", series: "Reference", tier: "Reference", price: "$3,300 per in-wall (R2)",
+      tech: "3-way in-walls (R1, R2) built as a front stage, with R1SUR surrounds and the R1C-SUR ceiling. The installer brand's own flagship.",
+      sound: "A real front stage from Sonance, a class above Visual Performance. Dialogue from the screen, not the floor.",
+      pitch: "When the whole house is Sonance and the theater still has to be serious." },
     { id: "bw-ci700", pn: 2700, brand: "Bowers & Wilkins", series: "CI700 S2", tier: "Premium", price: "$1,350 per in-wall",
       tech: "Carbon Dome tweeter and Continuum cone from the 700 S3 boxes, in 7 in in-ceiling (CCM7.5 S2) and in-wall (CWM7.5 S2) form, with 3-way versions above them. Sold singly.",
       sound: "The 700 S3 sound with nothing showing: refined, detailed, wants a real amp. The hidden front stage to pair with 700 S3 towers or to replace them.",
@@ -254,6 +287,14 @@
   ];
   // What the money buys (materials, in one breath) and how long it lasts (materials that age, plus the maker's US warranty, checked Nov 15, 2026).
   const PAY = {
+    "bw-800":        { pay: "Diamond tweeter, Continuum midrange in the Turbine Head, Aerofoil bass cones, Matrix cabinets; the parts every other B&W borrows from.", lasts: "B&W: 5-year warranty. Diamond and composite drivers, aluminum heads; built to be rebuilt by the factory decades on." },
+    "kef-blade":     { pay: "Single Apparent Source: Uni-Q plus four force-cancelling woofers in a built-to-order cabinet.", lasts: "KEF: 5 years on drivers, 2 on electronics. All-metal drivers; a Blade is a lifetime speaker." },
+    "kef-reference": { pay: "The flagship Uni-Q with MAT and aluminum bass drivers, in cabinets finished like furniture.", lasts: "KEF: 5 years on drivers, 2 on electronics. Metal cones, nothing to sag." },
+    "ml-esl":        { pay: "A hand-built electrostatic panel over a powered woofer with room correction; MartinLogan's entire reputation in one speaker.", lasts: "MartinLogan: 5-year warranty passive (3 on the powered sections). Panels are user-replaceable and MartinLogan still services decades-old ESLs; keep them vacuumed and out of direct sun." },
+    "bw-ci800":      { pay: "The 800 Series Diamond dome in a wall frame.", lasts: "B&W: 5-year warranty." },
+    "kef-ci-ref":    { pay: "Reference Meta Uni-Q and THX Ultra certification in the wall.", lasts: "KEF: 5 years on drivers." },
+    "ml-ci-ref":     { pay: "The XT Folded Motion tweeter with five woofers in a sealed in-wall enclosure.", lasts: "MartinLogan: 5-year warranty." },
+    "sonance-ref":   { pay: "Sonance's flagship 3-way in-wall frames and drivers.", lasts: "Sonance: 5 years parts and labor (per the Best Buy listing)." },
     "bw-700":        { pay: "Carbon Dome tweeter and Continuum woven cone, the same parts as the 800 Series Diamond studios buy, in furniture-grade cabinets.", lasts: "B&W: 5-year warranty on passive speakers, 2 years on powered subs. Woven composite and carbon: no paper to soften, no foam to rot." },
     "kef-r":         { pay: "All-aluminum Uni-Q with MAT: metal cones that hold their shape, one driver doing the work of two.", lasts: "KEF: 5 years on drivers, 2 on electronics. Metal cones with rubber surrounds; nothing in the driver ages." },
     "ml-xt":         { pay: "The XT Folded Motion tweeter, a pleated film 40% larger than the standard one, over aluminum woofers.", lasts: "MartinLogan: 5-year warranty on passive speakers, 3 on subs. The film tweeter has no dome to crack; aluminum cones do not fatigue." },

@@ -76,6 +76,14 @@
     ["architectural in-ceiling", 6325620], ["architectural in-wall", 11446051], ["in-ceiling 8", 6635492], ["in-ceiling 6 in", 6325620], ["sub (gen 3)", 6411140], ["sub mini", 6520132], ["sonos amp", 6312857],
     // Russound
     ["enhanced-performance in-ceiling", 10884916], ["all-purpose in-ceiling", 10884996],
+    // Reference tier (Nov 15, 2026)
+    ["803 d4", 6476396], ["804 d4", 6476369], ["805 d4", 6476384], ["db1d", 5796778], ["db3d", 5796780], ["ccm8.5 d", 5799119], ["cwm8.5 d", 5799118], ["cwm8.3 d", 5799117],
+    ["702 s3 signature", 6579873], ["705 s3 signature", 6579872],
+    ["reference 5 meta", 6502482], ["reference 3 meta", 6502484], ["reference 1 meta", 6502481], ["reference 4 meta", 6502506], ["reference 2 meta", 6502495], ["kc92", 6576949], ["reference 8b", 5838577],
+    ["blade one meta", 6502467], ["blade two meta", 6502469], ["ls60", 6563191], ["ls50 meta", 6434268], ["ci5160refm-thx", 6539077],
+    ["renaissance esl 15a", 5657348], ["expression esl 13a", 5657278], ["impression esl 11a", 5657303], ["illusion esl c34a", 5657280], ["focus esl c18", 5657353], ["electromotion esl x", 5194101], ["electromotion esl c", 5801801], ["depth 212", 6664661],
+    ["av 10 processor", 6522068], ["amp 10", 6522067], ["model 10", 6600038], ["avr-a1h", 6518165], ["michi x5", 6572433], ["michi x3", 6557355], ["avr31", 6504706],
+    ["pb17-ultra", 6603477], ["carbon special", 6646499], ["reference r2", 6253952], ["reference r1", 6253944], ["dione", 6505720],
     // Soundbars and their kits (Nov 15, 2026)
     ["hw-q990h", 6670431], ["hw-q930h", 6670433], ["theater trio", 6676688], ["ht-a9000", 6577855], ["ht-a8000", 6577858],
     ["rear 9 (sa-rs9)", 6673696], ["sub 9 (sa-sw9)", 6673694], ["rear 8 (sa-rs8)", 6629536], ["sub 8 (sa-sw8)", 6673697],
@@ -110,14 +118,14 @@
   function kindFor(text, hint) {
     if (hint) return hint;
     const t = norm(text);
-    if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-/.test(t)) return "avr";
+    if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-|av 10|model 10|michi/.test(t)) return "avr";
     if (/sonos amp|ua 2-125|amplifier|wiim amp|amp ultra|streamer/.test(t)) return "amp";
-    if (/sub|sw\d|kube|kc62|dynamo|descend|hts |pb-|sb-1|sb-2|sb-3|ms10|impact i|bps6/.test(t) && !/sb46/.test(t)) return "sub";
+    if (/sub|sw\d|kube|kc62|kc92|dynamo|descend|depth 21|hts |pb-|pb17|sb-1|sb-2|sb-3|ms10|impact i|bps6|db[13]d|reference 8b|carbon special/.test(t) && !/sb46/.test(t)) return "sub";
     if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|791|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|2[68]0c\b|\d{3}w\b|\d{3}wl\b|\diw\b|studio 6|conceal|marine 6|i[cw]-d|installer/.test(t)) return "arch";
     if (/module|atmos|elevation|-sa |sa ii|es90|r900|240h|dm90|alteco|ss-cse|r8 meta|q8 meta|rp-500sa|r-40sa/.test(t)) return "module";
-    if (/center|vokal|htm|c100|c1\b|c2\b|c10\b|dc53|dc63|r400|r50c|r-50c|es35|245c|ss-cs8|q6 meta|r6 meta|rp-504c|c444|c210|dm30/.test(t)) return "center";
-    if (/tower|floor|f100|f200|f2\b|f1\b|f20|f10|\b60[3]\b|\b70[34]\b|r700|r600|es60|280f|260f|r-800f|r-600f|rp-8000|rp-6000|rp-5000|q7|q11|r7 meta|r11|r5 meta|oberon [57]|opticon [68]|dm70|dm60|ns-555|ns-f210|df63|df53|pinnacle|ss-cs3|prime tower|evolution tower/.test(t)) return "tower";
-    if (/soundbar|sb46|hw-q9|theater trio|ht-a[89]0|s95ar|s90tr|q85h|arc ultra|arc \(gen|bar 1[03]00|flexus core|core 300|ambeo soundbar|dragon|shockwafe|true x bar/.test(t)) return "bar";
+    if (/center|vokal|htm|c100|c1\b|c2\b|c10\b|dc53|dc63|r400|r50c|r-50c|es35|245c|ss-cs8|q6 meta|r6 meta|rp-504c|c444|c210|dm30|reference [24] meta|c34a|c18\b|esl c\b/.test(t)) return "center";
+    if (/tower|floor|f100|f200|f2\b|f1\b|f20|f10|\b60[3]\b|\b70[34]\b|r700|r600|es60|280f|260f|r-800f|r-600f|rp-8000|rp-6000|rp-5000|q7|q11|r7 meta|r11|r5 meta|oberon [57]|opticon [68]|dm70|dm60|ns-555|ns-f210|df63|df53|pinnacle|ss-cs3|prime tower|evolution tower|80[34] d4|reference [35] meta|blade|esl 1[135]a|esl x\b|ls60/.test(t)) return "tower";
+    if (/soundbar|sb46|hw-q9|theater trio|ht-a[89]0|s95ar|s90tr|q85h|arc ultra|arc \(gen|bar 1[03]00|flexus core|core 300|ambeo soundbar|dragon|shockwafe|true x bar|dione/.test(t)) return "bar";
     return "bookshelf";
   }
   // Drawn silhouettes, in the page's own colors.
@@ -143,6 +151,8 @@
     "bose-791": "Bose Virtually Invisible 791 II in-ceiling", "russound": "Russound 6.5 in in-ceiling", "jbl-stage2": "JBL Stage 2 280F tower", "sony-core": "Sony SS-CS3 tower", "sonance-mag": "Sonance MAG6R in-ceiling",
     "klipsch-ci": "Klipsch R-5502-W II in-wall", "polk-ci": "Polk Audio 265-RT in-wall", "deftech-ci": "Definitive Technology DC-65 MAX in-ceiling", "ml-ci": "MartinLogan Motion CI MC6-HT in-ceiling",
     "kef-ci": "KEF Ci160QR in-ceiling", "jbl-ci": "JBL Stage 250WL in-wall", "ml-xtci": "MartinLogan Motion XT CI XTW6 in-wall", "bw-ci600": "Bowers & Wilkins CCM664 in-ceiling", "bw-ci700": "Bowers & Wilkins CCM7.5 S2 in-ceiling",
+    "bw-800": "Bowers & Wilkins 803 D4 tower", "kef-reference": "KEF Reference 5 Meta tower", "kef-blade": "KEF Blade One Meta tower", "ml-esl": "MartinLogan Renaissance ESL 15A tower",
+    "bw-ci800": "Bowers & Wilkins CCM8.5 D in-ceiling", "kef-ci-ref": "KEF Ci5160REFM-THX in-wall", "ml-ci-ref": "MartinLogan Tribute 5XW in-wall", "sonance-ref": "Sonance Reference R2 in-wall",
   };
   // One thumbnail: silhouette underneath, Best Buy photo on top when there is one; the photo removes itself if it fails.
   function thumb(text, hint, cls) {
