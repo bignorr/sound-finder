@@ -59,7 +59,7 @@
     <h2>Every in-wall and in-ceiling, line by line.</h2>
     <p class="muted">For each brand in the app, the in-wall and in-ceiling models Best Buy itself sells and ships, with the prices bestbuy.com showed when pulled (Nov 12 and 13, 2026; every open item re-checked on the product page Nov 13). Marketplace listings, discontinued models and anything Best Buy does not carry are left out entirely. Promo prices move weekly, so confirm before you quote.</p>
     <div class="jump">
-      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a><a href="#soundbars">Soundbars</a>
+      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a><a href="#wiim">WiiM</a><a href="#soundbars">Soundbars</a>
     </div>
     <div class="use">
       <div><b>Reading the sheets</b><span>Every row is a model Best Buy itself sells and ships. "Verify" or "price in cart" means Best Buy lists it but the price was not on the page when pulled; a maker's price fills the gap where the note says so. Third-party marketplace listings on bestbuy.com are not here at all.</span></div>
@@ -186,6 +186,13 @@
     <h2>Bose, the one passive line.</h2>
     <p class="muted">Everything else Bose sells at Best Buy is wireless (Lifestyle Ultra, Surround Speakers, soundbars), so this is the only Bose row.</p>
     <div class="card"><div class="tbl" id="bose-t"></div></div>
+  </section>
+
+  <section class="sec" id="wiim">
+    <p class="eyebrow">WiiM · sold and shipped by Best Buy</p>
+    <h2>WiiM streaming amps and the WiiM soundbar.</h2>
+    <p class="muted">The receiver alternative for a music-first stereo or 2.1 room: a small amp with every streaming service in the app, HDMI ARC from the TV, a sub out and room correction. No surround and no path to a center or rears, so it is for the customer who will never grow into 5.1. In the Family builder, a 2-channel build shows a "WiiM amp" chip under the receiver level. Prices are what bestbuy.com showed on Nov 15, 2026.</p>
+    <div class="card"><div class="tbl" id="wiim-list"></div></div>
   </section>
 
   <section class="sec" id="soundbars">
@@ -422,6 +429,16 @@
         (r[2] ? "<div class='f'><a href='" + bby(r[0], id) + "' target='_blank' rel='noopener'>Find on bestbuy.com</a></div>" : "") + "</div>";
     }).join("");
   });
+  // WiiM comes from bars.js too (SF_WIIM): the three amps the builder offers, then the rest of the line.
+  const W = window.SF_WIIM || null;
+  const wrows = W ? ["value", "mid", "premium"].map(function (k) { return W.amps[k]; }).filter(Boolean).concat(W.other || []) : [];
+  document.getElementById("wiim-list").innerHTML = wrows.length ? wrows.map(function (w) {
+    const pic = window.SF_IMG ? window.SF_IMG.thumb("WiiM " + w.m, w.kind || "amp") : "";
+    const link = w.sku ? "https://www.bestbuy.com/site/" + w.sku + ".p" : "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent("WiiM " + w.m);
+    return "<div class='trow'>" + pic + "<div class='m'>WiiM " + esc(w.m) + "</div><div class='p'>$" + Math.round(w.price).toLocaleString("en-US") + "</div>" +
+      "<div class='d'>" + esc(w.why || "") + "</div>" + (w.comp ? "<div class='c'>" + esc(w.comp) + "</div>" : "") +
+      "<div class='f'><a href='" + link + "' target='_blank' rel='noopener'>" + (w.sku ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + (w.sku ? " <span class='muted'>SKU " + esc(w.sku) + "</span>" : "") + "</div></div>";
+  }).join("") : "<p class='muted'>No WiiM products loaded yet.</p>";
   // Soundbars come from bars.js so the builder, the Finder and this sheet agree.
   const bars = window.SF_BARS || [];
   const money = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };

@@ -189,6 +189,7 @@
           <button type="button" data-v="value" aria-pressed="false">Value</button>
           <button type="button" data-v="mid" aria-pressed="false">Mid</button>
           <button type="button" data-v="premium" aria-pressed="false">Premium</button>
+          <button type="button" data-v="wiim" aria-pressed="false" hidden>WiiM amp</button>
         </div>
         <p class="muted small" id="avrAuto"></p>
       </div>
@@ -471,7 +472,9 @@
   const SALES = window.SF_SALES;
   const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
     acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all",
-    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console" };
+    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto" };
+  // WiiM streaming amps (bars.js): a 2-channel alternative to a receiver for stereo and 2.1 music rooms.
+  const WIIM = (window.SF_WIIM && window.SF_WIIM.amps) || null;
   // Soundbar systems Best Buy sells and ships (bestbuy.com, checked Nov 15, 2026). price = the bar as sold (with whatever ships in the box).
   // subIn / rearsIn = ships with them. sub / rears = the brand's own wireless add-on when it does not. tier by bar price: value < $900, mid to $1,500, premium above.
   const BARS = window.SF_BARS || [];
@@ -545,7 +548,9 @@
   const syncHeightType = chips("heightTypeChips", "heightType", false);
   const syncSubs = chips("subsChips", "subs", true);
   // Receiver level: "auto" follows the series' price level until a chip is tapped.
-  function tierFor(s) { return state.avr === "auto" ? s.tier : state.avr; }
+  function tierFor(s) { return state.avr === "auto" || state.avr === "wiim" ? s.tier : state.avr; }
+  function wiimOK() { return !!WIIM && channels() <= 2 && !currentSeries().bar && currentSeries().id !== "sonos-arch"; }
+  function wiimPick(s) { const lvl = state.wiim === "auto" ? s.tier : state.wiim; return WIIM[lvl] || (lvl === "mid" ? WIIM.premium : null) || WIIM.premium || WIIM.value; }
   function avrTier() { return tierFor(currentSeries()); }
   function currentSeries() {
     if (isBar()) return BARS.find(function (x) { return x.id === state.bar; }) || BARS[0];
@@ -554,9 +559,12 @@
   // The whole-system price for any family at the current build size: speakers, the matched receiver, and the cables that are switched on.
   function systemTotal(s) { const r = build(s); const rc = receiver(s); return r.total + (rc ? rc.total : 0) + accTotal(accessories(r, rc)); }
   const avrBtns = $("avrChips").querySelectorAll("button");
-  const syncAvr = function () { Array.prototype.forEach.call(avrBtns, function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === avrTier())); }); };
+  const syncAvr = function () { Array.prototype.forEach.call(avrBtns, function (b) { b.setAttribute("aria-pressed", String(state.avr === "wiim" ? b.dataset.v === "wiim" : b.dataset.v === avrTier())); }); };
   Array.prototype.forEach.call(avrBtns, function (b) { b.addEventListener("click", function () { state.avr = b.dataset.v; persist(); render(); }); });
-  $("avrAuto").addEventListener("click", function (e) { if (e.target.closest("#avrReset")) { state.avr = "auto"; persist(); render(); } });
+  $("avrAuto").addEventListener("click", function (e) {
+    if (e.target.closest("#avrReset")) { state.avr = "auto"; state.wiim = "auto"; persist(); render(); return; }
+    const w = e.target.closest("button[data-wiim]"); if (w) { state.wiim = w.dataset.wiim; persist(); render(); }
+  });
 
   function renderSeries() {
     const list = $("seriesList");
@@ -697,6 +705,10 @@
       return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp", ohm4: true };
     }
     if (tier === "none") return null;
+    if (state.avr === "wiim" && WIIM && n <= 2) {
+      const w = wiimPick(s);
+      return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8 };
+    }
     const key = avrNeedKey(n); const a = AVRS[key][tier];
     return { role: "Receiver · " + tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: AVRS[key].need, tier: tier, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: a.ohm4 !== false };
   }
@@ -709,6 +721,11 @@
     if (!needs4 && !lowSens) return null;
     const spec = (L.ohm ? L.ohm + " ohm nominal" : "") + (L.min ? ", " + L.min + " ohm minimum" : "") + (L.sens ? " · " + L.sens + " dB" : "");
     const name = s.brand + " " + s.series;
+    if (rc && rc.wiim) {
+      const ultra = WIIM.premium ? WIIM.premium.m : "Amp Ultra";
+      if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The WiiM " + esc(rc.short) + " is rated for 4 ohms and roughly doubles its power into them, so this is a good match." + (lowSens && rc.tier !== "premium" ? " It is also only " + L.sens + " dB: step up to the " + esc(ultra) + " for a bigger room." : "") };
+      return { bad: rc.tier === "value", html: "<b>Power-hungry.</b> " + esc(name) + " is " + L.sens + " dB. " + (rc.tier === "premium" ? "The " + esc(rc.short) + " has the headroom for it." : "On the WiiM " + esc(rc.short) + " it will run out of steam in a big room; pick the " + esc(ultra) + ".") };
+    }
     if (needs4 && rc && !rc.ohm4) return { bad: true, html: "<b>Receiver mismatch.</b> " + esc(name) + " is a 4-ohm load (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " is rated for 6 to 16 ohms. Pick the Mid or Premium receiver; every Denon, Marantz, Onkyo and Pioneer here is rated 4 to 16 ohms." };
     if (needs4 && !rc) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms, and set its speaker-impedance menu to 4 ohms." };
     if (needs4) return { bad: false, html: "<b>4-ohm load</b> (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " handles it; set the speaker-impedance menu to 4 ohms during setup." + (lowSens ? " It is also only " + L.sens + " dB, so do not go below the Mid receiver in a big room." : "") };
@@ -762,8 +779,8 @@
     const wire = arch ? { m: "14 AWG CL2/CL3 in-wall speaker wire, 100 ft", each: 60 } : { m: "16 AWG speaker wire, 100 ft", each: 40 };
     out.push({ id: "wire", role: "Speaker wire", brand: "Rocketfish / AudioQuest", model: wire.m, qty: spools, each: wire.each, note: "about " + ft + " ft of runs" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : "") });
     if (state.subs > 0) out.push({ id: "subcable", role: "Subwoofer cable", brand: "Rocketfish / AudioQuest", model: "Subwoofer RCA cable, 25 ft", qty: state.subs, each: 25, note: state.subs === 2 ? "one per sub" : "" });
-    const hdmiQty = rc && rc.sonos ? 1 : 2;
-    out.push({ id: "hdmi", role: "HDMI", brand: "Rocketfish / AudioQuest", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", qty: hdmiQty, each: 25, note: rc && rc.sonos ? "TV eARC to the Amp" : "TV eARC to receiver, plus the main source" });
+    const hdmiQty = rc && (rc.sonos || rc.wiim) ? 1 : 2;
+    out.push({ id: "hdmi", role: "HDMI", brand: "Rocketfish / AudioQuest", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", qty: hdmiQty, each: 25, note: rc && rc.sonos ? "TV eARC to the Amp" : rc && rc.wiim ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source" });
     const ch = channels();
     out.push({ id: "banana", role: "Connectors", brand: "Rocketfish", model: "Banana plugs, 12-pack", qty: Math.ceil(ch / 3), each: 25, note: "4 per channel, " + ch + " channels" });
     out.push({ id: "surge", role: "Power", brand: "Rocketfish", model: "8-outlet surge protector", qty: 1, each: 60, note: "receiver, subs, display" });
@@ -818,10 +835,17 @@
     const rc = receiver(); const n = channels(); const tier = avrTier();
     $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
     $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" ? "Amplifier" : "Receiver level";
-    Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = s.id === "sonos-arch" && b.dataset.v !== "none"; });
+    if (state.avr === "wiim" && !wiimOK()) state.avr = "auto";
+    Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = (s.id === "sonos-arch" && b.dataset.v !== "none") || (b.dataset.v === "wiim" && !wiimOK()); });
+    const wiimRow = function () {
+      if (!WIIM) return "";
+      return "<span class='wiimrow'>" + ["value", "mid", "premium"].filter(function (k) { return WIIM[k]; }).map(function (k) { const w = WIIM[k]; return "<button type='button' class='btn link' data-wiim='" + k + "'" + (wiimPick(s).level === k ? " style='color:var(--accent);font-weight:700'" : "") + ">" + esc(w.m) + " " + money(w.price) + "</button>"; }).join(" · ") + "</span>";
+    };
+    if (rc && rc.wiim) $("avrNeed").textContent = n + " speakers" + (state.subs ? " + " + state.subs + " sub on the amp's sub out" : "") + " · 2 channels";
     $("avrAuto").innerHTML = s.id === "sonos-arch"
       ? (tier === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so the level chips are off here.")
-      : (state.avr === "auto" ? "Matched to the series' <b>" + esc(s.tier) + "</b> level. Tap a level to change it."
+      : state.avr === "wiim" ? "WiiM streaming amp instead of a receiver: HDMI ARC from the TV, sub out, room correction, every streaming service in the app. No surround, no path to a center or rears. " + wiimRow() + " <button type='button' class='btn link' id='avrReset'>Back to a receiver</button>"
+      : (state.avr === "auto" ? "Matched to the series' <b>" + esc(s.tier) + "</b> level. Tap a level to change it." + (wiimOK() ? " For a music-first 2.1, try the WiiM amp." : "")
         : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Match the series</button>"
         : "Set to <b>" + esc(tier) + "</b> by hand. <button type='button' class='btn link' id='avrReset'>Match the series (" + esc(s.tier) + ")</button>");
     $("avrLines").innerHTML = rc ? lineHtml(rc) : "";
@@ -913,7 +937,7 @@
     r.lines.forEach(function (l) { out.push(line(l)); });
     out.push("  " + (s.bar ? "System" : "Speakers") + " subtotal: " + money(r.total), "");
     if (rc) {
-      out.push(rc.sonos ? "AMPLIFIER" : "RECEIVER (" + rc.tier + " · " + rc.need + ")");
+      out.push(rc.sonos ? "AMPLIFIER" : rc.wiim ? "STREAMING AMP (WiiM, 2 channels)" : "RECEIVER (" + rc.tier + " · " + rc.need + ")");
       out.push(line(rc));
       if (rc.note) out.push("  " + rc.note);
     } else out.push(s.bar ? "RECEIVER: none needed; the bar is the amplifier (TV connects over HDMI eARC)" : "RECEIVER: customer's own");
@@ -988,14 +1012,14 @@
     if (state.heights > 0) out.push(b(ceilHeights ? "Cut in " + state.heights + " in-ceiling height speakers per Dolby Atmos layout (" + (state.heights === 4 ? "front and rear pairs" : "front pair") + ", about 45 degrees elevation from main seat); confirm joist layout first" : "Set Atmos modules on top of the fronts" + (state.heights === 4 ? " and surrounds" : "") + "; angle toward the ceiling; confirm flat ceiling under 12 ft"));
     if (state.subs > 0) out.push(b("Place " + (state.subs === 2 ? "two subwoofers (front corner and opposite side wall or rear)" : "subwoofer in the front corner nearest the receiver") + "; sub crawl for best spot; crossover at 80 Hz"));
     out.push(b("Run all speaker wire concealed" + (ceilHeights || st !== "series" || s.arch ? "; CL2/CL3 in-wall rated inside walls and ceiling; brush plates at exits" : " along baseboards and behind furniture; raceway where exposed") + "; label both ends"));
-    if (rc) out.push(b(rc.sonos ? "Mount and connect Sonos Amp(s); add to the customer's Sonos app; run Trueplay" : "Connect all speakers; HDMI sources into the receiver, receiver HDMI out to TV eARC; run room correction; set distances, levels, crossovers; label inputs"));
+    if (rc) out.push(b(rc.sonos ? "Mount and connect Sonos Amp(s); add to the customer's Sonos app; run Trueplay" : rc.wiim ? "Connect the speaker pair and the sub (sub out) to the WiiM amp; TV HDMI ARC to the amp; set it up in the WiiM Home app on the customer's Wi-Fi, run room correction, set the sub crossover at 80 Hz, log in their streaming services" : "Connect all speakers; HDMI sources into the receiver, receiver HDMI out to TV eARC; run room correction; set distances, levels, crossovers; label inputs"));
     out.push(b("Walk the customer through the remote, input switching and the app; play a Dolby Atmos demo before leaving"));
     out.push("", "WATCH");
     out.push(b("Cable or streaming box and game console to receiver HDMI inputs; receiver HDMI out to the TV eARC port"));
     out.push(b("TV apps return audio to the receiver over eARC; set TV audio output to pass-through / bitstream"));
     out.push("", "LISTEN");
-    out.push(b((state.heights > 0 ? "Dolby Atmos and DTS:X" : "Dolby Digital and DTS surround") + " from streaming apps and disc; " + configString() + " layout"));
-    out.push(b(rc && rc.sonos ? "Music through the Sonos app, AirPlay and Spotify Connect" : "Music through the receiver's app (HEOS, MusicCast or Sonos-compatible), AirPlay, Bluetooth and Spotify Connect; stereo for two-channel music"));
+    out.push(b(rc && rc.wiim ? "TV and streaming apps in stereo over HDMI ARC; " + configString() + " layout, no surround processing" : (state.heights > 0 ? "Dolby Atmos and DTS:X" : "Dolby Digital and DTS surround") + " from streaming apps and disc; " + configString() + " layout"));
+    out.push(b(rc && rc.sonos ? "Music through the Sonos app, AirPlay and Spotify Connect" : rc && rc.wiim ? "Music through the WiiM Home app (Spotify, Tidal, Amazon, Qobuz and more), AirPlay 2, Chromecast, Alexa and Bluetooth; TV sound over ARC in stereo" : "Music through the receiver's app (HEOS, MusicCast or Sonos-compatible), AirPlay, Bluetooth and Spotify Connect; stereo for two-channel music"));
     out.push("", "DISCLAIMERS");
     out.push(b("Equipment at Best Buy list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
     out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText(installKind()) + " range for this kind of job)"));

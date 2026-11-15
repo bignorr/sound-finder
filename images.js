@@ -87,6 +87,8 @@
     ["flexus core 300", 12186013], ["core 300 5.1.2", 12186013], ["flexus core 200", 6580304], ["flexus surr 200", 11519492], ["flexus sub 200", 12167989],
     ["ambeo soundbar max", 6401975], ["ambeo soundbar plus", 6520427], ["ambeo sub", 6520426],
     ["dragon 11.4.6", 10207946], ["shockwafe wireless", 10513210], ["true x bar 50a", 10110808],
+    // WiiM (Nov 15, 2026)
+    ["wiim amp", 6684568], ["amp ultra", 6684569], ["b1 × wiim", 6596730], ["wiim ultra (streamer)", 6684567], ["wiim pro plus", 6685646], ["wiim pro (streamer)", 6684566], ["wiim mini", 6684570], ["wiim sound (speaker)", 6684943], ["wiim sound lite", 6684942],
     // Receivers
     ["avr-s670h", 6551304], ["avr-s770h", 6551305], ["avr-x2800h", 6518172], ["avr-x3800h", 6518170], ["avr-x6800h", 6563194], ["dra-900h", 6561384],
     ["cinema 70s", 6522069], ["cinema 60", 6522070], ["cinema 50", 6522072], ["cinema 30", 6573671],
@@ -109,7 +111,7 @@
     if (hint) return hint;
     const t = norm(text);
     if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-/.test(t)) return "avr";
-    if (/sonos amp|ua 2-125|amplifier/.test(t)) return "amp";
+    if (/sonos amp|ua 2-125|amplifier|wiim amp|amp ultra|streamer/.test(t)) return "amp";
     if (/sub|sw\d|kube|kc62|dynamo|descend|hts |pb-|sb-1|sb-2|sb-3|ms10|impact i|bps6/.test(t) && !/sb46/.test(t)) return "sub";
     if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|791|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|2[68]0c\b|\d{3}w\b|\d{3}wl\b|\diw\b|studio 6|conceal|marine 6|i[cw]-d|installer/.test(t)) return "arch";
     if (/module|atmos|elevation|-sa |sa ii|es90|r900|240h|dm90|alteco|ss-cse|r8 meta|q8 meta|rp-500sa|r-40sa/.test(t)) return "module";

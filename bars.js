@@ -89,3 +89,24 @@ window.SF_BARS = [
     cfg: "4.1.2 with sub", atmos: true, subIn: true, rearsIn: false,
     tech: "Sub in the box and Yamaha's Clear Voice; the battery True X rear speaker is no longer sold new at Best Buy, so quote it bar and sub." },
 ];
+
+// WiiM at Best Buy (bestbuy.com, Nov 15, 2026). The two amps the builder offers as a 2-channel alternative to a receiver, then the rest of the line.
+// Not on bestbuy.com US that day (Canada only): Amp Pro, Vibelink Amp, the WiiM Bar soundbar, Sub Pro. Add them here when Tyler shows a US SKU.
+window.SF_WIIM = {
+  amps: {
+    value: { level: "value", m: "Amp", price: 329, sku: "6684568", w8: 60, w4: 120,
+      why: "60 W x 2 into 8 ohms, 120 W into 4; HDMI ARC (stereo PCM, so set the TV to PCM), optical, line in, sub out with a crossover, AI RoomFit room correction, every streaming service in the WiiM Home app. Sold by Best Buy." },
+    premium: { level: "premium", m: "Amp Ultra", price: 549, sku: "6684569", w8: 100, w4: 200,
+      why: "100 W x 2 into 8 ohms, 200 W into 4, rated down to 2 ohms; 3.5 in touchscreen, Wi-Fi 6, HDMI ARC with Dolby Digital, sub out, RoomFit correction, ESS 9039 DAC. The one for 4-ohm or low-sensitivity speakers. Sold by Best Buy." },
+  },
+  other: [
+    { m: "MartinLogan Motion Foundation B1 × WiiM Amp bundle", price: 1000, sku: "6596730", kind: "bookshelf", comp: "Page showed Save $250 against a $999.99 comp; verify the live price",
+      why: "A ready-made 2.0 for the floor: a pair of Motion Foundation B1 bookshelves with a WiiM Amp and the cables. Add a sub on the amp's sub out." },
+    { m: "Ultra (streamer)", price: 349, sku: "6684567", kind: "amp", why: "Streamer and preamp with the touchscreen, no amplifier: for the customer who already has an amp or receiver." },
+    { m: "Pro Plus (streamer)", price: 249, sku: "6685646", kind: "amp", why: "Streamer with optical, coax and RCA out; adds streaming to any receiver." },
+    { m: "Pro (streamer)", price: 169, sku: "6684566", kind: "amp", why: "The basic streamer: optical, coax, RCA, Ethernet, AirPlay 2 and Chromecast." },
+    { m: "Mini (streamer)", price: 99, sku: "6684570", kind: "amp", why: "Entry streamer, aux and optical out." },
+    { m: "Sound (speaker)", price: 299, sku: "6684943", kind: "bookshelf", why: "Smart speaker with a 1.8 in touch display, hi-res, AI RoomFit, Alexa and Google built in. A second-room speaker on the same app as the amp." },
+    { m: "Sound Lite (speaker)", price: 229, sku: "6684942", kind: "bookshelf", why: "The smaller smart speaker, same app and RoomFit." },
+  ],
+};
