@@ -3,7 +3,7 @@
 // price = the bar as sold. subIn / rearsIn = ships in the box. sub / rears = the brand's own wireless add-on when it does not.
 // hdmi = number of HDMI inputs on the bar (0 = eARC only, sources stay on the TV; left out = not confirmed, check the spec sheet).
 // Not sold new at Best Buy on Nov 15: Bowers & Wilkins Panorama 3, Denon Home 550 / DHT bars, Polk MagniFi Max AX, Yamaha True X 40A, Marantz (no bar), Bang & Olufsen.
-// Nakamichi Dragon and Shockwafe showed "Unavailable from this seller" on 8-digit marketplace-style listings, so they are out until Tyler shows a Best Buy SKU.
+// Nakamichi Dragon and Shockwafe showed "Unavailable from this seller" on 8-digit marketplace-style listings, so they are out until norrito shows a Best Buy SKU.
 window.SF_BARS = [
   // ---- TV brands ----
   { id: "samsung-q990h", brand: "Samsung", m: "HW-Q990H 11.1.4 Q-Series", tier: "premium", price: 1499, comp: "Reg. $1,999.99; verify today's price", sku: "6670431",
@@ -89,7 +89,7 @@ window.SF_BARS = [
 ];
 
 // WiiM at Best Buy (bestbuy.com, Nov 15, 2026). The two amps the builder offers as a 2-channel alternative to a receiver, then the rest of the line.
-// Not on bestbuy.com US that day (Canada only): Amp Pro, Vibelink Amp, the WiiM Bar soundbar, Sub Pro. Add them here when Tyler shows a US SKU.
+// Not on bestbuy.com US that day (Canada only): Amp Pro, Vibelink Amp, the WiiM Bar soundbar, Sub Pro. Add them here when norrito shows a US SKU.
 window.SF_WIIM = {
   amps: {
     value: { level: "value", m: "Amp", price: 329, sku: "6684568", w8: 60, w4: 120,
