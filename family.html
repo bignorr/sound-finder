@@ -194,14 +194,14 @@
         <span class="muted small" id="avrNeed"></span>
       </div>
       <div class="ctl" id="avrCtl">
-        <span>Receiver level</span>
+        <span>What you need, then above it</span>
         <div class="chips" id="avrChips">
-          <button type="button" data-v="none" aria-pressed="false">None</button>
           <button type="button" data-v="value" aria-pressed="false">Value</button>
           <button type="button" data-v="mid" aria-pressed="false">Mid</button>
           <button type="button" data-v="premium" aria-pressed="false">Premium</button>
           <button type="button" data-v="reference" aria-pressed="false">Reference</button>
           <button type="button" data-v="wiim" aria-pressed="false" hidden>WiiM amp</button>
+          <button type="button" data-v="none" aria-pressed="false">Own receiver</button>
         </div>
         <p class="muted small" id="avrAuto"></p>
       </div>
@@ -533,7 +533,8 @@
         alts: [{ brand: "Rotel", m: "A12 MKII 2.0-ch integrated amplifier", cur: "ok", price: 1199, role: "Integrated amp", sku: "6557356", why: "60 W x 2 with a built-in DAC, phono and Bluetooth; showed $200 off $1,399" },
                { brand: "Rotel", m: "A14 MKII 2.0-ch integrated amplifier", cur: "ok", price: 1599, role: "Integrated amp", sku: "6557360", why: "80 W x 2, DAC, phono, Bluetooth; showed $300 off $1,899" },
                { brand: "Rotel", m: "S14 2.0-ch streaming amplifier", cur: "ok", price: 1999, role: "Streaming amp", sku: "6635556", why: "80 W x 2 with streaming built in (AirPlay 2, Chromecast, Roon Ready): the one-box music system" },
-               { brand: "Arcam", m: "Radia A15+ 2.0-ch integrated amplifier", cur: "ok", price: 1500, role: "Integrated amp", sku: "6642223", why: "80 W x 2 Class AB with a DAC and phono; Arcam's mid Radia" }] },
+               { brand: "Arcam", m: "Radia A15+ 2.0-ch integrated amplifier", cur: "ok", price: 1500, role: "Integrated amp", sku: "6642223", why: "80 W x 2 Class AB with a DAC and phono; Arcam's mid Radia" },
+               { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W with a proper 4-ohm mode and pre-outs; the mid-level amp with the current for a 4-ohm stereo pair, and five channels in reserve if the room grows" }] },
       premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", cur: "strong", price: 1800, why: "HDAM amplification for a premium stereo pair, with five channels in reserve for a full theater",
         alts: [{ brand: "Rotel", m: "RA-1572 MKII 2.0-ch integrated amplifier", cur: "strong", price: 2299, role: "Integrated amp", sku: "6557369", why: "120 W x 2 Class AB, DAC, phono, Bluetooth; showed $400 off $2,699" },
                { brand: "Arcam", m: "Radia A25+ 2.0-ch integrated amplifier", cur: "strong", price: 2000, role: "Integrated amp", sku: "6642221", why: "100 W x 2 Class G: Arcam's efficient Class A-biased design in the Radia line" },
@@ -549,9 +550,11 @@
     5: { need: "5 amplified channels",
       value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration" },
       mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", cur: "ok", price: 649, why: "8K HDMI, HEOS, Audyssey room correction, phono input, Alexa",
-        alts: [{ brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" }] },
+        alts: [{ brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W with a proper 4-ohm mode, pre-outs and Audyssey MultEQ XT; the amp a 4-ohm 5.1 needs, with two channels spare for heights later" },
+               { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" }] },
       premium: { brand: "Marantz", m: "Cinema 70s 7.2-ch slim receiver", cur: "ok", price: 1300, why: "Slim Marantz with Dolby Atmos and two spare channels for heights",
-        alts: [{ brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; the Arcam sound at the first step" },
+        alts: [{ brand: "Marantz", m: "Cinema 60 7.2-ch receiver", cur: "strong", price: 1800, why: "100 W HDAM amplification in the full-size chassis; the Marantz with the current for 4-ohm speakers, two channels spare for heights" },
+               { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; the Arcam sound at the first step" },
                { brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "110 W x 7 Class G; the Arcam for a serious 5.1.2" }] },
       reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 15, four independent sub outs, Dirac-ready; the one receiver that belongs under reference speakers. Marantz AV 10 + AMP 10 separates ($16,000) above it",
         alts: [{ brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "180 W x 7 Class G, Dirac Live included, Google Cast; the audiophile receiver for a 5.1 or 7.1 that will not grow past seven channels" },
@@ -669,18 +672,40 @@
   const syncHeightType = chips("heightTypeChips", "heightType", false);
   const syncSubs = chips("subsChips", "subs", true);
   const syncSubBrand = chips("subBrandChips", "subBrand", false);
-  // Receiver level: "auto" follows the series' price level until a chip is tapped.
-  // What the speakers ask of an amp, and the level that answers it with no caveat.
+  // Receiver level. The receiver is the piece that has to be right, so the app sets a floor for every family:
+  // the lowest level, at or above the series' price level, with an amp that drives these speakers with no caveat.
+  // Nothing below the floor is offered; the chips show the floor ("what you need") and the levels above it.
   function demanding(s) { const L = s.load; if (!L || s.bar) return null; const needs4 = L.ohm <= 4 || (L.min && L.min < 4); const lowSens = L.sens < 86; return needs4 || lowSens ? { needs4: needs4, lowSens: lowSens } : null; }
-  function autoLevel(s) {
-    if (!demanding(s)) return s.tier;
-    const key = avrNeedKey(channels()); const from = Math.max(0, TIER_ORDER.indexOf(s.tier));
-    for (let i = from; i < TIER_ORDER.length; i++) { const a = AVRS[key][TIER_ORDER[i]]; if (a && a.cur === "strong") return TIER_ORDER[i]; }
+  // Every amp at one level for this build, base first. Speakers that need current only get the amps rated for it.
+  function ampOptions(s, key, level) {
+    const a = AVRS[key] && AVRS[key][level]; if (!a) return [];
+    const all = [a].concat(a.alts || []);
+    return demanding(s) ? all.filter(function (x) { return x.cur === "strong"; }) : all;
+  }
+  function floorLevel(s) {
+    if (s.bar || s.id === "sonos-arch") return s.tier;
+    const key = avrNeedKey(channels());
+    const from = s.loadNote ? TIER_ORDER.indexOf("reference") : Math.max(0, TIER_ORDER.indexOf(s.tier));
+    for (let i = from; i < TIER_ORDER.length; i++) if (ampOptions(s, key, TIER_ORDER[i]).length) return TIER_ORDER[i];
     return s.tier;
   }
-  function tierFor(s) { return state.avr === "auto" || state.avr === "wiim" ? (s.id === "sonos-arch" || s.bar ? s.tier : autoLevel(s)) : state.avr; }
+  // The levels offered as chips: the floor and everything above it that has an amp to offer.
+  function levelsFor(s) { const key = avrNeedKey(channels()); const f = TIER_ORDER.indexOf(floorLevel(s)); return TIER_ORDER.filter(function (l, i) { return i >= f && ampOptions(s, key, l).length; }); }
+  function tierFor(s) {
+    if (s.id === "sonos-arch" || s.bar) return state.avr === "auto" || state.avr === "wiim" ? s.tier : state.avr;
+    const f = floorLevel(s);
+    if (state.avr === "auto" || state.avr === "wiim") return f;
+    if (state.avr === "none") return "none";
+    return TIER_ORDER.indexOf(state.avr) < TIER_ORDER.indexOf(f) ? f : state.avr;
+  }
   function wiimOK() { return !!WIIM && channels() <= 2 && !currentSeries().bar && currentSeries().id !== "sonos-arch"; }
-  function wiimPick(s) { const lvl = state.wiim === "auto" ? s.tier : state.wiim; return WIIM[lvl] || (lvl === "mid" || lvl === "reference" ? WIIM.premium : null) || WIIM.premium || WIIM.value; }
+  // The WiiM levels this family may use: speakers that need current only get the Amp Ultra.
+  function wiimLevels(s) { return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && (!demanding(s) || WIIM[k].level === "premium"); }); }
+  function wiimPick(s) {
+    const ok = wiimLevels(s); const lvl = state.wiim === "auto" ? s.tier : state.wiim;
+    const want = WIIM[lvl] || (lvl === "mid" || lvl === "reference" ? WIIM.premium : null) || WIIM.premium || WIIM.value;
+    return want && ok.indexOf(want.level) >= 0 ? want : (WIIM[ok[ok.length - 1]] || want);
+  }
   function avrTier() { return tierFor(currentSeries()); }
   function currentSeries() {
     if (isBar()) return BARS.find(function (x) { return x.id === state.bar; }) || BARS[0];
@@ -846,11 +871,15 @@
       const w = wiimPick(s);
       return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8, cur: w.level === "premium" ? "strong" : "ok" };
     }
-    const key = avrNeedKey(n); const base = AVRS[key][tier] || AVRS[key].premium;
-    const alts = base.alts || [];
+    const key = avrNeedKey(n); let lvl = tier; let opts = ampOptions(s, key, lvl);
+    if (!opts.length) { lvl = floorLevel(s); opts = ampOptions(s, key, lvl); }
+    if (!opts.length) { const b = AVRS[key][lvl] || AVRS[key].premium; opts = [b]; }
+    // At the floor, "what you need" is the least expensive amp that clears it; above the floor the level's headline pick leads. Alternates read up the price ladder.
+    const sorted = opts.slice().sort(function (x, y) { return x.price - y.price; });
+    const base = lvl === floorLevel(s) ? sorted[0] : opts[0]; const alts = sorted.filter(function (x) { return x !== base; });
     const alt = sArg ? null : alts.find(function (x) { return x.brand + " " + x.m === state.avrAlt; });
     const a = alt || base;
-    return { role: (a.role || "Receiver") + " · " + tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: tier, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + (a.short || a.m.replace(/ \d+\.\d-ch.*$/, "")), ohm4: a.ohm4 !== false, alts: alts, base: base, isAlt: !!alt, sku: a.sku, cur: a.cur || "ok", key: key };
+    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + (a.short || a.m.replace(/ \d+\.\d-ch.*$/, "")), ohm4: a.ohm4 !== false, alts: alts, base: base, isAlt: !!alt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s) };
   }
   // Does this series need a receiver rated for 4 ohms, or real power? Returns the warning to show, if any.
   // The cheapest amp at this channel count that drives these speakers with no caveat: a higher level, or a strong alternative at the current level.
@@ -873,7 +902,10 @@
     const extra = s.loadNote ? " " + esc(s.loadNote) : "";
     const recBtn = function (r) { return r ? " <button type='button' class='btn link' data-rec-level='" + esc(r.level) + "' data-rec-alt='" + esc(r.alt) + "'>Switch to the " + esc(r.brand + " " + r.short) + " (" + money(r.price) + ")</button>" : ""; };
     const wiimHint = channels() <= 2 && WIIM && WIIM.premium ? " For a stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") is rated down to 2 ohms and has no caveat either." : "";
-    if (!rc) return { kind: "soft", html: "<b>Needs a real amp.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms and has the current for it." + extra };
+    if (!rc) {
+      const fl = ampOptions(s, avrNeedKey(channels()), floorLevel(s))[0];
+      return { kind: "soft", html: "<b>Needs a real amp.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms and has the current for it" + (fl ? "; the floor here is the " + esc(fl.brand + " " + (fl.short || fl.m.replace(/ \d+\.\d-ch.*$/, ""))) + " (" + money(fl.price) + ")." : ".") + extra };
+    }
     if (rc.wiim) {
       if (rc.cur === "strong") return { kind: "good", html: "<b>Good match.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the WiiM " + esc(rc.short) + " is rated down to 2 ohms and doubles its power into 4, so there is nothing to work around." + extra };
       return { kind: "soft", html: "<b>Works, with a caveat.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). The WiiM " + esc(rc.short) + " is rated for it but it is the small amp. <button type='button' class='btn link' data-wiim='premium'>Switch to the " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ")</button>" + extra };
@@ -881,7 +913,7 @@
     const rec = recommendAmp(s, rc);
     if (s.loadNote && rc.tier !== "reference") return { kind: "bad", html: "<b>Not enough amp.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + ")." + extra + recBtn(rec && TIER_ORDER.indexOf(rec.level) >= 3 ? rec : { level: "reference", alt: "", brand: (AVRS[rc.key].reference || {}).brand || "Reference", short: ((AVRS[rc.key].reference || {}).m || "electronics").replace(/ \d+\.\d-ch.*$/, ""), price: (AVRS[rc.key].reference || {}).price || 0 }) };
     if (rc.cur === "easy") return { kind: "bad", html: "<b>Wrong receiver for these.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the " + esc(rc.brand + " " + rc.short) + " is rated for 6 to 16 ohms only." + recBtn(rec) + wiimHint };
-    if (rc.cur === "strong") return { kind: "good", html: "<b>Good match.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the " + esc(rc.brand + " " + rc.short) + " has the current for it, no caveat. Set the speaker-impedance menu the way the manual says and give it ventilation." + extra };
+    if (rc.cur === "strong") return { kind: "good", html: "<b>" + (rc.floor ? "This is what you need." : "Good match, a step above the floor.") + "</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the " + esc(rc.brand + " " + rc.short) + " has the current for it, no caveat. Set the speaker-impedance menu the way the manual says and give it ventilation." + extra };
     return { kind: "soft", html: "<b>Works, with a caveat.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " is rated for 4 ohms, but it does not have the current reserve these want and will run warm at volume." + recBtn(rec) + wiimHint + extra };
   }
   function lineSku(l) { if (l.nosku) return null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
@@ -988,20 +1020,28 @@
     syncAvr();
     const rc = receiver(); const n = channels(); const tier = avrTier();
     $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
-    $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" ? "Amplifier" : "Receiver level";
+    $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" ? "Amplifier" : "What you need, then above it";
     if (state.avr === "wiim" && !wiimOK()) state.avr = "auto";
-    Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = (s.id === "sonos-arch" && b.dataset.v !== "none") || (b.dataset.v === "wiim" && !wiimOK()); });
+    const floor = floorLevel(s); const levels = s.id === "sonos-arch" ? [] : levelsFor(s);
+    Array.prototype.forEach.call(avrBtns, function (b) {
+      const v = b.dataset.v;
+      b.hidden = v === "none" ? false : v === "wiim" ? !wiimOK() : s.id === "sonos-arch" || levels.indexOf(v) < 0;
+      b.classList.toggle("need", v === floor && s.id !== "sonos-arch");
+    });
     const wiimRow = function () {
       if (!WIIM) return "";
-      return "<span class='wiimrow'>" + ["value", "mid", "premium"].filter(function (k) { return WIIM[k]; }).map(function (k) { const w = WIIM[k]; return "<button type='button' class='btn link' data-wiim='" + k + "'" + (wiimPick(s).level === k ? " style='color:var(--accent);font-weight:700'" : "") + ">" + esc(w.m) + " " + money(w.price) + "</button>"; }).join(" · ") + "</span>";
+      return "<span class='wiimrow'>" + wiimLevels(s).map(function (k) { const w = WIIM[k]; return "<button type='button' class='btn link' data-wiim='" + k + "'" + (wiimPick(s).level === k ? " style='color:var(--accent);font-weight:700'" : "") + ">" + esc(w.m) + " " + money(w.price) + "</button>"; }).join(" · ") + "</span>";
     };
     if (rc && rc.wiim) $("avrNeed").textContent = n + " speakers" + (state.subs ? " + " + state.subs + " sub on the amp's sub out" : "") + " · 2 channels";
+    const d = demanding(s); const above = levels.slice(levels.indexOf(floor) + 1);
+    const aboveText = above.length ? " Above it: " + above.map(function (l) { return "<b>" + esc(l) + "</b>"; }).join(", ") + "." : " Nothing above it on the floor.";
+    const wiimText = wiimOK() ? (d ? " For a music-first stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") clears the floor too." : " For a music-first 2.1, try the WiiM amp.") : "";
     $("avrAuto").innerHTML = s.id === "sonos-arch"
       ? (tier === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so the level chips are off here.")
       : state.avr === "wiim" ? "WiiM streaming amp instead of a receiver: HDMI ARC from the TV, sub out, room correction, every streaming service in the app. No surround, no path to a center or rears. " + wiimRow() + " <button type='button' class='btn link' id='avrReset'>Back to a receiver</button>"
-      : (state.avr === "auto" ? (tier !== s.tier ? "Matched to the <b>speakers</b>, not just the price: these want more current than the " + esc(s.tier) + " receiver has, so the <b>" + esc(tier) + "</b> one is the right call. Tap a level to override." : "Matched to the series' <b>" + esc(s.tier) + "</b> level. Tap a level to change it.") + (wiimOK() ? " For a music-first 2.1, try the WiiM amp." : "")
-        : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Match the series</button>"
-        : "Set to <b>" + esc(tier) + "</b> by hand. <button type='button' class='btn link' id='avrReset'>Match the series (" + esc(s.tier) + ")</button>");
+      : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>"
+      : tier === floor ? "<b>What you need:</b> " + (d ? (floor !== s.tier ? "these speakers want more current than the " + esc(s.tier) + " receiver has, so <b>" + esc(floor) + "</b> is the floor, and only amps with the current for them are offered." : "<b>" + esc(floor) + "</b> is the floor for these speakers, and only amps with the current for them are offered.") : "the series' <b>" + esc(floor) + "</b> level is the floor.") + aboveText + wiimText
+      : "Stepped up to <b>" + esc(tier) + "</b>, above the floor. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>";
     $("avrLines").innerHTML = rc ? lineHtml(rc) + (rc.alts && rc.alts.length ? "<p class='muted small alts'>" + (rc.isAlt ? "Instead of the " + esc(rc.base.brand + " " + rc.base.m.replace(/ \d+\.\d-ch.*$/, "")) + " (" + money(rc.base.price) + "). " : "Or: ") +
       (rc.isAlt ? "<button type='button' class='btn link' data-alt='" + esc(rc.brand + " " + rc.model) + "'>Back to " + esc(rc.base.brand) + "</button> · " : "") +
       rc.alts.filter(function (x) { return !rc.isAlt || x.brand + " " + x.m !== rc.brand + " " + rc.model; }).map(function (x) { return "<button type='button' class='btn link' data-alt='" + esc(x.brand + " " + x.m) + "'>" + esc(x.brand + " " + x.m.replace(/ \d+\.\d-ch.*$/, "")) + " " + money(x.price) + "</button>"; }).join(" · ") + "</p>" : "") : "";

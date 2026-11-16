@@ -277,3 +277,7 @@ details.obj .proof { font-size: 14px; color: var(--muted); margin-top: 6px; }
 .lstats strong { font-family: var(--font-display); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .lead .seg button { min-height: 34px; padding: 5px 11px; font-size: 13px; }
 .lead .acts { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+
+/* The receiver floor: the chip for the level the speakers need carries a tag; the levels below it are not rendered at all. */
+.chips button.need::after { content: "need"; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-left: 7px; padding: 1px 6px; border-radius: 999px; background: var(--good); color: var(--surface); vertical-align: 1px; }
+.chips button.need[aria-pressed="true"]::after { background: var(--accent-ink); color: var(--accent); }
