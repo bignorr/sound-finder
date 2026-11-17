@@ -281,3 +281,32 @@ details.obj .proof { font-size: 14px; color: var(--muted); margin-top: 6px; }
 /* The receiver floor: the chip for the level the speakers need carries a tag; the levels below it are not rendered at all. */
 .chips button.need::after { content: "need"; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-left: 7px; padding: 1px 6px; border-radius: 999px; background: var(--good); color: var(--surface); vertical-align: 1px; }
 .chips button.need[aria-pressed="true"]::after { background: var(--accent-ink); color: var(--accent); }
+
+/* two systems side by side */
+.cmpbar { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; margin-top: 4px; border-top: 1px solid var(--line); }
+.cmpbar p { margin: 0; }
+.cmpbar .row { flex-wrap: wrap; gap: 8px; }
+.cmpform { max-height: 96dvh; max-width: 760px; gap: 14px; }
+.cmp { display: grid; grid-template-columns: minmax(58px, .62fr) 1fr 1fr; font-size: 14px; border-top: 1px solid var(--line); }
+.cmp > div { padding: 9px 6px; border-bottom: 1px solid var(--line); min-width: 0; }
+.cmp .k { color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; align-self: center; padding-left: 0; }
+.cmp .corner { border-bottom: 2px solid var(--fg); align-self: stretch; }
+.cmp .c.rec, .cmp .hd.rec { background: var(--accent-soft); }
+.cmp .hd { display: flex; flex-direction: column; gap: 4px; border-bottom: 2px solid var(--fg); cursor: pointer; }
+.cmp .hd.rec { border-bottom-color: var(--accent); }
+.cmp .hd .thumb { width: 64px; height: 64px; }
+.cmp .hd .tag { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+.cmp .hd.rec .tag { color: var(--accent); }
+.cmp .hd .nm { font-family: var(--font-display); font-size: 17px; font-weight: 700; line-height: 1.15; }
+.cmp .hd .cfg { color: var(--muted); font-size: 13px; }
+.cmp .v small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.3; }
+.cmp .v b { display: block; font-weight: 600; font-variant-numeric: tabular-nums; margin-bottom: 4px; }
+.cmp .v b:last-child { margin-bottom: 0; }
+.cmp .v b small { display: inline; font-size: 12px; margin-left: 1px; }
+.cmp .v.none { color: var(--muted); }
+.cmp .total b { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cmp .q { align-self: center; }
+.cmp .q .dots i { width: 9px; height: 9px; }
+.diff { padding: 12px 14px; border: 1px dashed var(--accent); border-radius: var(--radius-sm); background: var(--accent-soft); font-size: 15px; line-height: 1.4; }
+.diff .muted { font-size: 13px; }
+.cmpacts { flex-wrap: wrap; gap: 8px; }

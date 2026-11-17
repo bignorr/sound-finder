@@ -228,7 +228,30 @@
       <div id="sumFin"></div>
       <div class="inst"><span>Install, labor only <span class="muted small coach" id="instKind"></span></span><b id="sumInst"></b></div>
       <p class="muted small" id="sumNote"></p>
+      <div class="cmpbar" id="cmpBar">
+        <p class="small" id="cmpInfo"></p>
+        <div class="row">
+          <button class="btn" type="button" id="cmpPin">Pin this as option A</button>
+          <button class="btn primary" type="button" id="cmpOpen" hidden>Compare A with this</button>
+          <button class="btn link" type="button" id="cmpLoad" hidden>Open A</button>
+          <button class="btn link" type="button" id="cmpClear" hidden>Clear A</button>
+        </div>
+      </div>
     </div>
+    <dialog class="sheet" id="cmpSheet" aria-label="Two systems side by side">
+      <form method="dialog" class="sheetform cmpform">
+        <div class="row between">
+          <p class="eyebrow">Side by side</p>
+          <button class="btn link" type="submit" value="close">Done</button>
+        </div>
+        <div id="cmpBody"></div>
+        <div class="row cmpacts">
+          <button class="btn" type="button" id="cmpRec">Recommend A instead</button>
+          <button class="btn" type="button" id="cmpSwap">Swap A and B</button>
+          <button class="btn coach" type="button" id="cmpCopy">Copy comparison</button>
+        </div>
+      </form>
+    </dialog>
     <div class="card coach sowbox" id="sowCard" hidden>
       <div class="row between">
         <p class="eyebrow">Scope of work draft</p>
@@ -1065,6 +1088,7 @@
     $("sumNote").textContent = (r.lines.length + (rc ? 1 : 0) + acc.filter(function (a) { return a.on; }).length) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Install is your Settings range; Budget Builder sets the quote.";
     $("bbyBtn").onclick = function () { window.open(bby(s.brand + " " + s.series), "_blank", "noopener"); };
     if (!$("sowCard").hidden) $("sowText").value = sowText();
+    renderCmpBar();
     persist();
   }
   function barHasSub(s) { return !!(s.subIn || (state.barSub && s.sub)); }
@@ -1108,8 +1132,113 @@
     $("sumNote").textContent = (r.lines.length + acc.filter(function (a) { return a.on; }).length) + " line items · " + s.cfg + " · Best Buy prices as of Nov 15, 2026. Install is your Settings range; Budget Builder sets the quote.";
     $("bbyBtn").onclick = function () { window.open(s.sku ? "https://www.bestbuy.com/site/" + s.sku + ".p" : bby(s.brand + " " + s.m), "_blank", "noopener"); };
     if (!$("sowCard").hidden) $("sowText").value = sowText();
+    renderCmpBar();
   }
   document.addEventListener("sf-settings", render);
+
+  // ---------- Two systems side by side ----------
+  // Pin the build on screen as option A, build the other one, then show both next to each other with the difference in dollars and per month.
+  // A is a saved copy of the builder state, so it is priced live every time; B is always whatever is on screen.
+  const CMP_KEY = "sf-compare";
+  let CMP = null;
+  try { CMP = JSON.parse(localStorage.getItem(CMP_KEY) || "null"); } catch (e) {}
+  if (CMP && (!CMP.a || typeof CMP.a !== "object")) CMP = null;
+  function saveCmp() { try { if (CMP) localStorage.setItem(CMP_KEY, JSON.stringify(CMP)); else localStorage.removeItem(CMP_KEY); } catch (e) {} }
+  function snapshot() { return JSON.parse(JSON.stringify(state)); }
+  function applyState(snap) { Object.assign(state, JSON.parse(JSON.stringify(snap))); }
+  function withState(snap, fn) { const keep = snapshot(); applyState(snap); try { return fn(); } finally { applyState(keep); } }
+  function summarize() {
+    const s = currentSeries(); const r = build(s); const rc = receiver(); const acc = accessories(r, rc); const accSum = accTotal(acc);
+    const grand = r.total + (rc ? rc.total : 0) + accSum;
+    return { id: s.id, bar: !!s.bar, name: s.bar ? s.brand + " " + s.m : s.brand + " " + s.series, cfg: configString(), lines: r.lines, spk: r.total, rc: rc, accSum: accSum, grand: grand, plan: SALES.plan(grand), inst: SALES.installBand(installKind()), q: (window.SF_QUAL || {})[s.id] || null };
+  }
+  function cmpSame() { return !!CMP && JSON.stringify(CMP.a) === JSON.stringify(snapshot()); }
+  function renderCmpBar() {
+    if (!CMP) {
+      $("cmpInfo").innerHTML = "<b>Two systems side by side.</b> Pin this one as option A, build the other, then compare them with the difference in dollars and per month.";
+      $("cmpPin").hidden = false; $("cmpOpen").hidden = true; $("cmpLoad").hidden = true; $("cmpClear").hidden = true; return;
+    }
+    const a = withState(CMP.a, summarize); const same = cmpSame();
+    $("cmpInfo").innerHTML = "<b>Option A:</b> " + esc(a.name) + " · " + esc(a.cfg) + " · " + money(a.grand) + (same ? ". This is A; build option B, then compare." : "");
+    $("cmpPin").hidden = true; $("cmpOpen").hidden = false; $("cmpOpen").disabled = same; $("cmpLoad").hidden = same; $("cmpClear").hidden = false;
+  }
+  // Lines grouped the way a customer thinks about them, in a fixed order, so the two columns line up row for row.
+  const CMP_GROUPS = [["Soundbar", /^soundbar/i], ["Fronts", /^front/i], ["Center", /^center/i], ["Side surrounds", /\(sides\)/i], ["Rears", /\(rear\)|^rear speakers/i], ["Heights", /^height/i], ["Subwoofer", /^sub/i], ["Mount", /mount/i]];
+  function cmpGroup(role) { const g = CMP_GROUPS.find(function (x) { return x[1].test(role); }); return g ? g[0] : role; }
+  function cmpCell(lines) {
+    if (!lines || !lines.length) return "<div class='v none'>—</div>";
+    return "<div class='v'>" + lines.map(function (l) { return "<small>" + esc(l.brand + " " + l.model) + (l.qty > 1 ? " × " + l.qty : "") + "</small><b>" + (l.included ? "Included" : money(l.total)) + "</b>"; }).join("") + "</div>";
+  }
+  function cmpRcCell(x) {
+    if (x.bar) return "<div class='v'><small>Built into the bar</small><b>$0</b></div>";
+    if (!x.rc) return "<div class='v'><small>Customer's own</small><b>$0</b></div>";
+    return "<div class='v'><small>" + esc(x.rc.brand + " " + x.rc.short) + (x.rc.qty > 1 ? " × " + x.rc.qty : "") + "</small><b>" + money(x.rc.total) + "</b></div>";
+  }
+  function dotsHtml(n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; }
+  function cmpHtml(a, b) {
+    const rec = CMP.rec === "a" ? "a" : "b";
+    const head = function (x, k) { return "<div class='hd" + (rec === k ? " rec" : "") + "'>" + (IMG ? IMG.lead(x.id) : "") + "<span class='tag'>" + (rec === k ? "Recommended" : "Option " + k.toUpperCase()) + "</span><span class='nm'>" + esc(x.name) + "</span><span class='cfg'>" + esc(x.cfg) + "</span></div>"; };
+    const cls = function (k) { return rec === k ? " rec" : ""; };
+    let h = "<div class='cmp'><div class='k corner'></div>" + head(a, "a") + head(b, "b");
+    const groups = []; [a, b].forEach(function (x) { x.lines.forEach(function (l) { const g = cmpGroup(l.role); if (groups.indexOf(g) < 0) groups.push(g); }); });
+    groups.sort(function (p, q) { const r = function (g) { const i = CMP_GROUPS.findIndex(function (x) { return x[0] === g; }); return i < 0 ? 99 : i; }; return r(p) - r(q); });
+    groups.forEach(function (g) {
+      const la = a.lines.filter(function (l) { return cmpGroup(l.role) === g; }), lb = b.lines.filter(function (l) { return cmpGroup(l.role) === g; });
+      h += "<div class='k'>" + esc(g) + "</div><div class='c" + cls("a") + "'>" + cmpCell(la) + "</div><div class='c" + cls("b") + "'>" + cmpCell(lb) + "</div>";
+    });
+    h += "<div class='k'>" + (a.rc && a.rc.sonos || b.rc && b.rc.sonos ? "Amplifier" : "Receiver") + "</div><div class='c" + cls("a") + "'>" + cmpRcCell(a) + "</div><div class='c" + cls("b") + "'>" + cmpRcCell(b) + "</div>";
+    h += "<div class='k'>Cables and accessories</div><div class='c" + cls("a") + "'><div class='v'><b>" + money(a.accSum) + "</b></div></div><div class='c" + cls("b") + "'><div class='v'><b>" + money(b.accSum) + "</b></div></div>";
+    h += "<div class='k'>System total</div><div class='c total" + cls("a") + "'><b>" + money(a.grand) + "</b></div><div class='c total" + cls("b") + "'><b>" + money(b.grand) + "</b></div>";
+    const per = function (x) { return x.plan ? "<b>" + money(x.plan.per) + "<small>/mo</small></b><small>" + x.plan.months + " months, Best Buy card</small>" : "<small>No promo covers this total</small>"; };
+    h += "<div class='k'>Per month</div><div class='c" + cls("a") + "'><div class='v'>" + per(a) + "</div></div><div class='c" + cls("b") + "'><div class='v'>" + per(b) + "</div></div>";
+    h += "<div class='k'>Install, labor</div><div class='c" + cls("a") + "'><div class='v'><small>" + money(a.inst.low) + " to " + money(a.inst.high) + "</small></div></div><div class='c" + cls("b") + "'><div class='v'><small>" + money(b.inst.low) + " to " + money(b.inst.high) + "</small></div></div>";
+    if (a.q && b.q) {
+      [["Detail", "detail"], ["Bass", "bass"], ["Dynamics", "dyn"], ["Imaging", "imaging"], ["Build", "build"]].forEach(function (p) {
+        h += "<div class='k'>" + p[0] + "</div><div class='c q" + cls("a") + "'>" + dotsHtml(a.q[p[1]]) + "</div><div class='c q" + cls("b") + "'>" + dotsHtml(b.q[p[1]]) + "</div>";
+      });
+      h += "<div class='k'>Best for</div><div class='c" + cls("a") + "'><div class='v'><small>" + esc(a.q.best.join(" · ")) + "</small></div></div><div class='c" + cls("b") + "'><div class='v'><small>" + esc(b.q.best.join(" · ")) + "</small></div></div>";
+    }
+    h += "</div>";
+    // the difference, read from the recommended side
+    const R = rec === "a" ? a : b, O = rec === "a" ? b : a, rk = rec.toUpperCase(), ok = rec === "a" ? "B" : "A";
+    const d = R.grand - O.grand; const dm = R.plan && O.plan && R.plan.months === O.plan.months ? R.plan.per - O.plan.per : null;
+    const amt = function (n) { return money(Math.abs(n)); };
+    h += "<div class='diff'>" + (d === 0 ? "<b>Same price.</b> " + rk + " and " + ok + " come to " + money(R.grand) + "." :
+      "<b>" + rk + " is " + amt(d) + " " + (d > 0 ? "more" : "less") + " than " + ok + ".</b>" + (dm !== null ? " About " + amt(dm) + " " + (dm > 0 ? "more" : "less") + " a month over " + R.plan.months + " months." : R.plan && O.plan ? " " + money(R.plan.per) + "/mo against " + money(O.plan.per) + "/mo." : "")) +
+      (d > 0 && R.plan ? " <span class='muted'>That is " + money(Math.max(1, Math.round(d / (R.plan.months * 30)))) + " a day for as long as the payments run.</span>" : "") + "</div>";
+    return h;
+  }
+  function cmpText(a, b) {
+    const rec = CMP.rec === "a" ? "a" : "b";
+    const one = function (x, k) {
+      const out = ["OPTION " + k.toUpperCase() + (rec === k ? " (recommended)" : "") + ": " + x.name + " · " + x.cfg];
+      x.lines.forEach(function (l) { out.push("  " + cmpGroup(l.role) + ": " + l.brand + " " + l.model + (l.qty > 1 ? " x" + l.qty : "") + " — " + (l.included ? "included" : money(l.total))); });
+      out.push("  Receiver: " + (x.bar ? "built into the bar" : x.rc ? x.rc.brand + " " + x.rc.short + " — " + money(x.rc.total) : "customer's own"));
+      out.push("  Cables and accessories: " + money(x.accSum));
+      out.push("  SYSTEM TOTAL " + money(x.grand) + (x.plan ? " · about " + money(x.plan.per) + "/mo for " + x.plan.months + " months on the Best Buy card" : "") + " · install " + money(x.inst.low) + " to " + money(x.inst.high) + " labor");
+      return out.join("\n");
+    };
+    const R = rec === "a" ? a : b, O = rec === "a" ? b : a, d = R.grand - O.grand;
+    const diff = d === 0 ? "Same price." : rec.toUpperCase() + " is " + money(Math.abs(d)) + (d > 0 ? " more" : " less") + " than " + (rec === "a" ? "B" : "A") + (R.plan && O.plan && R.plan.months === O.plan.months ? ", about " + money(Math.abs(R.plan.per - O.plan.per)) + (R.plan.per - O.plan.per > 0 ? " more" : " less") + " a month" : "") + ".";
+    return [one(a, "a"), "", one(b, "b"), "", "DIFFERENCE: " + diff, "", "Best Buy list prices; confirm today's price and stock. Install is an estimate until Budget Builder."].join("\n");
+  }
+  let cmpPair = null;
+  function openCompare() {
+    if (!CMP) return;
+    cmpPair = { a: withState(CMP.a, summarize), b: summarize() };
+    $("cmpBody").innerHTML = cmpHtml(cmpPair.a, cmpPair.b);
+    $("cmpRec").textContent = (CMP.rec === "a" ? "Recommend B" : "Recommend A") + " instead";
+    const d = $("cmpSheet"); if (!d.open) { if (d.showModal) d.showModal(); else d.setAttribute("open", ""); }
+    d.querySelector(".sheetform").scrollTop = 0;
+  }
+  $("cmpPin").addEventListener("click", function () { CMP = { a: snapshot(), rec: "b", at: Date.now() }; saveCmp(); renderCmpBar(); toast("Pinned as option A. Now build B."); });
+  $("cmpOpen").addEventListener("click", openCompare);
+  $("cmpLoad").addEventListener("click", function () { if (!CMP) return; applyState(CMP.a); persist(); render(); toast("Option A is on screen"); });
+  $("cmpClear").addEventListener("click", function () { CMP = null; saveCmp(); renderCmpBar(); });
+  $("cmpRec").addEventListener("click", function () { if (!CMP) return; CMP.rec = CMP.rec === "a" ? "b" : "a"; saveCmp(); openCompare(); });
+  $("cmpSwap").addEventListener("click", function () { if (!CMP) return; const cur = snapshot(); applyState(CMP.a); CMP.a = cur; saveCmp(); persist(); render(); openCompare(); toast("Swapped: what was on screen is now A"); });
+  $("cmpCopy").addEventListener("click", function () { if (cmpPair) copyText(cmpText(cmpPair.a, cmpPair.b), "Comparison copied"); });
+  $("cmpBody").addEventListener("click", function (e) { const hd = e.target.closest(".hd"); if (!hd || !CMP) return; const idx = Array.prototype.indexOf.call(hd.parentNode.querySelectorAll(".hd"), hd); CMP.rec = idx === 0 ? "a" : "b"; saveCmp(); openCompare(); });
 
   // Finalized list for the clipboard: speakers, receiver, system total, with the date and a verify line.
   function listText() {
