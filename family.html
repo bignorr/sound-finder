@@ -22,6 +22,7 @@
 <script src="data.js"></script>
 <script src="images.js"></script>
 <script src="bars.js"></script>
+<script src="bundles.js"></script>
 <script src="sales.js"></script>
 </head>
 <body>
@@ -188,6 +189,29 @@
       <p class="muted small" id="totalNote"></p>
     </div>
     <div class="card alt coach" id="kitNote" hidden></div>
+    <div class="card bundles" id="bundleCard" hidden>
+      <div class="row between">
+        <p class="eyebrow">Package deals</p>
+        <span class="muted small" id="bundleAsOf"></span>
+      </div>
+      <p class="muted small coach" id="bundleIntro">A package that fits this build prices lower than the lines add up to. Tap one and the list, totals, side-by-side and SOW all use the package price.</p>
+      <div id="bundleList"></div>
+      <details class="storeb coach" id="storeBundle">
+        <summary>Store bundle from norrito</summary>
+        <div class="sgroup">
+          <div class="row">
+            <label>Package price<input id="cbPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="1499"></label>
+            <label class="chk"><input type="checkbox" id="cbAmp"> Receiver rings up in it</label>
+          </div>
+          <label>Name it<input id="cbName" type="text" placeholder="Mag 5.1 + Denon bundle" autocomplete="off"></label>
+          <div class="row">
+            <button class="btn primary" type="button" id="cbSave">Save and use</button>
+            <button class="btn link" type="button" id="cbClear" hidden>Remove</button>
+          </div>
+          <p class="muted small">Saved on this phone for this family and layout. It stands in for every speaker line; tick the box when the receiver on screen is part of the package too.</p>
+        </div>
+      </details>
+    </div>
     <div class="card" id="avrCard">
       <div class="row between">
         <p class="eyebrow">Receiver</p>
@@ -485,8 +509,8 @@
       tower: { m: "MAG8R 8 in in-ceiling (pair)", pair: 249, note: "Comp. value $1,099; sold in pairs only" }, bookshelf: { m: "MAG6R 6.5 in in-ceiling (pair)", pair: 149, note: "Comp. value $749; sold in pairs only" },
       center: { m: "MAG6R (one more pair; use one as center)", each: 149, note: "Mag has no in-wall center; the MAG5.1R puts a third ceiling speaker above the screen. For real dialog from the screen wall, step up to a VX62 LCR or VP62 LCR." },
       surround: { m: "MAG6R in-ceiling (pair)", pair: 149 }, inceiling: { m: "MAG6R in-ceiling (pair)", pair: 149 },
-      sub: { m: "MS10SUB 10 in 275 W", each: 429 }, subAlt: { m: "MAG5.1R complete 5.1 in-ceiling system", each: 499 },
-      kit: "MAG5.1R: five MAG6R-class in-ceilings + MS10SUB for $499 (comp $2,499). MAG5.1 Premium: three MAG6 LCR in-walls, two MAG6R SUR, MS10SUB, wireless kit for $1,199 (comp $4,499)." },
+      sub: { m: "MS10SUB 10 in 275 W", each: 429 }, subAlt: { m: "MAG5.1R complete 5.1 in-ceiling system", each: 749 },
+      kit: "The packages are the price story: MAG5.1R, five in-ceilings plus the MS8 SUB, $749 (comp $2,499; $499 to $699 on sale days). MAG5.1 PREMIUM, three MAG6 LCR in-walls, two MAG6R SUR, MS10SUB and the wireless kit, $1,199 (comp $4,499). Set the build to 5.1 and the Package deals card prices them." },
     { id: "sonance-vx", brand: "Sonance", series: "Visual Experience", tier: "mid", arch: true,
       tower: { m: "VX62 6.5 in in-wall (pair)", pair: 550 }, bookshelf: { m: "VX62R 6.5 in in-ceiling (pair)", pair: 550 },
       center: { m: "VX62 LCR in-wall", each: 440 },
@@ -599,14 +623,16 @@
       premium: { brand: "Marantz", m: "Cinema 50 9.4-ch receiver", cur: "strong", price: 2800, why: "110 W HDAM, 9.4 channels; the premium pick under B&W, KEF R and Motion XT",
         alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 100 W, 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" }] },
       reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: 15.4 processing, 200 W x 16 at 8 ohms, high-current enough for electrostatics and 4-ohm Blades. Denon AVR-A1H ($7,199) if it has to be one box",
-        alts: [{ brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier", cur: "strong", short: "AVP45 + AVA15", price: 10500, role: "Separates", sku: "6679207", why: "$5,999.95 + $4,499.95: Arcam's 16-channel processor in front of the AVA15's nine amplified channels; all Arcam, Dirac-ready" },
+        alts: [{ brand: "Marantz", m: "AV 20 processor + AMP 20 12-ch amplifier", cur: "strong", short: "AV 20 + AMP 20", price: 12000, role: "Separates", why: "bestbuy.com package price $12,000: the new Marantz separates, 13.4 processing in front of 200 W x 12; the step between a Cinema 30 and the AV 10 + AMP 10" },
+               { brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier", cur: "strong", short: "AVP45 + AVA15", price: 10500, role: "Separates", sku: "6679207", why: "$5,999.95 + $4,499.95: Arcam's 16-channel processor in front of the AVA15's nine amplified channels; all Arcam, Dirac-ready" },
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RB-1552 MKII 2-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RB-1552", price: 14498, role: "Separates", sku: "6571770", why: "$8,000 + $4,799 + $1,699: nine channels of Rotel Class AB (155 W x 7 plus 130 W x 2 for the heights)" }] } },
     11: { need: "11 amplified channels",
       value: { brand: "Pioneer Elite", m: "VSX-LX805 11.4-ch receiver", cur: "strong", price: 1699, why: "150 W x 11, Dirac Live, balanced pre-outs; comp value $2,999" },
       mid: { brand: "Denon", m: "AVR-X6800H 11.4-ch receiver", cur: "strong", price: 3799, why: "Made in Japan, 140 W x 11; drives a 7.2.4 with no outboard amp" },
       premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", cur: "strong", price: 4800, why: "The reference Marantz: 140 W x 11, 13.4 pre-outs, HDAM SA-2 modules" },
       reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: the top of the Marantz line, 200 W x 16, drives a 7.4.4 with channels to spare. Denon AVR-A1H ($7,199, 15 channels) is the one-box option",
-        alts: [{ brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RMB-1555 5-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RMB-1555", price: 15298, role: "Separates", sku: "6571770", why: "$8,000 + $4,799 + $2,499: twelve channels of Rotel Class AB for a 7.4.4" },
+        alts: [{ brand: "Marantz", m: "AV 20 processor + AMP 20 12-ch amplifier", cur: "strong", short: "AV 20 + AMP 20", price: 12000, role: "Separates", why: "bestbuy.com package price $12,000: 13.4 processing and 200 W x 12, so an 11-channel room with one amp box; the new Marantz separates under AV 10 + AMP 10" },
+               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RMB-1555 5-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RMB-1555", price: 15298, role: "Separates", sku: "6571770", why: "$8,000 + $4,799 + $2,499: twelve channels of Rotel Class AB for a 7.4.4" },
                { brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier + Rotel RB-1552 MKII", cur: "strong", short: "AVP45 + AVA15 + RB-1552", price: 12199, role: "Separates", sku: "6679207", why: "$5,999.95 + $4,499.95 + $1,699: Arcam processing and nine Arcam channels, Rotel for the last two" }] } },
   };
   const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
@@ -618,9 +644,45 @@
   const SALES = window.SF_SALES;
   const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
     acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all",
-    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrAlt: "" };
+    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrAlt: "", bundle: "" };
   // WiiM streaming amps (bars.js): a 2-channel alternative to a receiver for stereo and 2.1 music rooms.
   const WIIM = (window.SF_WIIM && window.SF_WIIM.amps) || null;
+  // Package deals (bundles.js): a complete system or a receiver-plus-speakers package that prices lower than the lines add up to.
+  const BUNDLES = (window.SF_BUNDLES && window.SF_BUNDLES.list) || [];
+  const BUNDLES_ASOF = (window.SF_BUNDLES && window.SF_BUNDLES.asOf) || "";
+  // Lines grouped the way a customer thinks about them, in a fixed order; packages and the side-by-side both use these names.
+  const ROLE_GROUPS = [["Soundbar", /^soundbar/i], ["Fronts", /^front/i], ["Center", /^center/i], ["Side surrounds", /\(sides\)/i], ["Rears", /\(rear\)|^rear speakers/i], ["Heights", /^height/i], ["Subwoofer", /^sub/i], ["Mount", /mount/i], ["Package", /^package/i]];
+  function roleGroup(role) { const g = ROLE_GROUPS.find(function (x) { return x[1].test(role); }); return g ? g[0] : role; }
+  const SPEAKER_GROUPS = ["Fronts", "Center", "Side surrounds", "Rears", "Heights", "Subwoofer"];
+  // A store bundle you keyed in from norrito for this family and layout; kept on this phone.
+  function bundleKey() { return [state.series, state.around, state.heights, state.subs, state.fronts].join("|"); }
+  function customBundles() { try { return JSON.parse(localStorage.getItem("sf-bundle-custom") || "{}") || {}; } catch (e) { return {}; } }
+  function customBundle() {
+    const c = customBundles()[bundleKey()]; if (!c || !(c.price > 0)) return null;
+    return { id: "custom", custom: true, kind: "store", brand: "Store bundle", name: c.name || "Store bundle price", price: +c.price, amp: c.amp || null, at: c.at, thumb: c.amp ? "avr" : "bookshelf",
+      replaces: SPEAKER_GROUPS, includes: "Every speaker line on this build" + (c.amp ? " and the " + c.amp.brand + " " + c.amp.m : "") + ", at the package price norrito showed", note: "Keyed in on this phone" + (c.at ? " " + new Date(c.at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "") + "; bundle prices change weekly, so check it again before you quote." };
+  }
+  function saveCustomBundle(obj) { const all = customBundles(); if (obj) all[bundleKey()] = obj; else delete all[bundleKey()]; try { localStorage.setItem("sf-bundle-custom", JSON.stringify(all)); } catch (e) {} }
+  // Packages that fit the build on screen: series, speaker count, heights, subs, fronts, surround and height type all have to agree.
+  function bundlesFor(s) {
+    if (!s || s.bar) return [];
+    const ctx = { series: s.id, around: state.around, heights: state.heights, subs: state.subs, fronts: state.fronts, surroundType: surroundType(), heightType: s.height ? state.heightType : "inceiling" };
+    const out = BUNDLES.filter(function (b) { return b.covers && Object.keys(b.covers).every(function (k) { return b.covers[k].indexOf(ctx[k]) >= 0; }); });
+    const c = customBundle(); if (c) out.unshift(c);
+    return out;
+  }
+  function activeBundle(s) { if (!state.bundle || !s || s.bar) return null; return bundlesFor(s).find(function (b) { return b.id === state.bundle; }) || null; }
+  // The build with the package in place of the lines it covers: one package line at the package price, the rest untouched.
+  function bundled(r) {
+    const b = activeBundle(r.series); if (!b) return r;
+    const covered = r.lines.filter(function (l) { return b.replaces.indexOf(roleGroup(l.role)) >= 0; });
+    const keep = r.lines.filter(function (l) { return b.replaces.indexOf(roleGroup(l.role)) < 0; });
+    const line = { role: "Package" + (b.amp ? " · speakers + amp" : ""), brand: b.brand === "Store bundle" ? r.series.brand : b.brand, model: b.name, qty: 1, each: b.price, total: b.price,
+      note: b.includes + (b.comp ? " · comp. value " + money(b.comp) : ""), kind: b.thumb || "bookshelf", sku: b.sku, q: (b.brand === "Store bundle" ? r.series.brand : b.brand) + " " + b.name, nosku: !!b.custom, bundle: b.id };
+    const lines = [line].concat(keep);
+    return { series: r.series, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0), bundle: b, covered: covered, raw: r };
+  }
+  function ampInBundle(s) { const b = activeBundle(s || currentSeries()); return b && b.amp ? b.amp : null; }
   // Soundbar systems Best Buy sells and ships (bestbuy.com, checked Nov 15, 2026). price = the bar as sold (with whatever ships in the box).
   // subIn / rearsIn = ships with them. sub / rears = the brand's own wireless add-on when it does not. tier by bar price: value < $900, mid to $1,500, premium above.
   const BARS = window.SF_BARS || [];
@@ -746,6 +808,7 @@
   const syncAvr = function () { Array.prototype.forEach.call(avrBtns, function (b) { b.setAttribute("aria-pressed", String(state.avr === "wiim" ? b.dataset.v === "wiim" : b.dataset.v === avrTier())); }); };
   Array.prototype.forEach.call(avrBtns, function (b) { b.addEventListener("click", function () { state.avr = b.dataset.v; persist(); render(); }); });
   $("avrAuto").addEventListener("click", function (e) {
+    if (e.target.closest("#bundleOff")) { state.bundle = ""; persist(); render(); return; }
     if (e.target.closest("#avrReset")) { state.avr = "auto"; state.wiim = "auto"; persist(); render(); return; }
     const w = e.target.closest("button[data-wiim]"); if (w) { state.wiim = w.dataset.wiim; persist(); render(); }
   });
@@ -816,7 +879,9 @@
     persist(); render();
   });
 
-  function build(sArg) {
+  function build(sArg) { const r = rawBuild(sArg); return !r.series.bar && r.series.id === state.series ? bundled(r) : r; }
+  function receiver(sArg) { const s = sArg || currentSeries(); if (!s.bar && s.id === state.series && ampInBundle(s)) return null; return rawReceiver(sArg); }
+  function rawBuild(sArg) {
     const s = sArg || currentSeries();
     const lines = [];
     const add = function (role, brand, model, qty, each, note, kind, extra) { lines.push(Object.assign({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }, extra || {})); };
@@ -879,7 +944,7 @@
   function channels() { return state.around + state.heights; }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11].find(function (c) { return n <= c; }) || 11; }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
-  function receiver(sArg) {
+  function rawReceiver(sArg) {
     const s = sArg || currentSeries(); if (s.bar) return null; const tier = tierFor(s); const n = channels();
     if (s.id === "sonos-arch") {
       if (tier === "none") return null;
@@ -1026,7 +1091,9 @@
     hc.disabled = !s.height;
     $("heightTypeChips").querySelector("[data-v='inceiling']").textContent = s.inceiling || s.arch ? "In-ceiling" : "In-ceiling (Klipsch)";
     if (!s.height && state.heightType === "series") { hc.setAttribute("aria-pressed", "false"); $("heightTypeChips").querySelector("[data-v='inceiling']").setAttribute("aria-pressed", "true"); }
+    if (state.bundle && !bundlesFor(s).some(function (b) { return b.id === state.bundle; })) state.bundle = "";
     const r = build();
+    renderBundles(s, r);
     $("buildLabel").textContent = "The " + configString() + " family" + (s.arch ? " · architectural" : "");
     $("buildHead").textContent = s.brand + " " + s.series;
     const page = BRAND_PAGES[s.brand];
@@ -1039,6 +1106,7 @@
     // receiver
     syncAvr();
     const rc = receiver(); const n = channels(); const tier = avrTier();
+    const ampIn = ampInBundle(s);
     $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
     $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" ? "Amplifier" : "What you need, then above it";
     if (state.avr === "wiim" && !wiimOK()) state.avr = "auto";
@@ -1062,11 +1130,15 @@
       : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>"
       : tier === floor ? "<b>What you need:</b> " + (d ? (floor !== s.tier ? "these speakers want more current than the " + esc(s.tier) + " receiver has, so <b>" + esc(floor) + "</b> is the floor, and only amps with the current for them are offered." : "<b>" + esc(floor) + "</b> is the floor for these speakers, and only amps with the current for them are offered.") : "the series' <b>" + esc(floor) + "</b> level is the floor.") + aboveText + wiimText
       : "Stepped up to <b>" + esc(tier) + "</b>, above the floor. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>";
-    $("avrLines").innerHTML = rc ? lineHtml(rc) + (rc.alts && rc.alts.length ? "<p class='muted small alts'>" + (rc.isAlt ? "Instead of the " + esc(rc.base.brand + " " + rc.base.m.replace(/ \d+\.\d-ch.*$/, "")) + " (" + money(rc.base.price) + "). " : "Or: ") +
+    if (ampIn) {
+      Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = true; });
+      $("avrAuto").innerHTML = "The package brings its own amplifier, so no separate receiver is quoted. <button type='button' class='btn link' id='bundleOff'>Drop the package</button> to price a receiver on its own.";
+    }
+    $("avrLines").innerHTML = ampIn ? lineHtml({ role: "Amplifier · in the package", brand: ampIn.brand, model: ampIn.m, qty: 1, each: 0, total: 0, note: ampIn.why || "", kind: "avr", sku: ampIn.sku, included: true, q: ampIn.brand + " " + ampIn.m }) : rc ? lineHtml(rc) + (rc.alts && rc.alts.length ? "<p class='muted small alts'>" + (rc.isAlt ? "Instead of the " + esc(rc.base.brand + " " + rc.base.m.replace(/ \d+\.\d-ch.*$/, "")) + " (" + money(rc.base.price) + "). " : "Or: ") +
       (rc.isAlt ? "<button type='button' class='btn link' data-alt='" + esc(rc.brand + " " + rc.model) + "'>Back to " + esc(rc.base.brand) + "</button> · " : "") +
       rc.alts.filter(function (x) { return !rc.isAlt || x.brand + " " + x.m !== rc.brand + " " + rc.model; }).map(function (x) { return "<button type='button' class='btn link' data-alt='" + esc(x.brand + " " + x.m) + "'>" + esc(x.brand + " " + x.m.replace(/ \d+\.\d-ch.*$/, "")) + " " + money(x.price) + "</button>"; }).join(" · ") + "</p>" : "") : "";
     // speaker load vs. receiver
-    const warn = loadCheck(s, rc);
+    const warn = ampIn ? null : loadCheck(s, rc);
     $("loadWarn").hidden = !warn;
     $("loadWarn").innerHTML = warn ? "<div class='warn " + (warn.kind || "") + "'>" + warn.html + "</div>" : "";
     // cables and accessories
@@ -1077,8 +1149,8 @@
     // finalized totals
     const grand = r.total + (rc ? rc.total : 0) + accSum;
     $("sumSpk").textContent = money(r.total);
-    $("sumAvrLabel").textContent = rc ? (rc.sonos ? "Sonos Amp" + (rc.qty > 1 ? "s (" + rc.qty + ")" : "") : rc.brand + " " + rc.short) : "Receiver";
-    $("sumAvr").textContent = rc ? money(rc.total) : "Customer's own";
+    $("sumAvrLabel").textContent = rc ? (rc.sonos ? "Sonos Amp" + (rc.qty > 1 ? "s (" + rc.qty + ")" : "") : rc.brand + " " + rc.short) : ampIn ? ampIn.brand + " " + ampIn.m : "Receiver";
+    $("sumAvr").textContent = rc ? money(rc.total) : ampIn ? "In the package" : "Customer's own";
     $("sumAcc").textContent = money(accSum);
     $("sumTotal").textContent = money(grand);
     $("sumFin").innerHTML = SALES.monthlyHtml(grand) || "<p class='muted small'>No financing promo covers " + money(grand) + ". Check the promo table in Settings.</p>";
@@ -1095,6 +1167,7 @@
   function barHasRears(s) { return !!(s.rearsIn || (state.barRears && s.rears)); }
   function renderBar() {
     const s = currentSeries();
+    $("bundleCard").hidden = true;
     const r = build(s);
     // chips reflect what this bar ships with: no "bar only" when the sub is in the box, no rears choice when the brand offers none
     const sc = $("barSubChips"), rcps = $("barRearsChips");
@@ -1136,6 +1209,44 @@
   }
   document.addEventListener("sf-settings", render);
 
+  // ---------- Package deals ----------
+  // The card lists every package that fits the build, with what it stands in for and what the same lines cost one by one.
+  function renderBundles(s, r) {
+    const list = bundlesFor(s); const card = $("bundleCard");
+    card.hidden = false; card.classList.toggle("coach", !list.length);
+    $("bundleAsOf").textContent = BUNDLES_ASOF ? "bestbuy.com " + BUNDLES_ASOF : "";
+    const raw = r.raw || rawBuild(s); const rawRc = rawReceiver();
+    const act = activeBundle(s);
+    $("bundleList").innerHTML = list.map(function (b) {
+      const covered = raw.lines.filter(function (l) { return b.replaces.indexOf(roleGroup(l.role)) >= 0; });
+      const lineSum = covered.reduce(function (a, l) { return a + l.total; }, 0) + (b.amp && rawRc ? rawRc.total : 0);
+      const d = lineSum - b.price; const on = act && act.id === b.id;
+      const groups = []; covered.forEach(function (l) { const g = roleGroup(l.role); if (groups.indexOf(g) < 0) groups.push(g); });
+      return "<div class='bundle" + (on ? " on" : "") + "'>" + (IMG ? IMG.thumb(b.brand + " " + b.name, b.thumb || "bookshelf") : "") +
+        "<div class='bt'><span class='kind'>" + esc(b.custom ? "Store bundle" : b.kind === "system" ? b.brand + " system" : "bestbuy.com package") + (b.sku ? " · SKU " + esc(b.sku) : "") + "</span>" +
+        "<div class='bh'><b>" + esc(b.name) + "</b><span class='bp'><b>" + money(b.price) + "</b>" + (b.comp ? "<small>comp. " + money(b.comp) + "</small>" : "") + "</span></div><span class='inc'>" + esc(b.includes) + "</span>" +
+        "<span class='std'>Stands in for " + esc(groups.join(", ").toLowerCase() || "the speakers") + (b.amp ? " and the receiver" : "") + ": " + money(lineSum) + " line by line" + (d > 0 ? ", <em>" + money(d) + " less</em> as the package" : d < 0 ? ", " + money(-d) + " more as the package" : ", same price") + ".</span>" +
+        (b.note ? "<span class='muted small'>" + esc(b.note) + "</span>" : "") +
+        "<button type='button' class='btn " + (on ? "" : "primary") + "' data-bundle='" + esc(b.id) + "'>" + (on ? "Using the package · undo" : "Use the package price") + "</button></div></div>";
+    }).join("") || "<p class='muted small coach'>No bestbuy.com package fits this exact layout. " + (s.brand === "Sonance" ? "Mag 5.1 in-ceiling (MAG5.1R), Mag 5.1 in-wall (MAG5.1 PREMIUM) and the 2.0 TV packages are the ones that exist; set the build to 5.1 or 2.0 to see them. " : "") + "If norrito shows a bundle for these, key it in below.</p>";
+    // store bundle form
+    const cb = customBundles()[bundleKey()];
+    $("cbClear").hidden = !cb;
+    if (document.activeElement !== $("cbPrice") && document.activeElement !== $("cbName")) { $("cbPrice").value = cb ? cb.price : ""; $("cbName").value = cb ? (cb.name || "") : ""; $("cbAmp").checked = !!(cb && cb.amp); }
+  }
+  $("bundleList").addEventListener("click", function (e) {
+    const b = e.target.closest("button[data-bundle]"); if (!b) return;
+    state.bundle = state.bundle === b.dataset.bundle ? "" : b.dataset.bundle; persist(); render();
+    toast(state.bundle ? "Package price on" : "Back to line by line");
+  });
+  $("cbSave").addEventListener("click", function () {
+    const price = parseFloat($("cbPrice").value); if (!(price > 0)) { toast("Type the package price first"); $("cbPrice").focus(); return; }
+    const rc = rawReceiver(); const withAmp = $("cbAmp").checked && rc;
+    saveCustomBundle({ price: price, name: $("cbName").value.trim(), amp: withAmp ? { brand: rc.brand, m: rc.model, sku: rc.sku, why: rc.note } : null, at: new Date().toISOString() });
+    state.bundle = "custom"; persist(); render(); toast("Store bundle saved and in use");
+  });
+  $("cbClear").addEventListener("click", function () { saveCustomBundle(null); if (state.bundle === "custom") state.bundle = ""; persist(); render(); toast("Store bundle removed"); });
+
   // ---------- Two systems side by side ----------
   // Pin the build on screen as option A, build the other one, then show both next to each other with the difference in dollars and per month.
   // A is a saved copy of the builder state, so it is priced live every time; B is always whatever is on screen.
@@ -1150,7 +1261,7 @@
   function summarize() {
     const s = currentSeries(); const r = build(s); const rc = receiver(); const acc = accessories(r, rc); const accSum = accTotal(acc);
     const grand = r.total + (rc ? rc.total : 0) + accSum;
-    return { id: s.id, bar: !!s.bar, name: s.bar ? s.brand + " " + s.m : s.brand + " " + s.series, cfg: configString(), lines: r.lines, spk: r.total, rc: rc, accSum: accSum, grand: grand, plan: SALES.plan(grand), inst: SALES.installBand(installKind()), q: (window.SF_QUAL || {})[s.id] || null };
+    return { id: s.id, bar: !!s.bar, name: s.bar ? s.brand + " " + s.m : s.brand + " " + s.series, cfg: configString(), lines: r.lines, spk: r.total, rc: rc, accSum: accSum, grand: grand, plan: SALES.plan(grand), inst: SALES.installBand(installKind()), q: (window.SF_QUAL || {})[s.id] || null, ampIn: s.bar ? null : ampInBundle(s) };
   }
   function cmpSame() { return !!CMP && JSON.stringify(CMP.a) === JSON.stringify(snapshot()); }
   function renderCmpBar() {
@@ -1162,15 +1273,14 @@
     $("cmpInfo").innerHTML = "<b>Option A:</b> " + esc(a.name) + " · " + esc(a.cfg) + " · " + money(a.grand) + (same ? ". This is A; build option B, then compare." : "");
     $("cmpPin").hidden = true; $("cmpOpen").hidden = false; $("cmpOpen").disabled = same; $("cmpLoad").hidden = same; $("cmpClear").hidden = false;
   }
-  // Lines grouped the way a customer thinks about them, in a fixed order, so the two columns line up row for row.
-  const CMP_GROUPS = [["Soundbar", /^soundbar/i], ["Fronts", /^front/i], ["Center", /^center/i], ["Side surrounds", /\(sides\)/i], ["Rears", /\(rear\)|^rear speakers/i], ["Heights", /^height/i], ["Subwoofer", /^sub/i], ["Mount", /mount/i]];
-  function cmpGroup(role) { const g = CMP_GROUPS.find(function (x) { return x[1].test(role); }); return g ? g[0] : role; }
+  const CMP_GROUPS = ROLE_GROUPS; const cmpGroup = roleGroup;
   function cmpCell(lines) {
     if (!lines || !lines.length) return "<div class='v none'>—</div>";
     return "<div class='v'>" + lines.map(function (l) { return "<small>" + esc(l.brand + " " + l.model) + (l.qty > 1 ? " × " + l.qty : "") + "</small><b>" + (l.included ? "Included" : money(l.total)) + "</b>"; }).join("") + "</div>";
   }
   function cmpRcCell(x) {
     if (x.bar) return "<div class='v'><small>Built into the bar</small><b>$0</b></div>";
+    if (!x.rc && x.ampIn) return "<div class='v'><small>" + esc(x.ampIn.brand + " " + x.ampIn.m) + "</small><b>In the package</b></div>";
     if (!x.rc) return "<div class='v'><small>Customer's own</small><b>$0</b></div>";
     return "<div class='v'><small>" + esc(x.rc.brand + " " + x.rc.short) + (x.rc.qty > 1 ? " × " + x.rc.qty : "") + "</small><b>" + money(x.rc.total) + "</b></div>";
   }
@@ -1181,7 +1291,7 @@
     const cls = function (k) { return rec === k ? " rec" : ""; };
     let h = "<div class='cmp'><div class='k corner'></div>" + head(a, "a") + head(b, "b");
     const groups = []; [a, b].forEach(function (x) { x.lines.forEach(function (l) { const g = cmpGroup(l.role); if (groups.indexOf(g) < 0) groups.push(g); }); });
-    groups.sort(function (p, q) { const r = function (g) { const i = CMP_GROUPS.findIndex(function (x) { return x[0] === g; }); return i < 0 ? 99 : i; }; return r(p) - r(q); });
+    groups.sort(function (p, q) { const r = function (g) { if (g === "Package") return -1; const i = CMP_GROUPS.findIndex(function (x) { return x[0] === g; }); return i < 0 ? 99 : i; }; return r(p) - r(q); });
     groups.forEach(function (g) {
       const la = a.lines.filter(function (l) { return cmpGroup(l.role) === g; }), lb = b.lines.filter(function (l) { return cmpGroup(l.role) === g; });
       h += "<div class='k'>" + esc(g) + "</div><div class='c" + cls("a") + "'>" + cmpCell(la) + "</div><div class='c" + cls("b") + "'>" + cmpCell(lb) + "</div>";
@@ -1213,7 +1323,7 @@
     const one = function (x, k) {
       const out = ["OPTION " + k.toUpperCase() + (rec === k ? " (recommended)" : "") + ": " + x.name + " · " + x.cfg];
       x.lines.forEach(function (l) { out.push("  " + cmpGroup(l.role) + ": " + l.brand + " " + l.model + (l.qty > 1 ? " x" + l.qty : "") + " — " + (l.included ? "included" : money(l.total))); });
-      out.push("  Receiver: " + (x.bar ? "built into the bar" : x.rc ? x.rc.brand + " " + x.rc.short + " — " + money(x.rc.total) : "customer's own"));
+      out.push("  Receiver: " + (x.bar ? "built into the bar" : x.rc ? x.rc.brand + " " + x.rc.short + " — " + money(x.rc.total) : x.ampIn ? x.ampIn.brand + " " + x.ampIn.m + " — in the package" : "customer's own"));
       out.push("  Cables and accessories: " + money(x.accSum));
       out.push("  SYSTEM TOTAL " + money(x.grand) + (x.plan ? " · about " + money(x.plan.per) + "/mo for " + x.plan.months + " months on the Best Buy card" : "") + " · install " + money(x.inst.low) + " to " + money(x.inst.high) + " labor");
       return out.join("\n");
@@ -1262,7 +1372,7 @@
       out.push(rc.sonos ? "AMPLIFIER" : rc.wiim ? "STREAMING AMP (WiiM, 2 channels)" : "RECEIVER (" + rc.tier + " · " + rc.need + ")");
       out.push(line(rc));
       if (rc.note) out.push("  " + rc.note);
-    } else out.push(s.bar ? "RECEIVER: none needed; the bar is the amplifier (TV connects over HDMI eARC)" : "RECEIVER: customer's own");
+    } else { const ai = s.bar ? null : ampInBundle(s); out.push(s.bar ? "RECEIVER: none needed; the bar is the amplifier (TV connects over HDMI eARC)" : ai ? "RECEIVER: " + ai.brand + " " + ai.m + " — included in the package above" : "RECEIVER: customer's own"); }
     const warn = loadCheck(s, rc);
     if (warn) out.push("  NOTE: " + warn.html.replace(/<[^>]+>/g, ""));
     out.push("", "CABLES AND ACCESSORIES");
@@ -1319,7 +1429,7 @@
       out.push(b("TV-link features (" + (s.tv || "same-brand TV") + ") depend on the customer's TV model and firmware"));
       return out.join("\n");
     }
-    if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : ""))); else out.push(b("Receiver: customer's existing unit (confirm channel count and 4-ohm rating)"));
+    if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : ""))); else if (ampInBundle(s)) out.push(b("1 × " + ampInBundle(s).brand + " " + ampInBundle(s).m + " — amplifier, included in the package above")); else out.push(b("Receiver: customer's existing unit (confirm channel count and 4-ohm rating)"));
     acc.forEach(function (a) { out.push(b(a.qty + " × " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
     out.push("", "SCOPE");
     if (s.arch) {

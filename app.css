@@ -310,3 +310,22 @@ details.obj .proof { font-size: 14px; color: var(--muted); margin-top: 6px; }
 .diff { padding: 12px 14px; border: 1px dashed var(--accent); border-radius: var(--radius-sm); background: var(--accent-soft); font-size: 15px; line-height: 1.4; }
 .diff .muted { font-size: 13px; }
 .cmpacts { flex-wrap: wrap; gap: 8px; }
+
+/* package deals */
+.bundles .bundle { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px 12px; padding: 12px 0; border-top: 1px solid var(--line); align-items: start; }
+.bundles .bundle:first-child { border-top: 0; }
+.bundles .bundle.on { background: var(--accent-soft); margin: 0 -14px; padding: 12px 14px; border-radius: var(--radius-sm); border-top-color: transparent; }
+.bundle .bt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.bundle .kind { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+.bundle .bt > b { font-family: var(--font-display); font-size: 17px; line-height: 1.2; }
+.bundle .inc, .bundle .std { font-size: 13.5px; color: var(--muted); line-height: 1.35; }
+.bundle .std em { font-style: normal; color: var(--good); font-weight: 700; }
+.bundle .bt .btn { align-self: flex-start; margin-top: 4px; }
+.bundle .bh { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.bundle .bp { text-align: right; flex: 0 0 auto; }
+.bundle .bp b { display: block; font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.bundle .bp small { display: block; color: var(--muted); font-size: 12px; text-decoration: line-through; }
+.storeb { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+.storeb summary { cursor: pointer; font-weight: 600; font-size: 15px; }
+.storeb .sgroup { padding-top: 10px; }
+.storeb .row { gap: 10px; align-items: end; flex-wrap: wrap; }
