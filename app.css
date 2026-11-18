@@ -157,6 +157,10 @@ label.maxlbl input { width: 150px; }
 .pickrow .model { font-weight: 600; }
 .pickrow .price { font-family: var(--font-display); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pickrow .btn { min-height: 40px; padding: 8px 14px; box-shadow: none; }
+.pickrow .vd { font-weight: 700; }
+.pickrow .vd.good { color: var(--good); }
+.pickrow .vd.soft { color: var(--accent); }
+.chips.brandchips { margin-bottom: 2px; }
 .total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 2px solid var(--fg); padding-top: 12px; }
 .total strong { font-family: var(--font-display); font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .row.between { justify-content: space-between; align-items: baseline; }
@@ -265,6 +269,8 @@ details.obj .proof { font-size: 14px; color: var(--muted); margin-top: 6px; }
 .aline input { margin-top: 3px; }
 .aline .model { font-weight: 600; }
 .aline .qty { color: var(--muted); font-size: 14px; }
+.accpick { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.accpick select { flex: 1 1 0; width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--fg); }
 .aline .price { font-family: var(--font-display); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .aline.off .model, .aline.off .price { opacity: .5; text-decoration: line-through; }
 .line .sku { font-size: 12px; color: var(--muted); letter-spacing: .04em; margin-left: 8px; }
