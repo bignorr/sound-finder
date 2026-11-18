@@ -80,6 +80,7 @@
         <button type="button" data-v="3" aria-pressed="false">3 (fronts + center)</button>
         <button type="button" data-v="5" aria-pressed="true">5</button>
         <button type="button" data-v="7" aria-pressed="false">7</button>
+        <button type="button" data-v="9" aria-pressed="false">9 (adds front wides)</button>
       </div>
     </div>
     <div class="ctl" id="surroundTypeCtl">
@@ -634,6 +635,9 @@
         alts: [{ brand: "Marantz", m: "AV 20 processor + AMP 20 12-ch amplifier", cur: "strong", short: "AV 20 + AMP 20", price: 12000, role: "Separates", why: "bestbuy.com package price $12,000: 13.4 processing and 200 W x 12, so an 11-channel room with one amp box; the new Marantz separates under AV 10 + AMP 10" },
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RMB-1555 5-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RMB-1555", price: 15298, role: "Separates", sku: "6571770", why: "$8,000 + $4,799 + $2,499: twelve channels of Rotel Class AB for a 7.4.4" },
                { brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier + Rotel RB-1552 MKII", cur: "strong", short: "AVP45 + AVA15 + RB-1552", price: 12199, role: "Separates", sku: "6679207", why: "$5,999.95 + $4,499.95 + $1,699: Arcam processing and nine Arcam channels, Rotel for the last two" }] } },
+    13: { need: "13 amplified channels (9.4 with heights)",
+      reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: 16 amplified channels at 200 W, enough for a 9.4.2 with channels to spare; the one that holds up to 4-ohm front and wide speakers",
+        alts: [{ brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 15 in one box with four sub outs: 9.4.2 fits with two spare channels; the one-box reference if the speakers are not 4-ohm demanding" }] } },
   };
   const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
@@ -705,7 +709,7 @@
     const cfg = (q.get("cfg") || "").split(".");
     if (cfg.length >= 2) {
       const around = parseInt(cfg[0], 10), subs = parseInt(cfg[1], 10), heights = parseInt(cfg[2] || "0", 10);
-      if ([2, 3, 5, 7].indexOf(around) >= 0) state.around = around;
+      if ([2, 3, 5, 7, 9].indexOf(around) >= 0) state.around = around;
       if ([0, 1, 2].indexOf(subs) >= 0) state.subs = subs;
       if ([0, 2, 4].indexOf(heights) >= 0) state.heights = heights;
     }
@@ -887,6 +891,7 @@
     const add = function (role, brand, model, qty, each, note, kind, extra) { lines.push(Object.assign({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }, extra || {})); };
     if (s.bar) {
       add("Soundbar", s.brand, s.m, 1, s.price, s.cfg + (s.atmos ? " Dolby Atmos" : "") + (s.hdmi ? " · " + s.hdmi + " HDMI in" + (s.pass ? ", " + s.pass + " pass-through" : "") : s.hdmi === 0 ? " · eARC only, sources stay on the TV" : "") + (s.note ? " · " + s.note : ""), "bar", { sku: s.sku });
+      if (s.passive) add("Receiver or amp", "Your pick", "AV receiver or amp, 4-ohm stable", 1, 0, "Passive bar: no amp inside. Not priced here; quote a receiver or amp that matches it", "avr", { nosku: true, unpriced: true });
       if (s.subIn) add("Subwoofer", s.brand, "Wireless sub, in the box", 1, 0, "Ships with the bar", "sub", { included: true, nosku: true });
       else if (state.barSub && s.sub) add("Subwoofer", s.brand, s.sub.m, 1, s.sub.price, "Brand's wireless sub; pairs in the app", "sub", { sku: s.sub.sku });
       if (s.rearsIn) add("Rear speakers", s.brand, "Wireless rears, in the box", 1, 0, "Ship with the bar", "bookshelf", { included: true, nosku: true });
@@ -919,6 +924,7 @@
     if (surType === "series" && !s.arch && s.surround && s.surround.note) sideNote += "; " + s.surround.note;
     if (state.around >= 5) add("Surrounds (sides)", surBrand, sur.m, 2, sur.pair / 2, sideNote, surKind);
     if (state.around >= 7) add("Surrounds (rear)", surBrand, rear.m, 2, rear.pair / 2, rearNote, surKind);
+    if (state.around >= 9) add("Surrounds (front wide)", surBrand, sur.m, 2, sur.pair / 2, "Front wides between the front speakers and the sides; the same speaker as the surrounds", surKind);
     // heights
     if (state.heights > 0) {
       const useCeil = state.heightType === "inceiling" || !s.height;
@@ -942,7 +948,7 @@
   function configString() { const s = currentSeries(); if (s && s.bar) return s.cfg || "soundbar"; return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
   function surroundType() { return state.around >= 5 ? state.surroundType : "series"; }
   function channels() { return state.around + state.heights; }
-  function avrNeedKey(n) { return [2, 5, 7, 9, 11].find(function (c) { return n <= c; }) || 11; }
+  function avrNeedKey(n) { return [2, 5, 7, 9, 11, 13].find(function (c) { return n <= c; }) || 13; }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
   function rawReceiver(sArg) {
     const s = sArg || currentSeries(); if (s.bar) return null; const tier = tierFor(s); const n = channels();
@@ -1044,6 +1050,7 @@
     if (state.around >= 3) ft += 10;
     if (state.around >= 5) ft += 2 * 40;
     if (state.around >= 7) ft += 2 * 50;
+    if (state.around >= 9) ft += 2 * 40;
     if (state.heights > 0) ft += state.heights * (state.heightType === "inceiling" || !s.height || s.arch ? 45 : 6);
     const spools = Math.ceil(ft / 100);
     const wire = arch ? { m: "14 AWG CL2/CL3 in-wall speaker wire, 100 ft", each: 60 } : { m: "16 AWG speaker wire, 100 ft", each: 40 };
@@ -1195,8 +1202,8 @@
     $("accTotal").textContent = money(accSum);
     const grand = r.total + accSum;
     $("sumSpk").textContent = money(r.total);
-    $("sumAvrLabel").textContent = "Receiver";
-    $("sumAvr").textContent = "Not needed";
+    $("sumAvrLabel").textContent = s.passive ? "Receiver or amp" : "Receiver";
+    $("sumAvr").textContent = s.passive ? "Not in this price" : "Not needed";
     $("sumAcc").textContent = money(accSum);
     $("sumTotal").textContent = money(grand);
     $("sumFin").innerHTML = SALES.monthlyHtml(grand) || "<p class='muted small'>No financing promo covers " + money(grand) + ". Check the promo table in Settings.</p>";
@@ -1441,6 +1448,7 @@
     }
     if (state.around >= 5) out.push(b(s.arch || st === "inceiling" ? "Cut in side surrounds in the ceiling beside the seating (90 to 110 degrees from main seat)" : st === "inwall" ? "Cut in side surrounds in the walls beside the seating, 2 ft above ear height" : "Mount side surrounds on brackets beside the seating, about 2 ft above ear height"));
     if (state.around >= 7) out.push(b(s.arch || st !== "series" ? "Cut in rear surrounds behind the seating (135 to 150 degrees from main seat)" : "Mount rear surrounds behind the seating on brackets"));
+    if (state.around >= 9) out.push(b(s.arch || st !== "series" ? "Cut in the front wides between the front speakers and the sides (about 60 degrees from main seat), aimed at the seats" : "Mount the front wides between the fronts and the sides, aimed at the seats, on brackets or a shelf"));
     if (state.heights > 0) out.push(b(ceilHeights ? "Cut in " + state.heights + " in-ceiling height speakers per Dolby Atmos layout (" + (state.heights === 4 ? "front and rear pairs" : "front pair") + ", about 45 degrees elevation from main seat); confirm joist layout first" : "Set Atmos modules on top of the fronts" + (state.heights === 4 ? " and surrounds" : "") + "; angle toward the ceiling; confirm flat ceiling under 12 ft"));
     if (state.subs > 0) out.push(b("Place " + (state.subs === 2 ? "two subwoofers (front corner and opposite side wall or rear)" : "subwoofer in the front corner nearest the receiver") + "; sub crawl for best spot; crossover at 80 Hz"));
     out.push(b("Run all speaker wire concealed" + (ceilHeights || st !== "series" || s.arch ? "; CL2/CL3 in-wall rated inside walls and ceiling; brush plates at exits" : " along baseboards and behind furniture; raceway where exposed") + "; label both ends"));
