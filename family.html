@@ -889,7 +889,12 @@
     $("overNote").innerHTML = cap && over.length ? "Just over: " + over.map(function (s) { return "<button type='button' class='btn link' data-pick='" + s.id + "'>" + esc(s.brand + " " + s.series) + " " + money(s.sys) + "</button>"; }).join(" · ") : "";
     $("unofferedNote").hidden = !unpowered.length;
     $("unofferedNote").innerHTML = unpowered.length ? "Not offered at this size, because no amp in the line can power them to spec: " + unpowered.map(function (s) { return esc(s.brand + " " + s.series) + " (" + esc(offerReason(s)) + ")"; }).join("; ") + "." : "";
-    if (!shown.length) { list.innerHTML = "<p class='muted small'>" + (cap ? "Nothing builds this size for " + money(cap) + ". Change the size above or raise the ceiling." : "No families match both filters.") + "</p>"; return; }
+    if (!shown.length) {
+      // Nothing builds at this size and ceiling. A selection this size's list does not hold (a passive front three left over from a 3.0 build, say) moves to the cheapest family it does hold; that one is flagged over.
+      if (!isBar() && !pool.some(function (s) { return s.id === state.series; })) { const next = over[0] || pool[0] || SERIES.find(function (s) { return !s.lcr && (state.form === "arch") === !!s.arch; }); if (next) state.series = next.id; }
+      list.innerHTML = "<p class='muted small'>" + (cap ? "Nothing builds this size for " + money(cap) + ". Change the size above or raise the ceiling." : "No families match both filters.") + "</p>";
+      return;
+    }
     if (isBar()) { if (!shown.some(function (s) { return s.id === state.bar; })) state.bar = shown[0].id; }
     // A family the customer tapped from "Just over" stays on screen, marked over, while the ceiling is on.
     else if (!shown.some(function (s) { return s.id === state.series; }) && !(cap && pool.some(function (s) { return s.id === state.series; }))) state.series = shown[0].id;
