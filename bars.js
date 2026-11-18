@@ -120,7 +120,7 @@ window.SF_WIIM = {
       why: "100 W x 2 into 8 ohms, 200 W into 4, rated down to 2 ohms; 3.5 in touchscreen, Wi-Fi 6, HDMI ARC with Dolby Digital, sub out, RoomFit correction, ESS 9039 DAC. The one for 4-ohm or low-sensitivity speakers. Sold by Best Buy." },
   },
   other: [
-    { m: "MartinLogan Motion Foundation B1 × WiiM Amp bundle", price: 1000, sku: "6596730", kind: "bookshelf", comp: "Page showed Save $250 against a $999.99 comp; verify the live price",
+    { m: "MartinLogan Motion Foundation B1 × WiiM Amp bundle", price: 749.99, sku: "6596730", kind: "bookshelf", comp: "Best Buy listing: Save $250 against a $999.99 comp (a second Best Buy page read $799.99); check the live price in norrito",
       why: "A ready-made 2.0 for the floor: a pair of Motion Foundation B1 bookshelves with a WiiM Amp and the cables. Add a sub on the amp's sub out." },
     { m: "Ultra (streamer)", price: 349, sku: "6684567", kind: "amp", why: "Streamer and preamp with the touchscreen, no amplifier: for the customer who already has an amp or receiver." },
     { m: "Pro Plus (streamer)", price: 249, sku: "6685646", kind: "amp", why: "Streamer with optical, coax and RCA out; adds streaming to any receiver." },

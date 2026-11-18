@@ -1032,12 +1032,21 @@
   // One receiver line. meta.base is the pick the budget or the floor gave; meta.alts are the other fits; meta.isAlt means a manual swap is on.
   function receiverLine(s, c, key, meta) {
     const a = c.a, lvl = c.lvl; const short = a.short || a.m.replace(/ \d+\.\d-ch.*$/, "");
-    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over };
+    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, wiim: !!a.wiim };
+  }
+  // WiiM amps as budget candidates on a stereo build, at the level the WiiM data gives them (Amp value, Amp Ultra premium), so the cable kit matches the manual WiiM pick. wiimLevels keeps the Ultra alone for demanding speakers. Same floor rule as the receivers.
+  function wiimCandidates(s) {
+    if (!WIIM || channels(s) > 2 || s.bar || s.lcr || s.id === "sonos-arch") return [];
+    const f = TIER_ORDER.indexOf(floorLevel(s));
+    return wiimLevels(s).map(function (k) {
+      const w = WIIM[k]; const lvl = w.level;
+      return { lvl: lvl, a: { brand: "WiiM", m: w.m, short: w.m, price: w.price, role: "Streaming amp", kind: "amp", why: w.why, sku: w.sku, ohm4: true, cur: k === "premium" ? "strong" : "ok", wiim: true } };
+    }).filter(function (c) { return TIER_ORDER.indexOf(c.lvl) >= f; });
   }
   // Budget on Auto: the strongest receiver that still fits once the speakers and the cables that suit it are paid for.
   // If nothing fits, the least expensive floor amp, flagged over budget.
   function budgetReceiver(s, key, cap, sArg) {
-    const list = candidatesFor(s, key).sort(strongerFirst);
+    const list = candidatesFor(s, key).concat(wiimCandidates(s)).sort(strongerFirst);
     if (!list.length) return null;
     const r = build(s);
     const totalWith = function (c) { return r.total + c.a.price + accTotal(accessories(r, rcLike(c, key))); };
