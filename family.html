@@ -66,7 +66,7 @@
   </section>
 
   <section id="sizeSec">
-    <div class="ctl">
+    <div class="ctl" id="frontsCtl">
       <span>Fronts</span>
       <div class="chips" id="frontsChips">
         <button type="button" data-v="tower" aria-pressed="true">Towers</button>
@@ -77,7 +77,7 @@
       <span>Speakers around the room</span>
       <div class="chips" id="aroundChips">
         <button type="button" data-v="2" aria-pressed="false">2 (stereo)</button>
-        <button type="button" data-v="3" aria-pressed="false">3 (fronts + center)</button>
+        <button type="button" data-v="3" aria-pressed="false">3 (front three)</button>
         <button type="button" data-v="5" aria-pressed="true">5</button>
         <button type="button" data-v="7" aria-pressed="false">7</button>
         <button type="button" data-v="9" aria-pressed="false">9 (adds front wides)</button>
@@ -91,7 +91,7 @@
         <button type="button" data-v="inceiling" aria-pressed="false">In-ceiling</button>
       </div>
     </div>
-    <div class="ctl">
+    <div class="ctl" id="heightsCtl">
       <span>Height channels</span>
       <div class="chips" id="heightsChips">
         <button type="button" data-v="0" aria-pressed="false">None</button>
@@ -548,6 +548,10 @@
       sub: { m: "SB-1000 Pro", each: 600, brand: "SVS" }, subAlt: { m: "Sonance MS10SUB", each: 429 },
       kit: "The only passive Bose line Best Buy sells: 791 II pair $599, 4.9 stars. Two drivers angled so each speaker throws both channels, good for a hallway or kitchen with one speaker. No Bose center, in-wall or passive sub; everything else Bose is wireless." },
   ];
+  // Passive LCR speakers (bars.js SF_LCR): no amp inside, so they are the front three of a speaker system, not a soundbar. Shown at the 3-channel size only.
+  (window.SF_LCR || []).forEach(function (b) {
+    SERIES.push({ id: b.id, brand: b.brand, series: b.name, tier: b.tier, lcr: true, passive: true, cfg: b.cfg, load: null, lcrModel: b.m, price: b.price, sku: b.sku, comp: b.comp, tech: b.tech });
+  });
   // Subwoofers by brand and price level, for the Subwoofer brand chips (bestbuy.com prices; REL rows filled Nov 15, 2026).
   const SUBS = {
     svs: { label: "SVS", value: { m: "SB-1000 Pro", each: 600, sku: "6455214" }, mid: { m: "PB-2000 Pro", each: 1000, sku: "6394985" }, premium: { m: "PB-3000", each: 1500, sku: "6315938" }, reference: { m: "PB17-Ultra R|Evolution", each: 3000, sku: "6603477" } },
@@ -643,6 +647,12 @@
       reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: 16 amplified channels at 200 W, enough for a 9.4.2 with channels to spare; the one that holds up to 4-ohm front and wide speakers",
         alts: [{ brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 15 in one box with four sub outs: 9.4.2 fits with two spare channels; the one-box reference if the speakers are not 4-ohm demanding" }] } },
   };
+  // The amp a passive LCR needs: three amplified channels into 4 ohms with current to spare. Best Buy prices (bestbuy.com, Nov 17, 2026); the alternate is the other amp that clears the same load.
+  const PASSIVE_AMP = {
+    mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", price: 1299, why: "95 W with a proper 4-ohm mode and Audyssey MultEQ XT; three of its channels drive the front three",
+      alts: [{ brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "100 W HDAM amplification; the Marantz voicing for the front three" }] },
+    premium: { brand: "Arcam", m: "AVR21 7.1-ch receiver", sku: "6504707", price: 4700, why: "110 W x 7 Class G: enough current for a 4-ohm front three, with four channels spare",
+      alts: [{ brand: "Marantz", m: "Cinema 60 7.2-ch receiver", price: 1800, why: "100 W HDAM amplification with the current for 4-ohm speakers, at a lower price than the Arcam" }] } };
   const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
   const BRAND_PAGES = { Sonance: "sonance", Sonos: "sonos", Russound: "russound", Bose: "bose",
@@ -727,8 +737,8 @@
     else if (tier && ["value", "mid", "premium", "reference"].indexOf(tier) >= 0) {
       state.tier = tier;
       const cur = SERIES.find(function (s) { return s.id === state.series; });
-      const inForm = function (s) { return s.tier === tier && (state.form === "arch") === !!s.arch; };
-      if (!cur || !inForm(cur)) state.series = (SERIES.find(inForm) || SERIES.find(function (s) { return s.tier === tier; })).id;
+      const inForm = function (s) { return s.tier === tier && !s.lcr && (state.form === "arch") === !!s.arch; };
+      if (!cur || !inForm(cur)) state.series = (SERIES.find(inForm) || SERIES.find(function (s) { return s.tier === tier && !s.lcr; })).id;
     }
     if (q.get("fronts") === "bookshelf" || q.get("fronts") === "tower") state.fronts = q.get("fronts");
   })();
@@ -778,15 +788,16 @@
     return demanding(s) ? all.filter(function (x) { return x.cur === "strong"; }) : all;
   }
   function floorLevel(s) {
-    if (s.bar || s.id === "sonos-arch") return s.tier;
-    const key = avrNeedKey(channels());
+    if (s.bar || s.lcr || s.id === "sonos-arch") return s.tier;
+    const key = avrNeedKey(channels(s));
     const from = s.loadNote ? TIER_ORDER.indexOf("reference") : Math.max(0, TIER_ORDER.indexOf(s.tier));
     for (let i = from; i < TIER_ORDER.length; i++) if (ampOptions(s, key, TIER_ORDER[i]).length) return TIER_ORDER[i];
     return s.tier;
   }
   // The levels offered as chips: the floor and everything above it that has an amp to offer.
-  function levelsFor(s) { const key = avrNeedKey(channels()); const f = TIER_ORDER.indexOf(floorLevel(s)); return TIER_ORDER.filter(function (l, i) { return i >= f && ampOptions(s, key, l).length; }); }
+  function levelsFor(s) { const key = avrNeedKey(channels(s)); const f = TIER_ORDER.indexOf(floorLevel(s)); return TIER_ORDER.filter(function (l, i) { return i >= f && ampOptions(s, key, l).length; }); }
   function tierFor(s) {
+    if (s.lcr) return s.tier;
     if (s.id === "sonos-arch" || s.bar) return state.avr === "auto" || state.avr === "wiim" ? s.tier : state.avr;
     const f = floorLevel(s);
     if (state.avr === "auto" || state.avr === "wiim") return f;
@@ -828,7 +839,7 @@
     const cap = budgetCap();
     let pool = isBar()
       ? BARS.filter(function (s) { return state.tier === "all" || s.tier === state.tier; })
-      : SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "arch") === !!s.arch; });
+      : SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "arch") === !!s.arch && (!s.lcr || state.around === 3); });
     pool.forEach(function (s) { s.sys = systemTotal(s); });
     let fits = pool, over = [];
     if (cap) {
@@ -867,8 +878,16 @@
           (s.tv ? "<span class='mini'><span>Pairs with</span><span>" + esc(s.tv) + "</span></span>" : "") +
           "</span></button>";
       }
+      if (s.lcr) {
+        const roomL = cap ? cap - s.sys : 0;
+        return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
+          (IMG ? IMG.thumb(s.brand + " " + s.lcrModel, "bar") : "") + "<span class='txt'>" +
+          "<span class='tier'>" + esc(s.tier) + " · 3.0 LCR passive</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
+          "<span class='sys'>System " + money(s.sys) + (cap ? (roomL >= 500 ? " · " + money(roomL) + " under" : " · fits") : "") + "</span>" +
+          "<span>Speakers " + money(s.price) + " · amp " + money(PASSIVE_AMP[s.tier].price) + " and up</span></span></button>";
+      }
       const q = (window.SF_QUAL || {})[s.id];
-      const dots = function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
+      const dots =function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
       const mini = q ? "<span class='mini'><span>Detail</span>" + dots(q.detail) + "<span>Bass</span>" + dots(q.bass) + "<span>Dynamics</span>" + dots(q.dyn) + "</span>" : "";
       const room = cap ? cap - s.sys : 0;
       return "<button type='button' class='ser' data-id='" + s.id + "' aria-pressed='" + (s.id === state.series) + "'>" +
@@ -897,12 +916,21 @@
     const add = function (role, brand, model, qty, each, note, kind, extra) { lines.push(Object.assign({ role: role, brand: brand, model: model, qty: qty, each: each, total: each * qty, note: note || "", kind: kind }, extra || {})); };
     if (s.bar) {
       add("Soundbar", s.brand, s.m, 1, s.price, s.cfg + (s.atmos ? " Dolby Atmos" : "") + (s.hdmi ? " · " + s.hdmi + " HDMI in" + (s.pass ? ", " + s.pass + " pass-through" : "") : s.hdmi === 0 ? " · eARC only, sources stay on the TV" : "") + (s.note ? " · " + s.note : ""), "bar", { sku: s.sku });
-      if (s.passive) add("Receiver or amp", "Your pick", "AV receiver or amp, 4-ohm stable", 1, 0, "Passive bar: no amp inside. Not priced here; quote a receiver or amp that matches it", "avr", { nosku: true, unpriced: true });
       if (s.subIn) add("Subwoofer", s.brand, "Wireless sub, in the box", 1, 0, "Ships with the bar", "sub", { included: true, nosku: true });
       else if (state.barSub && s.sub) add("Subwoofer", s.brand, s.sub.m, 1, s.sub.price, "Brand's wireless sub; pairs in the app", "sub", { sku: s.sub.sku });
       if (s.rearsIn) add("Rear speakers", s.brand, "Wireless rears, in the box", 1, 0, "Ship with the bar", "bookshelf", { included: true, nosku: true });
       else if (state.barRears && s.rears) add("Rear speakers", s.brand, s.rears.m, 1, s.rears.price, "Brand's wireless rear pair; power outlet needed at each", "bookshelf", { sku: s.rears.sku });
       if (state.barMount === "wall") add("Wall mount", s.bracket ? s.brand : "Sanus", s.bracket ? s.bracket.m : "Universal soundbar wall mount", 1, s.bracket ? s.bracket.price : 40, "Under the TV; confirm the TV mount leaves room", "stand", s.bracket ? { sku: s.bracket.sku } : {});
+      return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
+    }
+    // passive LCR: the front three in one cabinet; the amp is its own line (rawReceiver) and the sub is priced here
+    if (s.lcr) {
+      add("Front left, center, right", s.brand, s.lcrModel, 1, s.price, "Passive: no amp inside, so the amp is the next line" + (s.comp ? " · " + s.comp : ""), "bar", { sku: s.sku });
+      if (state.subs > 0) {
+        const pick = (state.subBrand !== "series" && subFor(state.subBrand, s.tier)) || subFor("svs", s.tier);
+        add(state.subs === 2 ? "Subwoofers (pair)" : "Subwoofer", pick.brand, pick.m, state.subs, pick.each,
+          "Not in the speaker price; " + (state.subBrand === "series" ? "SVS is the default sub for passive LCR" : "the sub brand you picked") + (pick.level !== s.tier ? "; the closest " + pick.brand + " sub to this level" : ""), "sub", { sku: pick.sku });
+      }
       return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
     }
     // fronts
@@ -951,13 +979,24 @@
     return { series: s, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0) };
   }
 
-  function configString() { const s = currentSeries(); if (s && s.bar) return s.cfg || "soundbar"; return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
+  function configString() { const s = currentSeries(); if (s && s.bar) return s.cfg || "soundbar"; if (s && s.lcr) return s.cfg; return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
   function surroundType() { return "series"; } // physical or architectural is chosen once, above the series list
-  function channels() { return state.around + state.heights; }
+  // Speaker count for a family: the passive LCR is the three fronts, so heights never apply to it.
+  function channels(sArg) { const s = sArg || currentSeries(); return state.around + (s && s.lcr ? 0 : state.heights); }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11, 13].find(function (c) { return n <= c; }) || 13; }
+  // The amp for a passive LCR: the priced pick for its level, with the other amp that clears 4 ohms as an alternate.
+  function passiveReceiver(s, sArg) {
+    const p = PASSIVE_AMP[s.tier] || PASSIVE_AMP.mid;
+    const base = { brand: p.brand, m: p.m, price: p.price, why: p.why, sku: p.sku, cur: "strong" };
+    const alt = sArg ? null : p.alts.find(function (x) { return x.brand + " " + x.m === state.avrAlt; });
+    const a = alt || base;
+    return { role: "Receiver · " + s.tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: "one multichannel unit for all three fronts, 4-ohm stable", tier: s.tier,
+      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: true, alts: p.alts, base: base, isAlt: !!alt, sku: a.sku, cur: "strong", key: null, floor: true, separates: false };
+    // The one-unit rule: a passive front three is never powered by stacked 2- or 3-channel amps; the pick is always a multichannel unit.
+  }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
   function rawReceiver(sArg) {
-    const s = sArg || currentSeries(); if (s.bar) return null; const tier = tierFor(s); const n = channels();
+    const s = sArg || currentSeries(); if (s.bar) return null; if (s.lcr) return passiveReceiver(s, sArg); const tier = tierFor(s); const n = channels(s);
     if (s.id === "sonos-arch") {
       if (tier === "none") return null;
       const amps = Math.ceil(n / 2);
@@ -976,13 +1015,13 @@
     const base = lvl === floorLevel(s) ? sorted[0] : opts[0]; const alts = sorted.filter(function (x) { return x !== base; });
     const alt = sArg ? null : alts.find(function (x) { return x.brand + " " + x.m === state.avrAlt; });
     const a = alt || base;
-    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + (a.short || a.m.replace(/ \d+\.\d-ch.*$/, "")), ohm4: a.ohm4 !== false, alts: alts, base: base, isAlt: !!alt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s) };
+    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + (a.short || a.m.replace(/ \d+\.\d-ch.*$/, "")), ohm4: a.ohm4 !== false, alts: alts, base: base, isAlt: !!alt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s), separates: a.role === "Separates" };
   }
   // Does this series need a receiver rated for 4 ohms, or real power? Returns the warning to show, if any.
   // The cheapest amp at this channel count that drives these speakers with no caveat: a higher level, or a strong alternative at the current level.
   function recommendAmp(s, rc) {
     if (!rc || rc.wiim || rc.sonos) return null;
-    const key = rc.key || avrNeedKey(channels());
+    const key = rc.key || avrNeedKey(channels(s));
     const cands = [];
     TIER_ORDER.forEach(function (lvl) { const a = AVRS[key][lvl]; if (a && a.cur === "strong" && TIER_ORDER.indexOf(lvl) >= TIER_ORDER.indexOf(s.tier)) cands.push({ level: lvl, alt: "", brand: a.brand, m: a.m, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), price: a.price }); });
     (rc.alts || []).forEach(function (a) { if (a.cur === "strong") cands.push({ level: rc.tier, alt: a.brand + " " + a.m, brand: a.brand, m: a.m, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), price: a.price }); });
@@ -991,6 +1030,7 @@
     return cands[0];
   }
   function loadCheck(s, rc) {
+    if (s.lcr) return { kind: "soft", html: "<b>Passive, so it needs a proper amp.</b> " + esc(s.brand + " " + s.series) + " has no amplifier inside. The build adds the " + esc(rc ? rc.brand + " " + rc.short : "amp") + (rc ? " (" + money(rc.total) + ")" : "") + ", one multichannel unit for all three fronts. Do not stack 2- or 3-channel amps for it. A 4-ohm load needs real current, so do not swap in a receiver rated only for 6 ohms or more." };
     if (s.bar) return s.tv || s.tech ? { kind: "soft", html: (s.tv ? "<b>Pairs best with " + esc(s.tv) + ".</b> " : "") + esc(s.tech || "") } : null;
     const L = s.load; const d = demanding(s); if (!d) return null;
     const spec = (L.ohm ? L.ohm + " ohm nominal" : "") + (L.min ? ", " + L.min + " ohm minimum" : "") + (L.sens ? " · " + L.sens + " dB" : "");
@@ -998,9 +1038,9 @@
     const what = d.needs4 ? (L.min && L.min < 4 ? "dips to " + L.min + " ohms" : "is a 4-ohm load") + (d.lowSens ? " and is only " + L.sens + " dB" : "") : "is only " + L.sens + " dB, among the least sensitive here";
     const extra = s.loadNote ? " " + esc(s.loadNote) : "";
     const recBtn = function (r) { return r ? " <button type='button' class='btn link' data-rec-level='" + esc(r.level) + "' data-rec-alt='" + esc(r.alt) + "'>Switch to the " + esc(r.brand + " " + r.short) + " (" + money(r.price) + ")</button>" : ""; };
-    const wiimHint = channels() <= 2 && WIIM && WIIM.premium ? " For a stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") is rated down to 2 ohms and has no caveat either." : "";
+    const wiimHint = channels(s) <= 2 && WIIM && WIIM.premium ? " For a stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") is rated down to 2 ohms and has no caveat either." : "";
     if (!rc) {
-      const fl = ampOptions(s, avrNeedKey(channels()), floorLevel(s))[0];
+      const fl = ampOptions(s, avrNeedKey(channels(s)), floorLevel(s))[0];
       return { kind: "soft", html: "<b>Needs a real amp.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms and has the current for it" + (fl ? "; the floor here is the " + esc(fl.brand + " " + (fl.short || fl.m.replace(/ \d+\.\d-ch.*$/, ""))) + " (" + money(fl.price) + ")." : ".") + extra };
     }
     if (rc.wiim) {
@@ -1043,41 +1083,65 @@
   });
 
   // Cables and accessories sized to the build. Typical Best Buy house-brand prices; the exact SKU goes in at the register.
+  // Cables and power by build level, so the kit steps up with the speakers. Best Buy SKUs and prices (bestbuy.com, Nov 17, 2026).
+  // Value keeps the house cables and a surge protector. Mid moves to AudioQuest HDMI and subwoofer RCA. Premium and reference add a power conditioner and a streamer; separate preamp and amp builds also get RCA interconnects.
+  const AQ_HDMI = { brand: "AudioQuest", model: "Forest 48 HDMI cable", each: 129.95, sku: "6428720" };
+  const AQ_SUB = { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 26.2 ft", each: 119.95, sku: "2877518" };
+  const ACC_KIT = {
+    value: { hdmi: { brand: "Rocketfish", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", each: 25 }, sub: { brand: "Rocketfish", model: "Subwoofer RCA cable, 25 ft", each: 25 }, surge: true },
+    mid: { hdmi: AQ_HDMI, sub: AQ_SUB, surge: true },
+    premium: { hdmi: AQ_HDMI, sub: AQ_SUB, power: { brand: "PowerQuest", model: "303 power conditioner", each: 529.95, sku: "6559369" },
+      streamer: { brand: "WiiM", model: "Pro Plus streamer", each: 249, sku: "6685646", defOn: false },
+      interconnect: { brand: "AudioQuest", model: "Evergreen RCA interconnect, 6.5 ft pair", each: 119.95, sku: "2926067" } },
+    reference: { hdmi: AQ_HDMI, sub: AQ_SUB, power: { brand: "PowerQuest", model: "707 power conditioner", each: 1599.95, sku: "6559951" },
+      streamer: { brand: "WiiM", model: "Ultra streamer", each: 349, sku: "6684567" },
+      interconnect: { brand: "AudioQuest", model: "Big Sur RCA interconnect, 16.4 ft pair", each: 379.95, sku: "6460309" } }
+  };
+  // Each line is a checkbox the customer can untick. A line the customer has not touched takes its default (a streamer can start off).
   function accessories(r, rc) {
-    const s = r.series; const out = [];
+    const s = r.series; const kit = ACC_KIT[s.tier] || ACC_KIT.value; const out = [];
+    const add = function (id, role, a, qty, note, defOn) {
+      const saved = state.acc[id];
+      out.push({ id: id, role: role, brand: a.brand, model: a.model, qty: qty, each: a.each, sku: a.sku || null, note: note || "", total: qty * a.each, on: saved === undefined ? defOn !== false : saved !== false });
+    };
     if (s.bar) {
-      out.push({ id: "hdmi", role: "HDMI", brand: "Rocketfish / AudioQuest", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", qty: s.hdmi ? 2 : 1, each: 25, note: s.hdmi ? "TV eARC to the bar, plus the main source into the bar" : "TV eARC to the bar; sources plug into the TV" });
-      out.push({ id: "surge", role: "Power", brand: "Rocketfish", model: "6-outlet surge protector", qty: 1, each: 40, note: "bar" + (barHasSub(s) ? ", sub" : "") + (barHasRears(s) ? ", rears" : "") + ", TV" });
-      out.forEach(function (a) { a.on = state.acc[a.id] !== false; a.total = a.qty * a.each; });
+      add("hdmi", "HDMI", kit.hdmi, s.hdmi ? 2 : 1, s.hdmi ? "TV eARC to the bar, plus the main source into the bar" : "TV eARC to the bar; sources plug into the TV");
+      const where = "bar" + (barHasSub(s) ? ", sub" : "") + (barHasRears(s) ? ", rears" : "") + ", TV";
+      if (kit.surge) add("surge", "Power", { brand: "Rocketfish", model: "6-outlet surge protector", each: 40 }, 1, where);
+      if (kit.power) add("conditioner", "Power conditioner", kit.power, 1, where);
       return out;
     }
-    const arch = s.arch || surroundType() !== "series" || (state.heights > 0 && (state.heightType === "inceiling" || !s.height));
+    // A passive LCR is the three fronts only, so it has no height speakers.
+    const H = s.lcr ? 0 : state.heights;
+    const arch = s.arch || surroundType() !== "series" || (H > 0 && (state.heightType === "inceiling" || !s.height));
     let ft = 2 * 20; // fronts
     if (state.around >= 3) ft += 10;
     if (state.around >= 5) ft += 2 * 40;
     if (state.around >= 7) ft += 2 * 50;
     if (state.around >= 9) ft += 2 * 40;
-    if (state.heights > 0) ft += state.heights * (state.heightType === "inceiling" || !s.height || s.arch ? 45 : 6);
+    if (H > 0) ft += H * (state.heightType === "inceiling" || !s.height || s.arch ? 45 : 6);
     const spools = Math.ceil(ft / 100);
     const wire = arch ? { m: "14 AWG CL2/CL3 in-wall speaker wire, 100 ft", each: 60 } : { m: "16 AWG speaker wire, 100 ft", each: 40 };
-    out.push({ id: "wire", role: "Speaker wire", brand: "Rocketfish / AudioQuest", model: wire.m, qty: spools, each: wire.each, note: "about " + ft + " ft of runs" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : "") });
-    if (state.subs > 0) out.push({ id: "subcable", role: "Subwoofer cable", brand: "Rocketfish / AudioQuest", model: "Subwoofer RCA cable, 25 ft", qty: state.subs, each: 25, note: state.subs === 2 ? "one per sub" : "" });
+    add("wire", "Speaker wire", { brand: "Rocketfish", model: wire.m, each: wire.each }, spools, "about " + ft + " ft of runs" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : ""));
+    if (state.subs > 0) add("subcable", "Subwoofer cable", kit.sub, state.subs, state.subs === 2 ? "one per sub" : "");
     const hdmiQty = rc && (rc.sonos || rc.wiim) ? 1 : 2;
-    out.push({ id: "hdmi", role: "HDMI", brand: "Rocketfish / AudioQuest", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", qty: hdmiQty, each: 25, note: rc && rc.sonos ? "TV eARC to the Amp" : rc && rc.wiim ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source" });
-    const ch = channels();
-    out.push({ id: "banana", role: "Connectors", brand: "Rocketfish", model: "Banana plugs, 12-pack", qty: Math.ceil(ch / 3), each: 25, note: "4 per channel, " + ch + " channels" });
-    out.push({ id: "surge", role: "Power", brand: "Rocketfish", model: "8-outlet surge protector", qty: 1, each: 60, note: "receiver, subs, display" });
-    out.forEach(function (a) { a.on = state.acc[a.id] !== false; a.total = a.qty * a.each; });
+    add("hdmi", "HDMI", kit.hdmi, hdmiQty, rc && rc.sonos ? "TV eARC to the Amp" : rc && rc.wiim ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source");
+    const ch = channels(s);
+    add("banana", "Connectors", { brand: "Rocketfish", model: "Banana plugs, 12-pack", each: 25 }, Math.ceil(ch / 3), "4 per channel, " + ch + " channels");
+    if (kit.power) add("conditioner", "Power conditioner", kit.power, 1, "receiver, subs, display");
+    else add("surge", "Power", { brand: "Rocketfish", model: "8-outlet surge protector", each: 60 }, 1, "receiver, subs, display");
+    if (kit.streamer && !(rc && (rc.sonos || rc.wiim))) add("streamer", "Streamer", kit.streamer, 1, "Streams music apps into the receiver; off unless the customer wants it", kit.streamer.defOn);
+    if (kit.interconnect && rc && rc.separates) add("interconnect", "Interconnects", kit.interconnect, 1, "Preamp to power amp, RCA pair");
     return out;
   }
   function accHtml(a) {
     return "<div class='aline" + (a.on ? "" : " off") + "'><input type='checkbox' data-acc='" + a.id + "'" + (a.on ? " checked" : "") + " aria-label='Include " + esc(a.model) + "'>" +
-      "<div><div class='role'>" + esc(a.role) + "</div><div class='model'>" + esc(a.model) + "</div><div class='qty'>" + a.qty + " × " + money(a.each) + (a.note ? " · " + esc(a.note) : "") + "</div></div>" +
+      "<div><div class='role'>" + esc(a.role) + "</div><div class='model'>" + esc(a.brand + " " + a.model) + "</div><div class='qty'>" + a.qty + " × " + money(a.each) + (a.note ? " · " + esc(a.note) : "") + (a.sku ? " · <a href='https://www.bestbuy.com/site/" + a.sku + ".p' target='_blank' rel='noopener'>SKU " + esc(a.sku) + "</a>" : "") + "</div></div>" +
       "<div class='price'>" + money(a.total) + "</div></div>";
   }
   $("accLines").addEventListener("change", function (e) { const i = e.target.closest("input[data-acc]"); if (!i) return; state.acc[i.dataset.acc] = i.checked; persist(); render(); });
   function accTotal(list) { return list.reduce(function (a, x) { return a + (x.on ? x.total : 0); }, 0); }
-  function installKind() { const s = currentSeries(); if (s.bar) return "bar"; return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
+  function installKind() { const s = currentSeries(); if (s.bar) return "bar"; if (s.lcr) return SALES.installKind({ path: "avr", around: 3, heights: 0 }); return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
 
   function render() {
     syncTier(); syncForm(); syncFronts(); syncAround(); syncSurroundType(); syncHeights(); syncHeightType(); syncSubs(); syncSubBrand(); syncBudget(); syncKind(); syncBarSub(); syncBarRears(); syncBarMount();
@@ -1089,6 +1153,9 @@
     renderSeries();
     if (bar) { renderBar(); persist(); return; }
     const s = SERIES.find(function (x) { return x.id === state.series; });
+    const lcr = !!s.lcr;
+    $("frontsCtl").hidden = lcr; $("heightsCtl").hidden = lcr; $("avrChips").hidden = lcr;
+    $("subBrandChips").querySelector("[data-v='series']").textContent = lcr ? "SVS" : "Series sub";
     const fc = $("frontsChips");
     fc.querySelector("[data-v='tower']").textContent = s.frontLabels ? s.frontLabels[0] : (s.arch ? "In-wall" : "Towers");
     fc.querySelector("[data-v='bookshelf']").textContent = s.frontLabels ? s.frontLabels[1] : (s.arch ? "In-ceiling" : "Bookshelf");
@@ -1098,7 +1165,7 @@
     sc.querySelector("[data-v='series']").textContent = s.surround ? "Series surrounds" : "Bookshelf";
     sc.querySelector("[data-v='inwall']").textContent = s.inwall ? "In-wall" : "In-wall (Klipsch)";
     sc.querySelector("[data-v='inceiling']").textContent = s.inceiling ? "In-ceiling" : "In-ceiling (Klipsch)";
-    $("heightTypeCtl").hidden = state.heights === 0;
+    $("heightTypeCtl").hidden = lcr || state.heights === 0;
     const hc = $("heightTypeChips").querySelector("[data-v='series']");
     hc.textContent = s.height ? (s.height.kind === "module" ? "Atmos modules" : "Height speakers") : "Atmos modules";
     hc.disabled = !s.height;
@@ -1113,12 +1180,13 @@
     syncHeightType();
     if (state.bundle && !bundlesFor(s).some(function (b) { return b.id === state.bundle; })) state.bundle = "";
     const r = build();
-    renderBundles(s, r);
-    $("buildLabel").textContent = "The " + configString() + " family" + (s.arch ? " · architectural" : "");
+    if (lcr) $("bundleCard").hidden = true; else renderBundles(s, r);
+    $("buildLabel").textContent = lcr ? "Passive front three · " + s.cfg : "The " + configString() + " family" + (s.arch ? " · architectural" : "");
     $("buildHead").textContent = s.brand + " " + s.series;
     const page = BRAND_PAGES[s.brand];
-    $("kitNote").hidden = !s.kit && !page;
-    $("kitNote").innerHTML = (s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" : "<p class='eyebrow'>In-wall and in-ceiling</p>") +
+    $("kitNote").hidden = !s.kit && !page && !lcr;
+    $("kitNote").innerHTML = lcr ? "<p class='eyebrow'>Why this build</p><p>" + esc(s.tech || "") + "</p>" + (page ? "<p class='small'><a href='brands.html#" + page + "'>" + esc(s.brand) + " on the Brands page</a></p>" : "") :
+      (s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" : "<p class='eyebrow'>In-wall and in-ceiling</p>") +
       (page ? "<p class='small'><a href='brands.html#" + page + "'>Every " + esc(s.brand) + (s.arch ? "" : " in-wall and in-ceiling") + " Best Buy sells, with prices</a></p>" : "");
     $("lines").innerHTML = r.lines.map(lineHtml).join("");
     $("total").textContent = money(r.total);
@@ -1127,10 +1195,10 @@
     syncAvr();
     const rc = receiver(); const n = channels(); const tier = avrTier();
     const ampIn = ampInBundle(s);
-    $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
-    $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" ? "Amplifier" : "What you need, then above it";
+    $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : lcr ? "Front three, passive · needs 3 amplified channels into 4 ohms" : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
+    $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" || lcr ? "Amplifier" : "What you need, then above it";
     if (state.avr === "wiim" && !wiimOK()) state.avr = "auto";
-    const floor = floorLevel(s); const levels = s.id === "sonos-arch" ? [] : levelsFor(s);
+    const floor = floorLevel(s); const levels = s.id === "sonos-arch" || lcr ? [] : levelsFor(s);
     Array.prototype.forEach.call(avrBtns, function (b) {
       const v = b.dataset.v;
       b.hidden = v === "none" ? false : v === "wiim" ? !wiimOK() : s.id === "sonos-arch" || levels.indexOf(v) < 0;
@@ -1144,7 +1212,8 @@
     const d = demanding(s); const above = levels.slice(levels.indexOf(floor) + 1);
     const aboveText = above.length ? " Above it: " + above.map(function (l) { return "<b>" + esc(l) + "</b>"; }).join(", ") + "." : " Nothing above it on the floor.";
     const wiimText = wiimOK() ? (d ? " For a music-first stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") clears the floor too." : " For a music-first 2.1, try the WiiM amp.") : "";
-    $("avrAuto").innerHTML = s.id === "sonos-arch"
+    $("avrAuto").innerHTML = lcr ? "<b>Passive, so it needs an amp.</b> The front three have no amplifier inside, so the build adds " + esc(rc ? rc.brand + " " + rc.short : "an amp") + " as one multichannel unit rated for 4 ohms. No stacked 2- or 3-channel amps." + (rc && rc.alts.length ? " Tap an amp below to swap it." : "") :
+      s.id === "sonos-arch"
       ? (tier === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so the level chips are off here.")
       : state.avr === "wiim" ? "WiiM streaming amp instead of a receiver: HDMI ARC from the TV, sub out, room correction, every streaming service in the app. No surround, no path to a center or rears. " + wiimRow() + " <button type='button' class='btn link' id='avrReset'>Back to a receiver</button>"
       : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>"
@@ -1215,8 +1284,8 @@
     $("accTotal").textContent = money(accSum);
     const grand = r.total + accSum;
     $("sumSpk").textContent = money(r.total);
-    $("sumAvrLabel").textContent = s.passive ? "Receiver or amp" : "Receiver";
-    $("sumAvr").textContent = s.passive ? "Not in this price" : "Not needed";
+    $("sumAvrLabel").textContent = "Receiver";
+    $("sumAvr").textContent = "Not needed";
     $("sumAcc").textContent = money(accSum);
     $("sumTotal").textContent = money(grand);
     $("sumFin").innerHTML = SALES.monthlyHtml(grand) || "<p class='muted small'>No financing promo covers " + money(grand) + ". Check the promo table in Settings.</p>";
@@ -1414,7 +1483,7 @@
     const missing = [];
     all.forEach(function (l) { if (l.nosku) return; const k = lineSku(l); if (k) out.push(k + "  × " + l.qty + "  " + l.brand + " " + l.model); else missing.push(l.brand + " " + l.model); });
     if (missing.length) out.push("", "No SKU on file (add it on the line): " + missing.join("; "));
-    out.push("", "Cables: " + accessories(r, rc).filter(function (a) { return a.on; }).map(function (a) { return a.qty + " × " + a.model; }).join("; "));
+    out.push("", "Cables: " + accessories(r, rc).filter(function (a) { return a.on; }).map(function (a) { return a.qty + " × " + a.brand + " " + a.model; }).join("; "));
     return out.join("\n");
   }
   // Scope of work in the Custom SOW Fill Out format: Room Name, Equipment, Scope, Watch, Listen, Disclaimers. Room Control only when there is automation.
@@ -1428,7 +1497,7 @@
     const out = ["ROOM NAME", b(room), "", "EQUIPMENT"];
     r.lines.forEach(function (l) { const k = lineSku(l); out.push(b((l.included ? "" : l.qty + " × ") + l.brand + " " + l.model + (k ? " (SKU " + k + ")" : "") + " — " + l.role.replace(/ · .*$/, "").toLowerCase())); });
     if (s.bar) {
-      acc.forEach(function (a) { out.push(b(a.qty + " × " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
+      acc.forEach(function (a) { out.push(b(a.qty + " × " + a.brand + " " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
       out.push("", "SCOPE");
       out.push(b(state.barMount === "wall" ? "Wall-mount the soundbar centered under the display; confirm clearance below the TV mount and route power behind the wall where code allows" : "Place the soundbar centered on the console under the display; confirm it does not block the TV's IR window"));
       if (barHasSub(s)) out.push(b("Place the wireless subwoofer on the front wall near an outlet; pair it to the bar and confirm the link"));
@@ -1449,8 +1518,29 @@
       out.push(b("TV-link features (" + (s.tv || "same-brand TV") + ") depend on the customer's TV model and firmware"));
       return out.join("\n");
     }
+    if (s.lcr) {
+      if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : "") + " — amp for the passive front three"));
+      acc.forEach(function (a) { out.push(b(a.qty + " × " + a.brand + " " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
+      out.push("", "SCOPE");
+      out.push(b("Mount the three speakers as one left, center and right array below or above the display, tweeters at ear height, aimed toward the main seat"));
+      if (state.subs > 0) out.push(b("Place " + (state.subs === 2 ? "two subwoofers" : "the subwoofer") + " in a front corner; sub crawl for the best spot; crossover at 80 Hz"));
+      out.push(b("Run all speaker wire concealed along the baseboard or behind the stand; label both ends"));
+      out.push(b("Set the amp to 4-ohm speaker impedance per the manual; give it ventilation and a surge-protected outlet"));
+      out.push(b("HDMI sources into the amp; amp HDMI out to the TV eARC port; run room correction; set levels and crossovers; label inputs"));
+      out.push(b("Walk the customer through the remote, input switching and the app; play a stereo and a Dolby Digital demo before leaving"));
+      out.push("", "WATCH");
+      out.push(b("Cable or streaming box and game console to the amp's HDMI inputs; amp HDMI out to the TV eARC port"));
+      out.push(b("TV apps return audio to the amp over eARC; set TV audio output to pass-through / bitstream"));
+      out.push("", "LISTEN");
+      out.push(b("TV and streaming apps through the front three" + (state.subs ? " and the sub" : "") + "; stereo music from the amp's app or Bluetooth"));
+      out.push("", "DISCLAIMERS");
+      out.push(b("Equipment at Best Buy list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
+      out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText(installKind()) + " range for this kind of job)"));
+      out.push(b("One multichannel amp drives all three fronts; no stacked 2- or 3-channel amps. Customer to confirm the amp's 4-ohm rating and channel count before quoting"));
+      return out.join("\n");
+    }
     if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : ""))); else if (ampInBundle(s)) out.push(b("1 × " + ampInBundle(s).brand + " " + ampInBundle(s).m + " — amplifier, included in the package above")); else out.push(b("Receiver: customer's existing unit (confirm channel count and 4-ohm rating)"));
-    acc.forEach(function (a) { out.push(b(a.qty + " × " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
+    acc.forEach(function (a) { out.push(b(a.qty + " × " + a.brand + " " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
     out.push("", "SCOPE");
     if (s.arch) {
       out.push(b(state.fronts === "tower" ? "Cut in and mount L/R in-wall speakers flanking the display at ear height; aim toward main seat" : "Cut in L/R in-ceiling speakers above the display wall; aim pivoting drivers toward main seat"));

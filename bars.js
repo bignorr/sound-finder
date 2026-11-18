@@ -3,8 +3,8 @@
 // price = the bar as sold. subIn / rearsIn = ships in the box. sub / rears = the brand's own wireless add-on when it does not.
 // hdmi = number of HDMI inputs on the bar (0 = eARC only, sources stay on the TV; left out = not confirmed, check the spec sheet).
 // Not sold new at Best Buy on Nov 15: Bowers & Wilkins Panorama 3, Denon Home 550 / DHT bars, Polk MagniFi Max AX, Yamaha True X 40A, Marantz (no bar), Bang & Olufsen.
-// Passive bars (passive: true) have no amplifier inside: they need an AV receiver or amp, which the list shows as its own line at $0 because the receiver is not in the bar price.
-// Passive bars checked on bestbuy.com Nov 17, 2026: MartinLogan Motion 3.0 (SKU 6031100), Sonance SB46-85 / SB46L / SB46M. KEF HTF8003 (SKU 5767384) and Klipsch RP-440D-SB (bestbuy.ca only) are left out until their passive status and US listing are confirmed.
+// Passive LCR speakers (MartinLogan Motion 3.0, Sonance SB46-85 / SB46L / SB46M) moved to window.SF_LCR below: they have no amplifier inside, so the builder treats them as the front three of a speaker system, not as soundbars.
+// Passive LCR checked on bestbuy.com Nov 17, 2026. KEF HTF8003 (SKU 5767384) and Klipsch RP-440D-SB (bestbuy.ca only) are left out until their passive status and US listing are confirmed.
 // Nakamichi Dragon and Shockwafe showed "Unavailable from this seller" on 8-digit marketplace-style listings, so they are out until norrito shows a Best Buy SKU.
 window.SF_BARS = [
   // ---- TV brands ----
@@ -91,19 +91,23 @@ window.SF_BARS = [
   { id: "yamaha-x50a", brand: "Yamaha", m: "True X Bar 50A", tier: "value", price: 500, sku: "10110808",
     cfg: "4.1.2 with sub", atmos: true, subIn: true, rearsIn: false,
     tech: "Sub in the box and Yamaha's Clear Voice; the battery True X rear speaker is no longer sold new at Best Buy, so quote it bar and sub." },
-  // ---- passive (no amplifier inside: the AV receiver or amp is not in the bar price) ----
-  { id: "martinlogan-motion3", brand: "MartinLogan", m: "Motion 3.0-Channel Soundbar (passive)", tier: "mid", price: 1040, sku: "6031100", comp: "Comp. $1,299.99; the page's price field conflicts with its Save $260 line, verify in norrito",
+];
+
+// Passive LCR speakers (passive: true): no amplifier inside, so they are not soundbars. The builder lists them as the front three (left, center, right), adds a priced amp that matches their load, and quotes a sub and the accessories separately.
+// Prices are what bestbuy.com showed on Nov 17, 2026, and do not include the amp, sub or cables.
+window.SF_LCR = [
+  { id: "martinlogan-motion3", brand: "MartinLogan", name: "Motion 3.0", m: "Motion 3.0-Channel Soundbar (passive)", tier: "mid", price: 1040, sku: "6031100", comp: "Comp. $1,299.99; the page's price field conflicts with its Save $260 line, verify in norrito",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true,
-    tech: "Passive: no amplifier inside, so it needs an AV receiver or amp. Best Buy's listing gives 4 ohms and says it takes 4, 6 or 8 ohm rated amps. Three Folded Motion tweeters and six 4 in woofers make a stereo and center stage. Add a sub; the sub is not in this price." },
-  { id: "sonance-sb46-85", brand: "Sonance", m: "SB46-85 3.0 fixed width, 85 in TV (passive)", tier: "premium", price: 2420, sku: "6341801",
+    tech: "Passive: no amplifier inside. Best Buy's listing gives 4 ohms and says it takes 4, 6 or 8 ohm rated amps. Three Folded Motion tweeters and six 4 in woofers make a stereo and center stage. The build adds the amp and a sub; neither is in this price." },
+  { id: "sonance-sb46-85", brand: "Sonance", name: "SB46-85 85 in", m: "SB46-85 3.0 fixed width, 85 in TV (passive)", tier: "premium", price: 2420, sku: "6341801",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true,
-    tech: "Passive LCR cut to the width of an 85 in TV: three 1 in aluminum domes and three 4 in woofers. It needs external amplification, and Best Buy's own answer recommends a sub with it. Pair it with a receiver or amp, which is not in this price." },
-  { id: "sonance-sb46l", brand: "Sonance", m: "SB46L 3.0 adjustable, 70 to 80 in TV (passive)", tier: "premium", price: 2420, sku: "5683586",
+    tech: "Passive LCR cut to the width of an 85 in TV: three 1 in aluminum domes and three 4 in woofers. It needs external amplification, and Best Buy's own answer recommends a sub with it. The build adds the amp and a sub; neither is in this price." },
+  { id: "sonance-sb46l", brand: "Sonance", name: "SB46L 70 to 80 in", m: "SB46L 3.0 adjustable, 70 to 80 in TV (passive)", tier: "premium", price: 2420, sku: "5683586",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true,
-    tech: "The same passive Sonance LCR with an adjustable width for 70 to 80 in TVs. External amplification required; add a sub and a receiver or amp, neither in this price." },
-  { id: "sonance-sb46m", brand: "Sonance", m: "SB46M 3.0 adjustable, 50 to 65 in TV (passive)", tier: "premium", price: 2120, sku: "5683431",
+    tech: "The same passive Sonance LCR with an adjustable width for 70 to 80 in TVs. External amplification required; the build adds the amp and a sub, neither in this price." },
+  { id: "sonance-sb46m", brand: "Sonance", name: "SB46M 50 to 65 in", m: "SB46M 3.0 adjustable, 50 to 65 in TV (passive)", tier: "premium", price: 2120, sku: "5683431",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true,
-    tech: "Passive LCR with an adjustable width for 50 to 65 in TVs, the smallest of the Sonance bars. External amplification required; add a sub and a receiver or amp, neither in this price." },
+    tech: "Passive LCR with an adjustable width for 50 to 65 in TVs, the smallest of the Sonance bars. External amplification required; the build adds the amp and a sub, neither in this price." },
 ];
 
 // WiiM at Best Buy (bestbuy.com, Nov 15, 2026). The two amps the builder offers as a 2-channel alternative to a receiver, then the rest of the line.
