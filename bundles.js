@@ -7,7 +7,7 @@
 // replaces: the speaker groups the package stands in for (Fronts, Center, Side surrounds, Rears, Heights, Subwoofer). Lines outside
 //           those groups stay on the list at their own price. amp: the amplifier that comes in the box, if any; it takes the receiver's place.
 (function () {
-  const UA = { brand: "Sonance", m: "UA 2-125 ARC 2.1-ch TV amplifier", sku: "6635174", why: "125 W x 2 (250 W bridged), HDMI eARC with CEC so the TV remote runs the volume, sub out; $999.99 on its own" };
+  const UA = { brand: "Sonance", m: "UA 2-125 ARC 2.1-ch TV amplifier", pk: "Sonance UA 2-125 ARC", sku: "6635174", why: "125 W x 2 into 8 ohms, HDMI eARC with CEC so the TV remote runs the volume, sub out; $999.99 on its own" };
   window.SF_BUNDLES = {
     asOf: "Nov 17, 2026",
     list: [
@@ -22,7 +22,7 @@
         note: "The in-wall Mag front stage is only sold inside this package. Passive: add the receiver. Seen at $1,499 some weeks." },
       { id: "sstv", kind: "system", brand: "Sonance", name: "MAG SSTVAUDIO soundbar alternative", price: 1299, comp: 2999, sku: "6408707", thumb: "arch",
         covers: { series: ["sonance-mag"], around: [2], heights: [0] }, replaces: ["Fronts"],
-        amp: { brand: "Sonos", m: "Amp", sku: "6312857", why: "125 W x 2, HDMI ARC from the TV, sub out, every streaming service in the Sonos app" },
+        amp: { brand: "Sonos", m: "Amp", sku: "6312857", why: "125 W x 2 into 8 ohms, HDMI ARC from the TV, sub out, every streaming service in the Sonos app" },
         includes: "Sonos Amp, two MAG6 LCR in-wall speakers flanking the TV, and the behind-the-TV wall box that hides the Amp",
         note: "The $1,299 Sonance amplifier-and-two-in-walls offer on the front of bestbuy.com. A sub goes on the Amp's sub out." },
       // ---- bestbuy.com packages: Sonance TV amp + speakers ----
@@ -42,12 +42,12 @@
       { id: "onkyo-klipsch", kind: "package", brand: "Klipsch", name: "Onkyo TX-NR5100 + Klipsch Reference 5.1.2", price: 2724.93, comp: 4224.93, thumb: "tower",
         covers: { series: ["klipsch-ref"], around: [5], heights: [2], subs: [1], fronts: ["tower"], surroundType: ["series"], heightType: ["series"] },
         replaces: ["Fronts", "Center", "Side surrounds", "Heights", "Subwoofer"],
-        amp: { brand: "Onkyo", m: "TX-NR5100 7.2-ch receiver", why: "80 W x 7, Dolby Atmos and DTS:X, 8K HDMI; it comes in the package in place of the Sony or Denon" },
+        amp: { brand: "Onkyo", m: "TX-NR5100 7.2-ch receiver", why: "80 W x 2 into 8 ohms (no 7-channel rating published), Dolby Atmos and DTS:X, 8K HDMI; it comes in the package in place of the Sony or Denon" },
         includes: "Onkyo TX-NR5100, two R-800F towers, R-30C center, R-50M surround pair, R-121SW 12 in sub and the R-40SA height pair",
         note: "bestbuy.com package price, save $1,500. The center in the box is the R-30C, not the R-50C on the line-by-line list." },
       { id: "yam-klipsch", kind: "package", brand: "Klipsch", name: "Yamaha R-S202 stereo receiver + Klipsch R-50M pair", price: 499.98, comp: 644.94, thumb: "amp",
         covers: { series: ["klipsch-ref"], around: [2], heights: [0], subs: [0], fronts: ["bookshelf"] }, replaces: ["Fronts"],
-        amp: { brand: "Yamaha", m: "R-S202 2-ch stereo receiver", sku: "5037100", why: "100 W x 2, Bluetooth, A/B speaker outputs; music only, no HDMI" },
+        amp: { brand: "Yamaha", m: "R-S202 2-ch stereo receiver", sku: "5037100", why: "100 W x 2 into 8 ohms, Bluetooth, A/B speaker outputs; music only, no HDMI" },
         includes: "Yamaha R-S202BL stereo receiver and one Klipsch R-50M bookshelf pair",
         note: "bestbuy.com package price, save $144.96. The starter stereo for a bedroom, office or garage." },
       // ---- Sonance outdoor systems: listed for the brand, nothing in the builder to stand in for ----
