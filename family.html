@@ -176,6 +176,7 @@
       <span id="seriesLabel">Series</span>
       <div class="series" id="seriesList"></div>
       <p class="muted small" id="overNote" hidden></p>
+      <p class="muted small" id="unofferedNote" hidden></p>
     </div>
   </section>
 
@@ -309,7 +310,7 @@
   const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 322, note: "Klipsch swap: this brand has no in-ceiling sold by Best Buy. Sonance MAG6R ($149 pair) is the budget swap" };
   const INWALL_FALLBACK = { brand: "Klipsch", m: "R-5502-W II in-wall LCR", pair: 440, note: "Klipsch swap: this brand has no in-wall sold by Best Buy. Sonance VX62 ($550 pair) is the other option" };
   // load: what the series asks of a receiver (maker specs, Nov 15, 2026). ohm = nominal, min = published minimum, sens = dB at 2.83 V/1 m
-  // for the least efficient main speaker. 4-ohm or sub-4-ohm-minimum families need a receiver rated for 4 ohms; under 86 dB wants real power.
+  // for the power check: the load is the minimum impedance, capped at 6 ohms, and the sensitivity sets the watts each channel needs for 104.5 dB at 1 m.
   const SERIES = [
     { id: "sony-core", brand: "Sony", series: "Core", tier: "value", load: { ohm: 6, sens: 87 },
       tower: { m: "SS-CS3", pair: 460 }, bookshelf: { m: "SS-CS5", pair: 180 }, center: { m: "SS-CS8", each: 150 },
@@ -416,7 +417,7 @@
       sub: { m: "KC92 dual 9 in", each: 2500 }, subAlt: { m: "Reference 8b dual 9 in", each: 7650 },
       kit: "Single Apparent Source: four force-cancelling woofers around one Uni-Q, so the whole speaker acts as a point source. The most expensive speaker on the floor and the one that sells itself in a demo." },
     { id: "ml-esl", brand: "MartinLogan", series: "Masterpiece ESL", tier: "reference", load: { ohm: 4, min: 0.6, sens: 91 }, frontLabels: ["Big panel", "ElectroMotion ESL X"],
-      loadNote: "Electrostatic panels dip under 1 ohm at the top of the band: use a high-current amp (Marantz AMP 10, Michi, the AVR-A1H), never a budget receiver.",
+      loadNote: "Electrostatic panels dip under 1 ohm at the top of the band, below every rating in this app, so the power check fails closed. Not offered until the minimum impedance is confirmed on the maker's sheet.",
       tower: { m: "Renaissance ESL 15A", pair: 29000 }, towerAlt: { m: "Expression ESL 13A", pair: 18000 }, bookshelf: { m: "ElectroMotion ESL X", pair: 4500, note: "The smallest electrostatic tower; the ESL line has no bookshelf. Impression ESL 11A ($12,000 pair) sits between it and the Expression" },
       center: { m: "Illusion ESL C34A", each: 9500, note: "Focus ESL C18 ($4,899.99) or ElectroMotion ESL C ($1,999.99) for a smaller wall" },
       surround: { m: "Motion XT B100", pair: 1500, note: "Folded Motion tweeter voice-matches the panels; MartinLogan's own pairing" },
@@ -424,56 +425,57 @@
       sub: { m: "Depth 212 dual 12 in", each: 5500, note: "BalancedForce technology; the BalancedForce 212 and 210 showed no longer available" }, subAlt: { m: "Dynamo 800X", each: 1000 },
       kit: "The electrostatic panel is a film the thickness of a hair driven across its whole surface: no cone, no breakup, dialogue that sounds like a person in the room. Each tower has a powered woofer section with ARC room correction. Classic ESL 9 showed no longer available Nov 15." },
     // Architectural (in-wall / in-ceiling) families. "tower" = in-wall fronts, "bookshelf" = in-ceiling fronts.
+    // load on these families = the lowest sensitivity and lowest minimum impedance among the models the app names, from maker sheets (Sonos, Sonance, Russound, Polk, KEF, JBL, MartinLogan, Klipsch, B&W, DefTech). Named models without a sourced figure are listed as open items.
     // Every model below is sold and shipped by Best Buy; prices are what bestbuy.com showed on Nov 13, 2026, each unless the model says pair.
-    { id: "jbl-ci", brand: "JBL", series: "Stage Architectural", tier: "value", arch: true,
+    { id: "jbl-ci", brand: "JBL", series: "Stage Architectural", tier: "value", arch: true, load: { ohm: 8, sens: 87 },
       tower: { m: "Stage 250WL dual 5.25 in in-wall LCR", pair: 700, note: "$349.95 each; left, center or right. Stage 260W 6.5 in in-wall ($209.95) if the budget is tight" }, bookshelf: { m: "Stage 260C 6.5 in in-ceiling", pair: 420, note: "$209.95 each; 260CSA angled is the same price and aims at the seats" },
       center: { m: "Stage 250WL in-wall LCR", each: 350, note: "Same LCR as the fronts, under the screen" },
       surround: { m: "Stage 260C in-ceiling", pair: 420 }, inceiling: { m: "Stage 260C in-ceiling", pair: 420 },
       sub: { m: "Stage 2 220P", each: 400 }, subAlt: { m: "Stage 2 200P", each: 300 },
       kit: "280C and 280CSA 8 in ceilings and the 280W 8 in in-wall are $309.95 each for a big room. Step up to Studio 6 in-walls with the Synthesis compression tweeter: 6IW $609.95, 8IW $719.95, 66LCR $769.95, 88LCR $879.95, Theater quad $1,429.95. Conceal C86 invisible in-wall $2,200." },
-    { id: "klipsch-ci", brand: "Klipsch", series: "Reference CI", tier: "value", arch: true,
+    { id: "klipsch-ci", brand: "Klipsch", series: "Reference CI", tier: "value", arch: true, load: { ohm: 8, sens: 92 },
       tower: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each (comp $489); dual 5.25 in, horizontal or vertical" }, bookshelf: { m: "CDT-5650-C II 6.5 in in-ceiling", pair: 322, note: "$160.99 each (comp $429.99); pivoting woofer and horn, so aim them at the seats" },
       center: { m: "R-5502-W II in-wall LCR", each: 220, note: "Same LCR as the fronts, mounted horizontal under the screen" },
       surround: { m: "CDT-5650-C II in-ceiling", pair: 322 }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322 },
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 },
       kit: "CDT-5800-C II 8 in ceiling $199.99 each for a big room. No Klipsch in-wall sub at Best Buy, so the sub stays a box. These are the only Klipsch in-wall and in-ceiling pieces Best Buy sells; the R-2650-C II, R-5650-W II and R-5800-W II never came and the CDT-2650-C II is gone." },
-    { id: "polk-ci", brand: "Polk Audio", series: "Vanishing Series", tier: "value", arch: true,
+    { id: "polk-ci", brand: "Polk Audio", series: "Vanishing Series", tier: "value", arch: true, load: { ohm: 8, sens: 90 },
       tower: { m: "265-RT dual 6.5 in 3-way in-wall", pair: 448, note: "$223.99 each; thin paintable bezel. 265-LS ($379 each) is the step-up in-wall" }, bookshelf: { m: "70-RT 7 in 3-way in-ceiling", pair: 398, note: "$199 each; angled mid and tweeter. 90-RT 9 in is $299 each" },
       center: { m: "265-RT in-wall (horizontal)", each: 224, note: "Same speaker as the fronts, mounted sideways under the screen" },
       surround: { m: "70-RT in-ceiling", pair: 398 }, inceiling: { m: "70-RT in-ceiling", pair: 398 },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 },
       kit: "RC6s single-stereo ceiling for a hallway ($149 list, price shows in cart). The RC80i / RC60i / RC85i rounds are gone from Best Buy and the V-series never came, so this is the Polk architectural line." },
-    { id: "deftech-ci", brand: "Definitive Technology", series: "Dymension CI", tier: "mid", arch: true,
+    { id: "deftech-ci", brand: "Definitive Technology", series: "Dymension CI", tier: "mid", arch: true, load: { ohm: 4, sens: 84 },
       tower: { m: "Dymension CI DW-65 MAX 6.5 in in-wall", pair: 958, note: "$479 each; DW-65 PRO ($379 each) saves $200 a pair" }, bookshelf: { m: "Dymension CI DC-65 MAX 6.5 in in-ceiling", pair: 958, note: "$479 each; DC-65 PRO is $379 each" },
       center: { m: "Dymension CI LCR-525 MAX in-wall", each: 529, note: "Dual 5.25 in LCR; LCR-650 MAX dual 6.5 in is $629" },
       surround: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 }, inceiling: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 },
       sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 },
       kit: "DW MAX SUR bipolar in-wall surround $679 each is the Definitive trick in the wall; DC-80 MAX SUR does it from the ceiling for $679. 8 in: DC-80 PRO $479, DC-80 MAX $599, DW-80 PRO $479. DC-65 PRO SI single-stereo $429. Older DI line still sold by Best Buy: DI 6.5R $299.99, DI 6.5LCR $599.99." },
-    { id: "ml-ci", brand: "MartinLogan", series: "Motion CI", tier: "mid", arch: true,
+    { id: "ml-ci", brand: "MartinLogan", series: "Motion CI", tier: "mid", arch: true, load: { ohm: 8, sens: 90 },
       tower: { m: "Motion CI MW6 6.5 in in-wall", pair: 1200, note: "$599.99 each with the Folded Motion tweeter" }, bookshelf: { m: "Motion CI MC6-HT angled in-ceiling", pair: 1100, note: "$549.99 each; angled toward the seats for front channels" },
       center: { m: "Motion CI MW4LCR in-wall", each: 600, note: "Dual 4 in LCR, $599.99" },
       surround: { m: "Motion CI MC6 in-ceiling", pair: 1000 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000 },
       sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 },
       kit: "MC8 8 in ceiling $549.99, MC4 4 in $349.99. Installer Series for the budget: IC6 $249.99, IC8 $349.99, IW6 $279.99, IW5LCR $399.99. Helos 12 angled ceiling $449.99 (seen at $199.99), Helos 22 stereo single $549.99. Back boxes C6BXR $30, C8BXR $55, C8HTBXR $65. Dynamo IW-S in-wall sub $799.99 (passive; needs an MP500 or MDA amp)." },
-    { id: "kef-ci", brand: "KEF", series: "Ci Series", tier: "premium", arch: true,
+    { id: "kef-ci", brand: "KEF", series: "Ci Series", tier: "premium", arch: true, load: { ohm: 4, min: 3.2, sens: 85 },
       tower: { m: "Ci4100QL-THX in-wall LCR", pair: 1400, note: "$699.99 each; quad 4 in woofers + Uni-Q, THX Ultra. Ci3160RLM-THX ($2,299.99) and Ci5160RLM-THX ($3,299.99) above it" }, bookshelf: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000, note: "$499.99 each; Ci200QR 8 in $599.99, Ci160RR-THX reference $999.99" },
       center: { m: "Ci4100QL-THX in-wall LCR", each: 700, note: "Same LCR as the fronts" },
       surround: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000 }, inceiling: { m: "Ci160QR Uni-Q in-ceiling", pair: 1000 },
       sub: { m: "Kube 12 MIE", each: 900 }, subAlt: { m: "Ci3160RLB-THX in-wall sub (needs an amp)", each: 1300 },
       kit: "Ci160QS square and Ci160QL rectangular in-wall $499.99 each; Ci160ES $399.99 a PAIR and Ci130.2CS 5.25 in $299.99 for the budget; Ci160.2CL in-wall $399.99; Ci160CRds single-stereo $399.99; Ci200.2CR 8 in $499.99. Reference: Ci160RR-THX $999.99, Ci200RR-THX $1,199.99, Ci200RS-THX in-wall $1,199.99." },
-    { id: "ml-xtci", brand: "MartinLogan", series: "Motion XT CI", tier: "premium", arch: true,
+    { id: "ml-xtci", brand: "MartinLogan", series: "Motion XT CI", tier: "premium", arch: true, load: { ohm: 4, sens: 91 },
       tower: { m: "Motion XT CI XTW6 6.5 in in-wall", pair: 1800, note: "$899.99 each with the XT Folded Motion tweeter" }, bookshelf: { m: "Motion XT CI XTC8 8 in in-ceiling", pair: 2200, note: "$1,099.99 each" },
       center: { m: "Motion XT CI XTW5LCR in-wall", each: 1200, note: "Dual 5.25 in LCR; XTW6LCR dual 6.5 in is $1,699.99 for a big screen wall" },
       surround: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000 },
       sub: { m: "Dynamo 1000X", each: 1300 }, subAlt: { m: "Dynamo 800X", each: 1000 },
       kit: "Heights drop to Motion CI MC6 ($499.99 each) because overhead channels do not need the XT tweeter; swap to XTC8 if the customer wants it all XT. Icon 3XW $2,199.99 and Tribute 5XW $3,499.99 are the in-wall flagships above this." },
-    { id: "bw-ci600", brand: "Bowers & Wilkins", series: "CI600", tier: "mid", arch: true,
+    { id: "bw-ci600", brand: "Bowers & Wilkins", series: "CI600", tier: "mid", arch: true, load: { ohm: 8, min: 4, sens: 82 },
       tower: { m: "CI600 CWM664 in-wall (pair)", pair: 900, note: "Sold in pairs; 6 in 2-way with aluminum tweeter" }, bookshelf: { m: "CI600 CCM664 in-ceiling", pair: 950, note: "$475 each; CCM665 pair is $750" },
       center: { m: "CI600 CWM664 (one of a pair)", each: 450, note: "B&W sells CI600 in pairs, so a center means a second pair; a single CI700 CWM7.5 S2 ($1,350) is the one-piece option" },
       surround: { m: "CI600 CCM665 in-ceiling (pair)", pair: 750 }, inceiling: { m: "CI600 CCM665 in-ceiling (pair)", pair: 750 },
       sub: { m: "ASW610", each: 900 }, subAlt: { m: "ASW608", each: 700 },
       kit: "Pairs: CCM663RD reduced-depth $1,350, CCM662 3-way $1,650, CCM684 8 in $1,000, CCM683 $1,450, CCM682 8 in 3-way $2,000, CWM652 5 in in-wall $850, CCM632 3 in $950. CCM663SR single-stereo $825 each. CI300 entry: CCM362 6 in ceiling $550 pair, CCM382 8 in $650 pair, in-wall $600 pair." },
-    { id: "bw-ci700", brand: "Bowers & Wilkins", series: "CI700 S2", tier: "premium", arch: true,
+    { id: "bw-ci700", brand: "Bowers & Wilkins", series: "CI700 S2", tier: "premium", arch: true, load: { ohm: 8, min: 3.1, sens: 88.5 },
       tower: { m: "CI700 S2 CWM7.5 S2 in-wall", pair: 2700, note: "$1,350 each; Carbon Dome tweeter from 700 S3" }, bookshelf: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500, note: "$1,250 each" },
       center: { m: "CI700 S2 CWM7.5 S2 in-wall", each: 1350, note: "Sold singly, so a center is one more. CWM7.3 S2 3-way ($2,800) for a big screen wall" },
       surround: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500 }, inceiling: { m: "CI600 CCM664 in-ceiling", pair: 950 },
@@ -486,7 +488,7 @@
       surround: { m: "CI800 CCM8.5 D in-ceiling", pair: 8500 }, inceiling: { m: "CI800 CCM8.5 D in-ceiling", pair: 8500 },
       sub: { m: "DB1D dual 12 in", each: 5041 }, subAlt: { m: "DB3D dual 8 in", each: 4500 },
       kit: "The 800 Series Diamond tweeter in the wall. CI700 S2 ($1,350 each) covers heights if the budget needs a break." },
-    { id: "kef-ci-ref", brand: "KEF", series: "Ci Reference THX", tier: "reference", arch: true, load: { ohm: 4, min: 3.2, sens: 90 },
+    { id: "kef-ci-ref", brand: "KEF", series: "Ci Reference THX", tier: "reference", arch: true, load: { ohm: 4, min: 3.2, sens: 89 },
       tower: { m: "Ci5160REFM-THX in-wall", pair: 24000, note: "$11,999.99 each: the Reference Meta Uni-Q and four woofers in the wall. Ci5160RLM-THX ($3,299.99 each) is the R-grade step-down" }, bookshelf: { m: "Ci200RR-THX in-ceiling", pair: 2400, note: "$1,199.99 each" },
       center: { m: "Ci5160RLM-THX in-wall", each: 3300, note: "The REFM as center if the wall allows ($11,999.99)" },
       surround: { m: "Ci200RR-THX in-ceiling", pair: 2400 }, inceiling: { m: "Ci200RR-THX in-ceiling", pair: 2400 },
@@ -498,26 +500,26 @@
       surround: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 }, inceiling: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 },
       sub: { m: "Depth 212 dual 12 in", each: 5500 }, subAlt: { m: "Dynamo 800X", each: 1000 },
       kit: "MartinLogan's top in-wall line; Statement 40XW and Monument 7XW did not show on bestbuy.com Nov 15." },
-    { id: "sonance-ref", brand: "Sonance", series: "Reference", tier: "reference", arch: true, frontLabels: ["R2 in-wall", "R1 in-wall"],
+    { id: "sonance-ref", brand: "Sonance", series: "Reference", tier: "reference", arch: true, load: { ohm: 6, min: 4, sens: 90 }, frontLabels: ["R2 in-wall", "R1 in-wall"],
       tower: { m: "Reference R2 3-way in-wall", pair: 6600, note: "$3,300 each, Sonance's flagship in-wall" }, bookshelf: { m: "Reference R1 3-way in-wall", pair: 3300, note: "$1,650 each" },
       center: { m: "Reference R1 in-wall", each: 1650 },
       surround: { m: "Reference R1 in-wall (R1SUR is the dedicated surround; price in norrito)", pair: 3300 }, inceiling: { m: "Reference R1C-SUR in-ceiling (price in norrito)", pair: 3300, note: "Listed at Best Buy without a rendered price; verify" },
       sub: { m: "SVS PB17-Ultra R|Evolution", each: 3000, brand: "SVS" }, subAlt: { m: "REL Carbon Special", each: 4999, brand: "REL" },
       kit: "The Sonance line above Visual Performance: 3-way in-walls built as a front stage, not a ceiling speaker. No Sonance reference sub at Best Buy; pair with SVS or REL." },
     // Sonance. Prices are what bestbuy.com showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
-    { id: "sonance-mag", brand: "Sonance", series: "Mag Series", tier: "value", arch: true, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
+    { id: "sonance-mag", brand: "Sonance", series: "Mag Series", tier: "value", arch: true, load: { ohm: 8, min: 6, sens: 89 }, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
       tower: { m: "MAG8R 8 in in-ceiling (pair)", pair: 249, note: "Comp. value $1,099; sold in pairs only" }, bookshelf: { m: "MAG6R 6.5 in in-ceiling (pair)", pair: 149, note: "Comp. value $749; sold in pairs only" },
       center: { m: "MAG6R (one more pair; use one as center)", each: 149, note: "Mag has no in-wall center; the MAG5.1R puts a third ceiling speaker above the screen. For real dialog from the screen wall, step up to a VX62 LCR or VP62 LCR." },
       surround: { m: "MAG6R in-ceiling (pair)", pair: 149 }, inceiling: { m: "MAG6R in-ceiling (pair)", pair: 149 },
       sub: { m: "MS10SUB 10 in 275 W", each: 429 }, subAlt: { m: "MAG5.1R complete 5.1 in-ceiling system", each: 749 },
       kit: "The packages are the price story: MAG5.1R, five in-ceilings plus the MS8 SUB, $749 (comp $2,499; $499 to $699 on sale days). MAG5.1 PREMIUM, three MAG6 LCR in-walls, two MAG6R SUR, MS10SUB and the wireless kit, $1,199 (comp $4,499). Set the build to 5.1 and the Package deals card prices them." },
-    { id: "sonance-vx", brand: "Sonance", series: "Visual Experience", tier: "mid", arch: true,
+    { id: "sonance-vx", brand: "Sonance", series: "Visual Experience", tier: "mid", arch: true, load: { ohm: 8, min: 6, sens: 89 },
       tower: { m: "VX62 6.5 in in-wall (pair)", pair: 550 }, bookshelf: { m: "VX62R 6.5 in in-ceiling (pair)", pair: 550 },
       center: { m: "VX62 LCR in-wall", each: 440 },
       surround: { m: "VX62R in-ceiling (pair)", pair: 550 }, inceiling: { m: "VX62R in-ceiling (pair)", pair: 550 },
       sub: { m: "MS10SUB 10 in 275 W", each: 429 }, subAlt: { m: "Impact i8 8 in wireless", each: 1100 },
       kit: "VX62 rectangle single $275; VX60R pair $440 below it, VX64R $670 and VX66R $965 pairs above it. VX42 4 in in-wall pair is packaged with the UA 2-125 ARC amp at $1,369.99." },
-    { id: "sonance-vp", brand: "Sonance", series: "Visual Performance", tier: "premium", arch: true,
+    { id: "sonance-vp", brand: "Sonance", series: "Visual Performance", tier: "premium", arch: true, load: { ohm: 6, min: 4, sens: 89 },
       tower: { m: "VP62 LCR 6.5 in in-wall (each)", pair: 830, note: "$415 each; clearance units seen at $102.99" }, bookshelf: { m: "VP66R 6.5 in in-ceiling (each)", pair: 865 },
       center: { m: "VP62 LCR in-wall", each: 415 },
       surround: { m: "VP62R SST/SUR thin-line in-ceiling", pair: 990 }, inceiling: { m: "VP66R in-ceiling (each)", pair: 865 },
@@ -529,13 +531,13 @@
       surround: { m: "IS6 invisible (pair)", pair: 1515 }, inceiling: { m: "IS6 invisible (pair)", pair: 1515 },
       sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
       kit: "IS8 $2,120 pair / $1,060 each; IS6 $1,515 pair / $757.50 each. 84 to 86 dB sensitivity, so give them a real amp." },
-    { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
+    { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true, load: { ohm: 8, sens: 85 }, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
       tower: { m: "In-Ceiling 8 in (pair)", pair: 1099, note: "The new 8 in with deeper bass; needs a Sonos Amp ($699, drives one pair)" }, bookshelf: { m: "In-Ceiling 6 in (pair)", pair: 679, note: "Seen as low as $589.99; comp $729" },
       center: { m: "In-Ceiling 6 in (one of a pair)", each: 340, note: "Sonos sells pairs only and Best Buy no longer sells the in-wall, so a center is a third ceiling speaker over the screen. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
       surround: { m: "In-Ceiling 6 in (pair)", pair: 679 }, inceiling: { m: "In-Ceiling 6 in (pair)", pair: 679 },
       sub: { m: "Sub (Gen 3), wireless", each: 799, brand: "Sonos" }, subAlt: { m: "Sub Mini", each: 429 },
       kit: "Made by Sonance, tuned with Sonos Trueplay. Best Buy sells the 6 in ceiling pair ($679), the 8 in ceiling pair ($1,099) and the outdoor pair ($899); the in-wall pair has gone to marketplace sellers. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
-    { id: "russound", brand: "Russound", series: "In-Ceiling", tier: "value", arch: true, frontLabels: ["6.5 in enhanced", "6.5 in all-purpose"],
+    { id: "russound", brand: "Russound", series: "In-Ceiling", tier: "value", arch: true, load: { ohm: 8, sens: 88 }, frontLabels: ["6.5 in enhanced", "6.5 in all-purpose"],
       tower: { m: "6.5 in enhanced-performance in-ceiling (each)", pair: 798, note: "$399 each at Best Buy; toolless install, paintable grille" }, bookshelf: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436, note: "$218 each; pivoting silk tweeter" },
       center: { m: "6.5 in all-purpose in-ceiling (each)", each: 218 },
       surround: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 }, inceiling: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 },
@@ -550,7 +552,7 @@
   ];
   // Passive LCR speakers (bars.js SF_LCR): no amp inside, so they are the front three of a speaker system, not a soundbar. Shown at the 3-channel size only.
   (window.SF_LCR || []).forEach(function (b) {
-    SERIES.push({ id: b.id, brand: b.brand, series: b.name, tier: b.tier, lcr: true, passive: true, cfg: b.cfg, load: null, lcrModel: b.m, price: b.price, sku: b.sku, comp: b.comp, tech: b.tech });
+    SERIES.push({ id: b.id, brand: b.brand, series: b.name, tier: b.tier, lcr: true, passive: true, cfg: b.cfg, load: b.load || null, lcrModel: b.m, price: b.price, sku: b.sku, comp: b.comp, tech: b.tech });
   });
   // Subwoofers by brand and price level, for the Subwoofer brand chips (bestbuy.com prices; REL rows filled Nov 15, 2026).
   const SUBS = {
@@ -574,103 +576,103 @@
   }
   function subAlts(tier, skip) { return Object.keys(SUBS).filter(function (b) { return b !== skip; }).map(function (b) { return subFor(b, tier); }).filter(Boolean); }
   // Receivers Best Buy sells and ships, one per price level for each channel count. Prices are bestbuy.com list on Nov 13, 2026.
-  // Nov 18, 2026: added as alternates the receivers with a Best Buy seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-DH790, STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not Best Buy on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
+  // Nov 18, 2026: added as alternates the receivers with a Best Buy seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not Best Buy on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
   // Marantz CINEMA Series 2 (Best Buy SKUs 6687403 / 6687404 / 6687405, sold by Best Buy) replaces the first-generation Cinema 50, 60 and 70s. Their prices are the Marantz list prices ($1,500 / $2,000 / $3,000); confirm the Best Buy price in norrito. Cinema 30 and Cinema 40 stay first generation.
-  // ohm4: rated for 4-ohm speakers per the maker's manual (Denon, Marantz, Onkyo, Pioneer: 4 to 16 ohms). The Sony STR-DH590 is 6 to 16 ohms.
+  // ohm4: informational only. Whether a unit can drive a load is decided by powerCheck, from the SF_POWER ratings in bars.js.
   const AVRS = {
     2: { need: "2 amplified channels",
-      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later",
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later. 90 W x 2 at 6 ohms (minimum RMS); Sony publishes no 8-ohm figure",
         alts: [{ brand: "Rotel", m: "A10 MKII 2.0-ch integrated amplifier", cur: "ok", price: 699, role: "Integrated amp", sku: "6571776", why: "50 W x 2 Class AB, phono input, Bluetooth; a real stereo amp at the price of a budget receiver, two channels only" },
-               { brand: "Rotel", m: "A11 MKII 2.0-ch integrated amplifier", cur: "ok", price: 949, role: "Integrated amp", sku: "6571771", why: "50 W x 2 into 8 ohms, 62 W into 4; the Ken Ishiwata-tuned A11 with Bluetooth and phono" }] },
-      mid: { brand: "Denon", m: "DRA-900H 2.2-ch stereo receiver", cur: "ok", price: 799, why: "True two-channel, 100 W, 8K HDMI, HEOS streaming, two sub outs",
+               { brand: "Rotel", m: "A11 MKII 2.0-ch integrated amplifier", cur: "ok", price: 949, role: "Integrated amp", sku: "6571771", why: "50 W x 2 into 8 ohms; the Ken Ishiwata-tuned A11 with Bluetooth and phono. No 4-ohm figure published" }] },
+      mid: { brand: "Denon", m: "DRA-900H 2.2-ch stereo receiver", cur: "ok", price: 799, why: "True two-channel: 100 W x 2 into 8 ohms (120 W at 6 ohms), 8K HDMI, HEOS streaming, two sub outs",
         alts: [{ brand: "Rotel", m: "A12 MKII 2.0-ch integrated amplifier", cur: "ok", price: 1199, role: "Integrated amp", sku: "6557356", why: "60 W x 2 with a built-in DAC, phono and Bluetooth; showed $200 off $1,399" },
                { brand: "Rotel", m: "A14 MKII 2.0-ch integrated amplifier", cur: "ok", price: 1599, role: "Integrated amp", sku: "6557360", why: "80 W x 2, DAC, phono, Bluetooth; showed $300 off $1,899" },
                { brand: "Rotel", m: "S14 2.0-ch streaming amplifier", cur: "ok", price: 1999, role: "Streaming amp", sku: "6635556", why: "80 W x 2 with streaming built in (AirPlay 2, Chromecast, Roon Ready): the one-box music system" },
-               { brand: "Arcam", m: "Radia A15+ 2.0-ch integrated amplifier", cur: "ok", price: 1500, role: "Integrated amp", sku: "6642223", why: "80 W x 2 Class AB with a DAC and phono; Arcam's mid Radia" },
-               { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W with a proper 4-ohm mode and pre-outs; the mid-level amp with the current for a 4-ohm stereo pair, and five channels in reserve if the room grows" }] },
-      premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W per channel for a premium stereo pair, with five channels in reserve for a full theater",
+               { brand: "Arcam", m: "Radia A15+ 2.0-ch integrated amplifier", cur: "ok", price: 1500, role: "Integrated amp", sku: "6642223", why: "80 W x 2 Class AB with a DAC and phono; 120 W x 2 at 4 ohms; Arcam's mid Radia" },
+               { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs, and five channels in reserve if the room grows" }] },
+      premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms, for a premium stereo pair, with five channels in reserve for a full theater",
         alts: [{ brand: "Rotel", m: "RA-1572 MKII 2.0-ch integrated amplifier", cur: "strong", price: 2299, role: "Integrated amp", sku: "6557369", why: "120 W x 2 Class AB, DAC, phono, Bluetooth; showed $400 off $2,699" },
-               { brand: "Arcam", m: "Radia A25+ 2.0-ch integrated amplifier", cur: "strong", price: 2000, role: "Integrated amp", sku: "6642221", why: "100 W x 2 Class G: Arcam's efficient Class A-biased design in the Radia line" },
-               { brand: "Arcam", m: "SA30 2.0-ch streaming amplifier", cur: "strong", price: 3300, role: "Streaming amp", sku: "6391974", why: "130 W x 2 Class G with Dirac Live room correction and streaming built in: the audiophile all-in-one" },
+               { brand: "Arcam", m: "Radia A25+ 2.0-ch integrated amplifier", cur: "strong", price: 2000, role: "Integrated amp", sku: "6642221", why: "100 W x 2 into 8 ohms and 165 W at 4 ohms, Class G, in the Radia line" },
                { brand: "Rotel", m: "RA-1592 MKII 2.0-ch integrated amplifier", cur: "strong", price: 3699, role: "Integrated amp", sku: "6557371", why: "200 W x 2 Class AB; Rotel's biggest integrated; showed $500 off" },
                { brand: "Michi", m: "Prestige X430 2.0-ch integrated amplifier", cur: "strong", price: 4999, role: "Integrated amp", sku: "6678050", why: "210 W x 2 into 8 ohms, Rotel's Michi build: two-channel only, for the music room that will stay two-channel" }] },
       reference: { brand: "Marantz", m: "Model 10 2.0-ch integrated amplifier", cur: "strong", price: 15000, role: "Integrated amp", why: "250 W x 2 into 8 ohms, the flagship Marantz integrated",
-        alts: [{ brand: "Michi", m: "X5 Series 2 2.0-ch integrated amplifier", cur: "strong", price: 9499, role: "Integrated amp", sku: "6572433", why: "Rotel's flagship: 350 W x 2 into 8 ohms, 600 W into 4; the amp for Blades and electrostatics" },
-               { brand: "Michi", m: "X3 Series 2 2.0-ch integrated amplifier", cur: "strong", price: 7499, role: "Integrated amp", sku: "6557355", why: "200 W x 2 into 8 ohms, 350 W into 4; Michi build with a smaller footprint" },
-               { brand: "Rotel", m: "RC-1590 MKII preamplifier + RB-1590 2.0-ch power amplifier", cur: "strong", short: "RC-1590 MKII + RB-1590", price: 7298, role: "Separates", sku: "5708756", why: "$2,699 + $4,599: balanced preamp with MQA and Roon, 350 W x 2 power amp; Rotel's reference stereo separates" },
-               { brand: "Arcam", m: "Radia SA45 2.2-ch integrated amplifier", cur: "strong", price: 5500, role: "Integrated amp", sku: "6622108", why: "180 W x 2 Class G with two sub outs; Arcam's flagship integrated" },
+        alts: [{ brand: "Michi", m: "X5 Series 2 2.0-ch integrated amplifier", cur: "strong", price: 9499, role: "Integrated amp", sku: "6572433", why: "Michi's flagship: 350 W x 2 into 8 ohms. No 4-ohm figure published" },
+               { brand: "Michi", m: "X3 Series 2 2.0-ch integrated amplifier", cur: "strong", price: 7499, role: "Integrated amp", sku: "6557355", why: "200 W x 2 into 8 ohms; Michi build with a smaller footprint. No 4-ohm figure published" },
+               { brand: "Rotel", m: "RC-1590 MKII preamplifier + RB-1590 2.0-ch power amplifier", cur: "strong", short: "RC-1590 MKII + RB-1590", price: 7298, role: "Separates", sku: "5708756", parts: ["Rotel RB-1590"], why: "$2,699 + $4,599: balanced preamp with MQA and Roon; the RB-1590 is 350 W x 2 into 8 ohms; Rotel's reference stereo separates" },
+               { brand: "Arcam", m: "Radia SA45 2.2-ch integrated amplifier", cur: "strong", price: 5500, role: "Integrated amp", sku: "6622108", why: "180 W x 2 into 8 ohms and 300 W at 4 ohms, Class G, with two sub outs; Arcam's flagship integrated" },
                { brand: "Michi", m: "Prestige X430 2.0-ch integrated amplifier", cur: "strong", price: 4999, role: "Integrated amp", sku: "6678050", why: "210 W x 2 into 8 ohms; the entry to Michi" }] } },
     5: { need: "5 amplified channels",
-      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration",
-        alts: [{ brand: "JBL", m: "MA310 5.2-ch receiver", cur: "ok", price: 440, sku: "6584222", why: "Bluetooth, HDR and a voice assistant in a 5.2 receiver; sold by Best Buy at $439.95" },
-               { brand: "Sony", m: "STR-DH790 7.2-ch receiver", cur: "ok", price: 549.99, ohm4: false, sku: "6219445", why: "145 W x 7 at 6 ohms with Dolby Atmos and DTS:X; sold by Best Buy at $549.99" },
-               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 7 with Dolby Atmos and MusicCast; sold by Best Buy at $799.95" },
-               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 7, HEOS and 8K HDMI; sold by Best Buy at $849" },
-               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 7, HEOS and Dolby Atmos; sold by Best Buy at $849 on sale, $949 comparable" },
-               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "120 W x 7 at 6 ohms with Dolby Atmos and DTS:X; sold by Best Buy at $849.99" }] },
-      mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", cur: "ok", price: 649, why: "8K HDMI, HEOS, Audyssey room correction, phono input, Alexa",
-        alts: [{ brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W with a proper 4-ohm mode, pre-outs and Audyssey MultEQ XT; the amp a 4-ohm 5.1 needs, with two channels spare for heights later" },
-               { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" },
-               { brand: "JBL", m: "MA510 5.2-ch receiver", cur: "ok", price: 660, sku: "6584083", why: "75 W x 5 at 8 ohms; sold by Best Buy at $659.95" },
-               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 7 at 8 ohms; sold by Best Buy at $1,199.99" }] },
-      premium: { brand: "Marantz", m: "CINEMA 70S Series 2 7.2-ch slim receiver", sku: "6687403", cur: "ok", price: 1500, why: "Slim Marantz Series 2 with Dolby Atmos and two spare channels for heights",
-        alts: [{ brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W per channel in the full-size chassis; the Marantz with the current for 4-ohm speakers, two channels spare for heights" },
-               { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; the Arcam sound at the first step" },
-               { brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "110 W x 7 Class G; the Arcam for a serious 5.1.2" }] },
-      reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 15, four independent sub outs, Dirac-ready; the one receiver that belongs under reference speakers. Marantz AV 10 + AMP 10 separates ($16,000) above it",
-        alts: [{ brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "180 W x 7 Class G, Dirac Live included, Google Cast; the audiophile receiver for a 5.1 or 7.1 that will not grow past seven channels" },
-               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1585 MKII 5-ch amplifier", cur: "strong", short: "AV 10 + RMB-1585 MKII", price: 12599, role: "Separates", sku: "6571702", why: "$8,000 + $4,599: 15.4 processing in front of 210 W x 5 (340 W into 4 ohms) of Rotel Class AB; separates for a 5.1 that is all about the speakers" }] } },
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration. 90 W x 2 at 6 ohms (minimum RMS); no all-channel rating published",
+        alts: [{ brand: "JBL", m: "MA310 5.2-ch receiver", cur: "ok", price: 440, sku: "6584222", why: "Bluetooth, HDR and a voice assistant in a 5.2 receiver; 50 W x 2 into 8 ohms (FTC); sold by Best Buy at $439.95" },
+               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by Best Buy at $799.95" },
+               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by Best Buy at $849" },
+               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by Best Buy at $849 on sale, $949 comparable" },
+               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" }] },
+      mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", cur: "ok", price: 649, why: "75 W x 2 into 8 ohms and 100 W at 6 ohms; 8K HDMI, HEOS, Audyssey room correction, phono input, Alexa; no all-channel rating published",
+        alts: [{ brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs and Audyssey MultEQ XT; two channels spare for heights later" },
+               { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" },
+               { brand: "JBL", m: "MA510 5.2-ch receiver", cur: "ok", price: 660, sku: "6584083", why: "75 W x 2 into 8 ohms (FTC) and 100 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $659.95" },
+               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by Best Buy at $1,199.99" }] },
+      premium: { brand: "Marantz", m: "CINEMA 70S Series 2 7.2-ch slim receiver", sku: "6687403", cur: "ok", price: 1500, why: "Slim Marantz Series 2 with Dolby Atmos and two spare channels for heights; 50 W x 2 into 8 ohms and 70 W at 6 ohms",
+        alts: [{ brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms in the full-size chassis; two channels spare for heights" },
+               { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB, 8K HDMI, Google Cast; the Arcam sound at the first step" },
+               { brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "90 W x 7 at 8 ohms and 110 W x 7 at 4 ohms; Class AB; the Arcam for a serious 5.1.2" }] },
+      reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 2 into 8 ohms and 190 W at 6 ohms; 15 amplified channels, four independent sub outs, Dirac-ready; the one receiver that belongs under reference speakers",
+        alts: [{ brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "100 W x 7 at 8 ohms and 180 W x 7 at 4 ohms; Class G, Dirac Live included; the audiophile receiver for a 5.1 or 7.1 that will not grow past seven channels" },
+               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1585 MKII 5-ch amplifier", cur: "strong", short: "AV 10 + RMB-1585 MKII", price: 12599, role: "Separates", sku: "6571702", parts: ["Rotel RMB-1585 MKII"], why: "$8,000 + $4,599: 15.4 processing in front of 210 W x 5 at 8 ohms (340 W x 5 at 4 ohms, Rotel brochure) of Rotel Class AB; separates for a 5.1 that is all about the speakers" }] } },
     7: { need: "7 amplified channels",
-      value: { brand: "Denon", m: "AVR-S770H 7.2-ch receiver", cur: "ok", price: 749, why: "Dolby Atmos and DTS:X, 8K HDMI, HEOS; promoted around $599 to $649 most weeks",
-        alts: [{ brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ and Google Cast; the audiophile step from a value receiver" },
-               { brand: "JBL", m: "MA710 7.2-ch receiver", cur: "ok", price: 700, sku: "6584069", why: "90 W x 7 at 8 ohms, with 110 W x 2 for the front pair; sold by Best Buy at $699.95, comp $879.95" },
-               { brand: "Sony", m: "STR-DH790 7.2-ch receiver", cur: "ok", price: 549.99, ohm4: false, sku: "6219445", why: "145 W x 7 at 6 ohms with Dolby Atmos and DTS:X; sold by Best Buy at $549.99" },
-               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 7 with Dolby Atmos and MusicCast; sold by Best Buy at $799.95" },
-               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 7, HEOS and 8K HDMI; sold by Best Buy at $849" },
-               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 7, HEOS and Dolby Atmos; sold by Best Buy at $849 on sale, $949 comparable" },
-               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "120 W x 7 at 6 ohms with Dolby Atmos and DTS:X; sold by Best Buy at $849.99" }] },
-      mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W, pre-outs, Audyssey MultEQ XT; the step up in amplifier quality",
-        alts: [{ brand: "JBL", m: "MA7100HP 7.2-ch receiver", cur: "ok", price: 1060, sku: "6584072", why: "125 W x 2 and 100 W x 7 continuous at 8 ohms; sold by Best Buy at $1,059.95" },
-               { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; built like a stereo amp with seven channels" },
-               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 7 at 8 ohms; sold by Best Buy at $1,199.99" }] },
-      premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W per channel and the Marantz voicing for music-first rooms",
-        alts: [{ brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "110 W x 7 Class G; the Arcam for a 7.1 or 5.1.2 that will stay seven channels" },
-               { brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "180 W x 7 Class G with Dirac Live: the step from receiver to reference without going to separates" }] },
-      reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 15 with room to grow to 7.4.6; Marantz AV 10 + AMP 10 ($16,000) for separates",
-        alts: [{ brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "180 W x 7 Class G, Dirac Live included; exactly seven channels, so a 7.1 with no heights, or 5.1.2" },
-               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch amplifier", cur: "strong", short: "AV 10 + RMB-1587 MKII", price: 12799, role: "Separates", sku: "6571770", why: "$8,000 + $4,799: 15.4 processing in front of 155 W x 7 of Rotel Class AB" }] } },
+      value: { brand: "Denon", m: "AVR-S770H 7.2-ch receiver", cur: "ok", price: 749, why: "Dolby Atmos and DTS:X, 8K HDMI, HEOS; 75 W x 2 into 8 ohms and 110 W at 6 ohms",
+        alts: [{ brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB with Dirac EQ and Google Cast; the audiophile step from a value receiver" },
+               { brand: "JBL", m: "MA710 7.2-ch receiver", cur: "ok", price: 700, sku: "6584069", why: "110 W x 2 into 8 ohms (FTC) and 160 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $699.95, comp $879.95" },
+               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by Best Buy at $799.95" },
+               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by Best Buy at $849" },
+               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by Best Buy at $849 on sale, $949 comparable" },
+               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" }] },
+      mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs, Audyssey MultEQ XT; the step up in amplifier quality",
+        alts: [{ brand: "JBL", m: "MA7100HP 7.2-ch receiver", cur: "ok", price: 1060, sku: "6584072", why: "125 W x 2 into 8 ohms and 175 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $1,059.95" },
+               { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB, 8K HDMI, Google Cast; built like a stereo amp with seven channels" },
+               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by Best Buy at $1,199.99" }] },
+      premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms, with the Marantz voicing for music-first rooms",
+        alts: [{ brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "90 W x 7 at 8 ohms and 110 W x 7 at 4 ohms; Class AB; the Arcam for a 7.1 or 5.1.2 that will stay seven channels" },
+               { brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "100 W x 7 at 8 ohms and 180 W x 7 at 4 ohms; Class G with Dirac Live: the step from receiver to reference without going to separates" }] },
+      reference: { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 2 into 8 ohms and 190 W at 6 ohms; 15 amplified channels in one box",
+        alts: [{ brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "100 W x 7 at 8 ohms and 180 W x 7 at 4 ohms; Class G, Dirac Live included; exactly seven channels, so a 7.1 with no heights, or 5.1.2" },
+               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch amplifier", cur: "strong", short: "AV 10 + RMB-1587 MKII", price: 12799, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII"], why: "$8,000 + $4,799: 15.4 processing in front of 155 W x 7 at 8 ohms (250 W x 7 at 4 ohms, Rotel brochure) of Rotel Class AB" }] } },
     9: { need: "9 amplified channels",
-      value: { brand: "Onkyo", m: "TX-RZ30 9.2-ch receiver", cur: "strong", price: 1000, why: "Dirac Live room correction included, IMAX Enhanced, THX; comp value $1,249.99",
-        alts: [{ brand: "Pioneer Elite", m: "VSX-LX305 9.2-ch receiver", cur: "ok", price: 749, sku: "6405450", why: "100 W x 9 at 8 ohms; sold by Best Buy at $749, comparable $1,199" }] },
-      mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", cur: "strong", price: 1799, why: "Four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse. Denon lists it at $1,399, so ask for a match",
-        alts: [{ brand: "JBL", m: "MA9100HP 9.2-ch receiver", cur: "ok", price: 1760, sku: "6584075", why: "140 W x 2 and 125 W x 9 at 8 ohms; sold by Best Buy at $1,759.95" },
-               { brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; Best Buy lists 140 W for two channels at 8 ohms; sold by Best Buy at $2,299.99, comparable $2,899.99" }] },
-      premium: { brand: "Marantz", m: "CINEMA 50 Series 2 9.4-ch receiver", sku: "6687405", cur: "strong", price: 3000, why: "110 W x 9 at 4 ohms, 9.4 channels, Dirac Live upgradeable; the premium pick under B&W, KEF R and Motion XT",
-        alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 100 W, 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" }] },
-      reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: 15.4 processing, 200 W x 16 at 8 ohms, high-current enough for electrostatics and 4-ohm Blades. Denon AVR-A1H ($7,199) if it has to be one box",
-        alts: [{ brand: "Marantz", m: "AV 20 processor + AMP 20 12-ch amplifier", cur: "strong", short: "AV 20 + AMP 20", price: 12000, role: "Separates", why: "bestbuy.com package price $12,000: the new Marantz separates, 13.4 processing in front of 200 W x 12; the step between a Cinema 30 and the AV 10 + AMP 10" },
-               { brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier", cur: "strong", short: "AVP45 + AVA15", price: 10500, role: "Separates", sku: "6679207", why: "$5,999.95 + $4,499.95: Arcam's 16-channel processor in front of the AVA15's nine amplified channels; all Arcam, Dirac-ready" },
-               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RB-1552 MKII 2-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RB-1552", price: 14498, role: "Separates", sku: "6571770", why: "$8,000 + $4,799 + $1,699: nine channels of Rotel Class AB (155 W x 7 plus 130 W x 2 for the heights)" }] } },
+      value: { brand: "Onkyo", m: "TX-RZ30 9.2-ch receiver", cur: "strong", price: 1000, why: "100 W per channel into 8 ohms (2 channels driven); no 4- or 6-ohm figure published. Dirac Live room correction included, IMAX Enhanced, THX; comp value $1,249.99",
+        alts: [{ brand: "Pioneer Elite", m: "VSX-LX305 9.2-ch receiver", cur: "ok", price: 749, sku: "6405450", why: "100 W x 2 into 8 ohms (minimum RMS); no all-channel rating published; sold by Best Buy at $749, comparable $1,199" }] },
+      mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", cur: "strong", price: 1799, why: "105 W x 2 into 8 ohms and 135 W at 6 ohms; four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse",
+        alts: [{ brand: "JBL", m: "MA9100HP 9.2-ch receiver", cur: "ok", price: 1760, sku: "6584075", why: "140 W x 2 into 8 ohms (FTC) and 240 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $1,759.95" },
+               { brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by Best Buy at $2,299.99, comparable $2,899.99" }] },
+      premium: { brand: "Marantz", m: "CINEMA 50 Series 2 9.4-ch receiver", sku: "6687405", cur: "strong", price: 3000, why: "110 W x 2 into 8 ohms and 150 W at 6 ohms; no all-channel or 4-ohm rating published; 9.4 channels, Dirac Live upgradeable",
+        alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 65 W each into 8 ohms; 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" }] },
+      reference: { brand: "Marantz", m: "AV 10 processor + 2 x AMP 10 amplifiers", cur: "strong", short: "AV 10 + 2 x AMP 10", price: 24000, role: "Separates", sku: null, parts: ["Marantz AMP 10"], rep: 2, why: "$8,000 + 2 x $8,000: 15.4 processing. Each AMP 10 drives five channels at 200 W into 8 ohms (Marantz infosheet), so two units cover nine. Denon AVR-A1H ($7,199) if it has to be one box",
+        alts: [{ brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier", cur: "strong", short: "AVP45 + AVA15", price: 10500, role: "Separates", sku: "6679207", parts: ["Arcam AVA15"], why: "$5,999.95 + $4,499.95: Arcam's 16-channel processor in front of the AVA15's nine amplified channels at 65 W each into 8 ohms; all Arcam, Dirac-ready" },
+               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RB-1552 MKII 2-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RB-1552", price: 14498, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII", "Rotel RB-1552 MKII"], why: "$8,000 + $4,799 + $1,699: nine channels of Rotel Class AB (155 W x 7 plus 130 W x 2 for the heights, both into 8 ohms)" }] } },
     11: { need: "11 amplified channels",
-      value: { brand: "Pioneer Elite", m: "VSX-LX805 11.4-ch receiver", cur: "strong", price: 1699, why: "150 W x 11, Dirac Live, balanced pre-outs; comp value $2,999",
-        alts: [{ brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; Best Buy lists 140 W for two channels at 8 ohms; sold by Best Buy at $2,299.99, comparable $2,899.99" }] },
-      mid: { brand: "Denon", m: "AVR-X6800H 11.4-ch receiver", cur: "strong", price: 3799, why: "Made in Japan, 140 W x 11; drives a 7.2.4 with no outboard amp" },
-      premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", cur: "strong", price: 4800, why: "The reference Marantz: 140 W x 11, 13.4 pre-outs, HDAM SA-2 modules" },
-      reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: the top of the Marantz line, 200 W x 16, drives a 7.4.4 with channels to spare. Denon AVR-A1H ($7,199, 15 channels) is the one-box option",
-        alts: [{ brand: "Marantz", m: "AV 20 processor + AMP 20 12-ch amplifier", cur: "strong", short: "AV 20 + AMP 20", price: 12000, role: "Separates", why: "bestbuy.com package price $12,000: 13.4 processing and 200 W x 12, so an 11-channel room with one amp box; the new Marantz separates under AV 10 + AMP 10" },
-               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RMB-1555 5-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RMB-1555", price: 15298, role: "Separates", sku: "6571770", why: "$8,000 + $4,799 + $2,499: twelve channels of Rotel Class AB for a 7.4.4" },
-               { brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier + Rotel RB-1552 MKII", cur: "strong", short: "AVP45 + AVA15 + RB-1552", price: 12199, role: "Separates", sku: "6679207", why: "$5,999.95 + $4,499.95 + $1,699: Arcam processing and nine Arcam channels, Rotel for the last two" }] } },
+      value: { brand: "Pioneer Elite", m: "VSX-LX805 11.4-ch receiver", cur: "strong", price: 1699, why: "150 W x 2 into 8 ohms (FTC); no all-channel rating published. Dirac Live, balanced pre-outs; comp value $2,999",
+        alts: [{ brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by Best Buy at $2,299.99, comparable $2,899.99" }] },
+      mid: { brand: "Denon", m: "AVR-X6800H 11.4-ch receiver", cur: "strong", price: 3799, why: "Made in Japan; 140 W x 2 into 8 ohms and 175 W at 6 ohms; no all-channel rating published" },
+      premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", cur: "strong", price: 4800, why: "The reference Marantz: 140 W x 2 into 8 ohms and 175 W at 6 ohms; 13.4 pre-outs, HDAM SA-2 modules" },
+      reference: { brand: "Marantz", m: "AV 10 processor + 3 x AMP 10 amplifiers", cur: "strong", short: "AV 10 + 3 x AMP 10", price: 32000, role: "Separates", sku: null, parts: ["Marantz AMP 10"], rep: 3, why: "$8,000 + 3 x $8,000: the top of the Marantz line. Each AMP 10 drives five channels at 200 W into 8 ohms (Marantz infosheet), so three units cover 11 with room to spare. Denon AVR-A1H ($7,199, 15 channels) is the one-box option",
+        alts: [{ brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RMB-1585 MKII 5-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RMB-1585", price: 17398, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII", "Rotel RMB-1585 MKII"], why: "$8,000 + $4,799 + $4,599: eleven channels of Rotel Class AB, 155 W x 7 and 210 W x 5 into 8 ohms; 250 W x 7 and 340 W x 5 into 4 ohms (Rotel)" },
+               { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RMB-1555 5-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RMB-1555", price: 15298, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII", "Rotel RMB-1555"], why: "$8,000 + $4,799 + $2,499: twelve channels of Rotel Class AB, 155 W x 7 and 120 W x 5 into 8 ohms" },
+               { brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier + Rotel RB-1552 MKII", cur: "strong", short: "AVP45 + AVA15 + RB-1552", price: 12199, role: "Separates", sku: "6679207", parts: ["Arcam AVA15", "Rotel RB-1552 MKII"], why: "$5,999.95 + $4,499.95 + $1,699: Arcam processing and nine Arcam channels at 65 W each into 8 ohms, Rotel for the last two (130 W x 2)" }] } },
     13: { need: "13 amplified channels (9.4 with heights)",
-      reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: 16 amplified channels at 200 W, enough for a 9.4.2 with channels to spare; the one that holds up to 4-ohm front and wide speakers",
-        alts: [{ brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 15 in one box with four sub outs: 9.4.2 fits with two spare channels; the one-box reference if the speakers are not 4-ohm demanding" }] } },
+      reference: { brand: "Marantz", m: "AV 10 processor + 3 x AMP 10 amplifiers", cur: "strong", short: "AV 10 + 3 x AMP 10", price: 32000, role: "Separates", sku: null, parts: ["Marantz AMP 10"], rep: 3, why: "$8,000 + 3 x $8,000: 15 amplified channels at 200 W each into 8 ohms (Marantz infosheet, five channels per unit); enough for a 9.4.2 with channels to spare",
+        alts: [{ brand: "Marantz / Rotel", m: "AV 10 processor + 2 x Rotel RMB-1587 MKII 7-ch amplifiers", cur: "strong", short: "AV 10 + 2 x RMB-1587 MKII", price: 17598, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII"], rep: 2, why: "$8,000 + 2 x $4,799: fourteen channels of Rotel Class AB, 155 W x 7 into 8 ohms and 250 W x 7 into 4 ohms (Rotel); 13 split seven and six" },
+               { brand: "Marantz / Rotel", m: "AV 10 processor + 3 x Rotel RMB-1585 MKII 5-ch amplifiers", cur: "strong", short: "AV 10 + 3 x RMB-1585 MKII", price: 21797, role: "Separates", sku: "6571702", parts: ["Rotel RMB-1585 MKII"], rep: 3, why: "$8,000 + 3 x $4,599: fifteen channels of Rotel Class AB, 210 W x 5 into 8 ohms and 340 W x 5 into 4 ohms (Rotel); the 4-ohm answer for 13" },
+               { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 2 into 8 ohms and 190 W at 6 ohms in one box, with four sub outs: 9.4.2 fits with two spare channels; the one-box reference if the speakers are not 4-ohm demanding" }] } },
   };
-  // The amp a passive LCR needs: three amplified channels into 4 ohms with current to spare. Best Buy prices (bestbuy.com, Nov 17, 2026); the alternate is the other amp that clears the same load.
+  // The amp a passive LCR needs: three amplified channels, checked against the speakers' load (powerCheck). Best Buy prices (bestbuy.com, Nov 17, 2026).
+  // Mid speakers take the mid amps and premium or reference speakers the premium amps; of the amps that clear the load, the cheapest leads.
   const PASSIVE_AMP = {
-    mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", price: 1299, why: "95 W with a proper 4-ohm mode and Audyssey MultEQ XT; three of its channels drive the front three",
-      alts: [{ brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", price: 2000, why: "100 W per channel; the Marantz voicing for the front three" }] },
-    premium: { brand: "Arcam", m: "AVR21 7.1-ch receiver", sku: "6504707", price: 4700, why: "110 W x 7 Class G: enough current for a 4-ohm front three, with four channels spare",
-      alts: [{ brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", price: 2000, why: "100 W per channel with the current for 4-ohm speakers, at a lower price than the Arcam" }] } };
-  const SONOS_AMP = { brand: "Sonos", m: "Amp, 125 W x 2", price: 699, why: "Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
+    mid: { brand: "Arcam", m: "AVR5 7.1-ch receiver", sku: "6473960", price: 2000, why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms, Class AB, per Arcam's sheet; three of its channels drive the front three, with four to spare",
+      alts: [{ brand: "Arcam", m: "AVR11 7.1-ch receiver", sku: "6504708", price: 3050, why: "the same 85 W x 7 at 4 ohms, Class AB, with 8K HDMI and Google Cast" }] },
+    premium: { brand: "Arcam", m: "AVR21 7.1-ch receiver", sku: "6504707", price: 4700, why: "90 W x 7 at 8 ohms and 110 W x 7 at 4 ohms, Class AB: enough current for the front three, with four channels to spare",
+      alts: [{ brand: "Arcam", m: "AVR31 7.1-ch receiver", sku: "6504706", price: 6900, why: "100 W x 7 at 8 ohms and 180 W x 7 at 4 ohms, Class G with Dirac Live" }] } };
+  // Sonos Architectural speakers run on one Sonos Amp per pair (two channels each).
+  const SONOS_AMP = { pk: "Sonos Amp", brand: "Sonos", m: "Amp", price: 699, why: "125 W per channel at 8 ohms. Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
   const BRAND_PAGES = { Sonance: "sonance", Sonos: "sonos", Russound: "russound", Bose: "bose",
     Klipsch: "klipsch", "Polk Audio": "polk", KEF: "kef", MartinLogan: "martinlogan", "Definitive Technology": "deftech", "Bowers & Wilkins": "bw", JBL: "jbl" };
@@ -702,8 +704,8 @@
   function bundlesFor(s) {
     if (!s || s.bar) return [];
     const ctx = { series: s.id, around: state.around, heights: state.heights, subs: state.subs, fronts: state.fronts, surroundType: surroundType(), heightType: s.height ? state.heightType : "inceiling" };
-    const out = BUNDLES.filter(function (b) { return b.covers && Object.keys(b.covers).every(function (k) { return b.covers[k].indexOf(ctx[k]) >= 0; }); });
-    const c = customBundle(); if (c) out.unshift(c);
+    const out = BUNDLES.filter(function (b) { return b.covers && Object.keys(b.covers).every(function (k) { return b.covers[k].indexOf(ctx[k]) >= 0; }) && (!b.amp || powerOk(s, b.amp, chanCount(s))); });
+    const c = customBundle(); if (c && (!c.amp || powerOk(s, c.amp, chanCount(s)))) out.unshift(c);
     return out;
   }
   function activeBundle(s) { if (!state.bundle || !s || s.bar) return null; return bundlesFor(s).find(function (b) { return b.id === state.bundle; }) || null; }
@@ -725,6 +727,8 @@
   // Budget ceilings for the whole system (speakers + matched receiver + cables). The Finder's budget answer deep-links to the same keys.
   const BUDGETS = { b1: 1000, b2: 2500, b3: 6000, b4: 12000, b5: 50000 };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
+  // Plain text from a note built as escaped HTML: tags removed, entities turned back into characters (&amp; last, so it is not decoded twice).
+  function plainNote(html) { return String(html).replace(/<[^>]+>/g, "").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&"); }
   function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
   function bby(q) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent(q); }
   function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove("show"); }, 2200); }
@@ -799,9 +803,11 @@
   // Nothing below the floor is offered; the chips show the floor ("what you need") and the levels above it.
   function demanding(s) { const L = s.load; if (!L || s.bar) return null; const needs4 = L.ohm <= 4 || (L.min && L.min < 4); const lowSens = L.sens < 86; return needs4 || lowSens ? { needs4: needs4, lowSens: lowSens } : null; }
   // Every amp at one level for this build, base first. Speakers that need current only get the amps rated for it.
+  // A speaker that is 6 ohms nominal or dips below 6 ohms can never take an amp rated for 6 to 16 ohms only.
+  function ohmBelow6(s) { const L = s.load; return !!L && ((!!L.ohm && L.ohm <= 6) || (!!L.min && L.min < 6)); }
   function ampOptions(s, key, level) {
     const a = AVRS[key] && AVRS[key][level]; if (!a) return [];
-    const all = [a].concat(a.alts || []);
+    const all = [a].concat(a.alts || []).filter(function (x) { return !(x.cur === "easy" && ohmBelow6(s)) && powerOk(s, x, chanCount(s)); });
     return demanding(s) ? all.filter(function (x) { return x.cur === "strong"; }) : all;
   }
   function floorLevel(s) {
@@ -821,9 +827,14 @@
     if (state.avr === "none") return "none";
     return TIER_ORDER.indexOf(state.avr) < TIER_ORDER.indexOf(f) ? f : state.avr;
   }
-  function wiimOK() { return !!WIIM && channels() <= 2 && !currentSeries().bar && currentSeries().id !== "sonos-arch"; }
-  // The WiiM levels this family may use: speakers that need current only get the Amp Ultra.
-  function wiimLevels(s) { return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && (!demanding(s) || WIIM[k].level === "premium"); }); }
+  function wiimOK() { return !!WIIM && channels() <= 2 && !currentSeries().bar && currentSeries().id !== "sonos-arch" && wiimLevels(currentSeries()).length > 0; }
+  // The WiiM levels this family may use. WiiM is the entry and mid build only: premium and reference speakers get a receiver or integrated amp, never a streamer.
+  // Each WiiM amp must sit at or above the speakers' floor, the same rule the receivers follow. Speakers that need current only get the Amp Ultra.
+  function wiimLevels(s) {
+    const f = TIER_ORDER.indexOf(floorLevel(s));
+    if (f > TIER_ORDER.indexOf("mid")) return [];
+    return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && TIER_ORDER.indexOf(WIIM[k].level) >= f && (!demanding(s) || WIIM[k].level === "premium") && powerOk(s, WIIM[k], 2); });
+  }
   function wiimPick(s) {
     const ok = wiimLevels(s); const lvl = state.wiim === "auto" ? s.tier : state.wiim;
     const want = WIIM[lvl] || (lvl === "mid" || lvl === "reference" ? WIIM.premium : null) || WIIM.premium || WIIM.value;
@@ -857,6 +868,8 @@
     let pool = isBar()
       ? BARS.filter(function (s) { return state.tier === "all" || s.tier === state.tier; })
       : SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "arch") === !!s.arch && (!s.lcr || state.around === 3); });
+    const unpowered = pool.filter(function (s) { return !poweredAt(s); });
+    pool = pool.filter(function (s) { return poweredAt(s); });
     pool.forEach(function (s) { s.sys = systemTotal(s); });
     let fits = pool, over = [];
     if (cap) {
@@ -880,6 +893,8 @@
       : (isBar() ? "Bar, sub, rears and the cables below, as you set them next." : "Speakers, the matched receiver and the cables below, for the build size you pick next.");
     $("overNote").hidden = !(cap && over.length);
     $("overNote").innerHTML = cap && over.length ? "Just over: " + over.map(function (s) { return "<button type='button' class='btn link' data-pick='" + s.id + "'>" + esc(s.brand + " " + s.series) + " " + money(s.sys) + "</button>"; }).join(" · ") : "";
+    $("unofferedNote").hidden = !unpowered.length;
+    $("unofferedNote").innerHTML = unpowered.length ? "Not offered at this size, because no amp in the line can power them to spec: " + unpowered.map(function (s) { return esc(s.brand + " " + s.series) + " (" + esc(offerReason(s)) + ")"; }).join("; ") + "." : "";
     if (!shown.length) { list.innerHTML = "<p class='muted small'>" + (cap ? "Nothing builds this size for " + money(cap) + ". Change the size above or raise the ceiling." : "No families match both filters.") + "</p>"; return; }
     if (isBar()) { if (!shown.some(function (s) { return s.id === state.bar; })) state.bar = shown[0].id; }
     else if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
@@ -901,7 +916,7 @@
           (IMG ? IMG.thumb(s.brand + " " + s.lcrModel, "bar") : "") + "<span class='txt'>" +
           "<span class='tier'>" + esc(s.tier) + " · 3.0 LCR passive</span><b>" + esc(s.brand) + " " + esc(s.series) + "</b>" +
           "<span class='sys'>System " + money(s.sys) + (cap ? (roomL >= 500 ? " · " + money(roomL) + " under" : " · fits") : "") + "</span>" +
-          "<span>Speakers " + money(s.price) + " · amp " + money(PASSIVE_AMP[s.tier].price) + " and up</span></span></button>";
+          "<span>Speakers " + money(s.price) + " · amp " + money(passiveOptions(s)[0].price) + " and up</span></span></button>";
       }
       const q = (window.SF_QUAL || {})[s.id];
       const dots =function (n) { let o = "<span class='dots'>"; for (let i = 1; i <= 5; i++) o += "<i class='" + (i <= n ? "on" : "") + "'></i>"; return o + "</span>"; };
@@ -1001,16 +1016,144 @@
   // Speaker count for a family: the passive LCR is the three fronts, so heights never apply to it.
   function channels(sArg) { const s = sArg || currentSeries(); return state.around + (s && s.lcr ? 0 : state.heights); }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11, 13].find(function (c) { return n <= c; }) || 13; }
-  // The amp for a passive LCR: the priced pick for its level, with the other amp that clears 4 ohms as an alternate.
+  // The amp for a passive LCR: the cheapest amp in its tier that clears the speakers' load on three channels leads; the other passing amp is the alternate. Null when none clears it.
   function passiveReceiver(s, sArg) {
-    const p = PASSIVE_AMP[s.tier] || PASSIVE_AMP.mid;
-    const base = { brand: p.brand, m: p.m, price: p.price, why: p.why, sku: p.sku, cur: "strong" };
-    const alt = sArg ? null : p.alts.find(function (x) { return x.brand + " " + x.m === state.avrAlt; });
-    const a = alt || base;
-    return { role: "Receiver · " + s.tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: "one multichannel unit for all three fronts, 4-ohm stable", tier: s.tier,
-      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: true, alts: p.alts, base: base, isAlt: !!alt, sku: a.sku, cur: "strong", key: null, floor: true, separates: false };
+    const opts = passiveOptions(s);
+    if (!opts.length) return null;
+    const lead = opts[0];
+    const base = { brand: lead.brand, m: lead.m, price: lead.price, why: lead.why, sku: lead.sku, cur: "strong" };
+    const alt = sArg ? null : opts.find(function (x) { return x.brand + " " + x.m === state.avrAlt; });
+    const a = alt || lead;
+    const p = powerCheck(s, a, 3);
+    return { role: "Receiver · " + s.tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: "one multichannel unit for all three fronts, rated for this load", tier: s.tier,
+      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: p.R <= 4.5, alts: opts.filter(function (x) { return x !== lead; }), base: base, isAlt: !!alt, sku: a.sku, cur: "strong", key: null, floor: true, separates: false, power: p };
     // The one-unit rule: a passive front three is never powered by stacked 2- or 3-channel amps; the pick is always a multichannel unit.
   }
+
+  // ---- Power check. Every receiver, amp, separate and combo must clear the speakers' load on the maker's ratings (SF_POWER, bars.js).
+  // A unit that cannot clear the load is not offered: it is left out of the ladder, the prices, the fits and the list.
+  // loadR: the impedance the check is made at: the published minimum where there is one, capped at 6 ohms.
+  function loadR(L) { return Math.min(6, L.min != null ? L.min : L.ohm); }
+  // Watts per channel the speakers need: the 104.5 dB target at 1 m, from their sensitivity (2.83 V / 1 m), into the load the check is made at.
+  function powerNeed(s) { return (8 / loadR(s.load)) * Math.pow(10, (104.5 - s.load.sens) / 10); }
+  // The SF_POWER row for a unit name: the longest key the name equals or starts with (on a word boundary), ignoring case.
+  function powerRowFor(name) {
+    const P = window.SF_POWER || {}; const n = String(name || "").toLowerCase(); let best = null;
+    Object.keys(P).forEach(function (k) { const kl = k.toLowerCase(); if ((n === kl || n.indexOf(kl + " ") === 0) && (best === null || kl.length > best.kl.length)) best = { k: k, kl: kl }; });
+    return best ? P[best.k] : null;
+  }
+  // The boxes behind a unit: a combo's parts (the first repeats rep times, up to 3), or the unit itself. Each box carries its SF_POWER row.
+  function boxesFor(x) {
+    let names = [x.pk || (x.brand + " " + x.m)];
+    if (x.parts && x.parts.length) {
+      const rep = Math.min(3, Math.max(1, x.rep || 1)); names = [];
+      for (let i = 0; i < rep; i++) names.push(x.parts[0]);
+      names = names.concat(x.parts.slice(1));
+    }
+    return names.map(function (name) { return { name: name, row: powerRowFor(name) }; });
+  }
+  // The rating one box gives for the channels it drives at this load, and what that figure is.
+  // Two channels: the 4-ohm figure at 4 ohms or under; otherwise the 6-ohm figure, or the 8-ohm figure when no 6-ohm figure is published (the safer of the two at 6 ohms).
+  // Three or more channels: the maker's all-channel figure only. Where none is published the box has no rating, so the unit fails the check. Nothing is estimated.
+  function boxRating(row, k, R) {
+    if (!row) return null;
+    if (k <= 2) {
+      if (R <= 4.5) return row.w4 != null ? { v: row.w4, est: false, basis: "4-ohm stereo rating" } : null;
+      if (row.w6 != null) return { v: row.w6, est: false, basis: "6-ohm stereo rating" };
+      return row.w8 != null ? { v: row.w8, est: false, basis: "8-ohm stereo rating, the safer figure at 6 ohms" } : null;
+    }
+    if (R <= 4.5) {
+      if (row.m4 != null) return { v: row.m4, est: false, basis: "maker's all-channel rating at 4 ohms" };
+      return null;
+    }
+    if (row.m8 != null) return { v: row.m8, est: false, basis: "maker's all-channel rating at 8 ohms, the safer figure at 6 ohms" };
+    return null;
+  }
+  // The power check for one unit on one speaker set with n channels driven. Boxes take channels in order, up to their mMax (2 where the sheet gives none).
+  // ok: every channel is covered by a published rating and the weakest box clears the need. tight: it clears by under 25%. est: always false now.
+  // low: the speakers dip under 4 ohms, below the lowest rating on file, so the margin is not a published one.
+  function powerCheck(s, x, n) {
+    const L = s && s.load;
+    if (!L || !(L.sens > 0) || !(L.ohm > 0 || L.min > 0)) return { ok: false, reason: "nospec" };
+    const R = loadR(L); const need = powerNeed(s);
+    if (!(R >= 1)) return { ok: false, reason: "under1", R: R, need: need };
+    let left = n; const used = [];
+    boxesFor(x).forEach(function (b) {
+      const cap = b.row && b.row.mMax ? b.row.mMax : 2; const k = Math.min(cap, left);
+      if (k > 0) { used.push({ name: b.name, row: b.row, k: k }); left -= k; }
+    });
+    if (left > 0) return { ok: false, reason: "channels", R: R, need: need };
+    let cap = Infinity, est = false, basis = "", missing = null;
+    used.forEach(function (u) {
+      const r = boxRating(u.row, u.k, R);
+      if (!r) { if (!missing) missing = u.name; return; }
+      if (r.est) est = true;
+      if (r.v < cap) { cap = r.v; basis = r.basis; }
+    });
+    if (missing) return { ok: false, reason: "norating", R: R, need: need, missing: missing };
+    const ratio = cap / need;
+    return { ok: ratio >= 1, tight: ratio < 1.25, est: est, low: R < 4, R: R, need: need, cap: cap, ratio: ratio, basis: basis, reason: ratio >= 1 ? "" : "short" };
+  }
+  function powerOk(s, x, n) { return powerCheck(s, x, n).ok; }
+  // A unit that clears the check with headroom, no estimate and no sub-4-ohm margin: the only kind a fix button may point to.
+  function cleanFit(s, x) { const p = powerCheck(s, x, chanCount(s)); return p.ok && !p.tight && !p.est && !p.low; }
+  // Channels the amp has to drive: a passive LCR is its three fronts; otherwise the build's speaker count.
+  function chanCount(s) { return s && s.lcr ? 3 : channels(s); }
+  // One line for the installer: what the speakers need, what the unit gives, and on what basis.
+  function powerSentence(p) {
+    if (!p) return "";
+    const f = function (r) { return String(Math.round(r * 10) / 10); };
+    if (p.reason === "nospec") return "No impedance or sensitivity on file, so this cannot be power-checked.";
+    if (p.reason === "under1") return "The speakers dip to " + f(p.R) + " ohms, and no rating on file covers a load under 1 ohm.";
+    if (p.reason === "channels") return "This unit does not drive every channel the build needs.";
+    if (p.reason === "norating") return "No all-channel rating from the maker on file for " + p.missing + " at " + f(p.R) + " ohms, so this cannot be confirmed.";
+    return "Needs " + Math.round(p.need) + " W per channel into " + f(p.R) + " ohms; this gives " + Math.round(p.cap) + " W (" + p.basis + ")" + (p.ok ? "." : ", short of that.");
+  }
+  // The speakers' load in words, for the check line and the list.
+  function loadWhat(s) {
+    const L = s.load; if (!L) return "no impedance or sensitivity on file";
+    return (L.ohm ? L.ohm + " ohm nominal" : "") + (L.min ? ", " + L.min + " ohm minimum" : "") + (L.sens ? " · " + L.sens + " dB" : "");
+  }
+  // Every unit a family could be given at its channel count: the passive amps for a passive LCR, else each level's lead and alternates.
+  function unitsFor(s) {
+    const out = [];
+    const add = function (a) { if (a) { out.push(a); (a.alts || []).forEach(function (x) { out.push(x); }); } };
+    if (s.lcr) { add(PASSIVE_AMP.mid); add(PASSIVE_AMP.premium); return out; }
+    const key = avrNeedKey(chanCount(s));
+    TIER_ORDER.forEach(function (lvl) { add(AVRS[key] && AVRS[key][lvl]); });
+    return out;
+  }
+  // Why a family is left off the list: its load cannot be checked, or the strongest unit in its line is short of what it needs.
+  function offerReason(s) {
+    if (!s.load) return "no impedance or sensitivity on file, so it cannot be power-checked";
+    const R = loadR(s.load); const n = chanCount(s);
+    if (!(R >= 1)) return "its " + R + " ohm minimum is under 1 ohm, below any rating on file, so no unit can be shown to power it";
+    let best = null;
+    unitsFor(s).forEach(function (x) { const p = powerCheck(s, x, n); if (p.cap != null && isFinite(p.cap) && (best === null || p.cap > best)) best = p.cap; });
+    if (best === null) return "no unit in its line has a maker rating for a " + R + " ohm load";
+    return "the strongest unit in its line gives " + Math.round(best) + " W per channel into " + R + " ohms, and these speakers need " + Math.round(powerNeed(s)) + " W";
+  }
+  // The amps a passive LCR can take: the tier's lead and alternate that clear the check on three channels, cheapest first.
+  // Mid speakers use the mid amps; premium and reference speakers use the premium amps.
+  function passiveOptions(s) {
+    const p = s.tier === "premium" || s.tier === "reference" ? PASSIVE_AMP.premium : PASSIVE_AMP.mid;
+    return [p].concat(p.alts || []).filter(function (x) { return powerOk(s, x, 3); }).sort(function (x, y) { return x.price - y.price; });
+  }
+  // The WiiM streaming amp as the receiver line: stereo builds only.
+  function wiimLine(s, w) {
+    return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8, cur: w.level === "premium" ? "strong" : "ok", power: powerCheck(s, w, 2) };
+  }
+  // Does this family have a way to be powered that clears the check? A bar needs no amp check. A passive LCR needs a passing amp.
+  // A Sonos Architectural family needs its Sonos Amp to clear each pair. Any other family needs a receiver at or above its floor, a WiiM stereo amp, or a package amp.
+  function poweredAt(s) {
+    if (s.bar) return true;
+    if (s.lcr) return passiveOptions(s).length > 0;
+    if (s.id === "sonos-arch") return powerOk(s, SONOS_AMP, 2);
+    if (levelsFor(s).length > 0) return true;
+    if (channels(s) <= 2 && WIIM && wiimLevels(s).length > 0) return true;
+    return bundlesFor(s).length > 0;
+  }
+
   // Every receiver the family can use at this channel count, from its floor level up: headline and alternates, one entry per model.
   function candidatesFor(s, key) {
     const out = []; const f = TIER_ORDER.indexOf(floorLevel(s));
@@ -1032,7 +1175,7 @@
   // One receiver line. meta.base is the pick the budget or the floor gave; meta.alts are the other fits; meta.isAlt means a manual swap is on.
   function receiverLine(s, c, key, meta) {
     const a = c.a, lvl = c.lvl; const short = a.short || a.m.replace(/ \d+\.\d-ch.*$/, "");
-    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, wiim: !!a.wiim };
+    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, wiim: !!a.wiim, power: powerCheck(s, a, chanCount(s)) };
   }
   // WiiM amps as budget candidates on a stereo build, at the level the WiiM data gives them (Amp value, Amp Ultra premium), so the cable kit matches the manual WiiM pick. wiimLevels keeps the Ultra alone for demanding speakers. Same floor rule as the receivers.
   function wiimCandidates(s) {
@@ -1064,19 +1207,20 @@
     const s = sArg || currentSeries(); if (s.bar) return null; if (s.lcr) return passiveReceiver(s, sArg); const tier = tierFor(s); const n = channels(s);
     if (s.id === "sonos-arch") {
       if (tier === "none") return null;
+      if (!powerOk(s, SONOS_AMP, 2)) return null;
       const amps = Math.ceil(n / 2);
-      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp", ohm4: true, cur: "ok" };
+      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp", ohm4: true, cur: "ok", power: powerCheck(s, SONOS_AMP, 2) };
     }
     if (tier === "none") return null;
-    if (state.avr === "wiim" && WIIM && n <= 2) {
+    if (state.avr === "wiim" && WIIM && n <= 2 && wiimLevels(s).length) {
       const w = wiimPick(s);
-      return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8, cur: w.level === "premium" ? "strong" : "ok" };
+      return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8, cur: w.level === "premium" ? "strong" : "ok", power: powerCheck(s, w, 2) };
     }
     const key = avrNeedKey(n); const cap = budgetCap();
     if ((state.avr === "auto" || state.avr === "wiim") && cap > 0 && !s.lcr) { const p = budgetReceiver(s, key, cap, sArg); if (p) return p; }
     let lvl = tier; let opts = ampOptions(s, key, lvl);
-    if (!opts.length) { lvl = floorLevel(s); opts = ampOptions(s, key, lvl); }
-    if (!opts.length) { const b = AVRS[key][lvl] || AVRS[key].premium; opts = [b]; }
+    for (let i = TIER_ORDER.indexOf(floorLevel(s)); !opts.length && i < TIER_ORDER.length; i++) { lvl = TIER_ORDER[i]; opts = ampOptions(s, key, lvl); }
+    if (!opts.length) return (WIIM && n <= 2 && wiimLevels(s).length) ? wiimLine(s, wiimPick(s)) : null;
     // At the floor, "what you need" is the least expensive amp that clears it; above the floor the level's headline pick leads. Alternates read up the price ladder.
     const sorted = opts.slice().sort(function (x, y) { return x.price - y.price; });
     const base = lvl === floorLevel(s) ? sorted[0] : opts[0]; const alts = sorted.filter(function (x) { return x !== base; });
@@ -1084,42 +1228,47 @@
     const a = alt || base;
     return receiverLine(s, { a: a, lvl: lvl }, key, { base: base, alts: alts, isAlt: !!alt });
   }
-  // Does this series need a receiver rated for 4 ohms, or real power? Returns the warning to show, if any.
+  // The cheapest clean fit for this build: a higher level, or a strong alternative, that clears the load with headroom (cleanFit).
   // The cheapest amp at this channel count that drives these speakers with no caveat: a higher level, or a strong alternative at the current level.
   function recommendAmp(s, rc) {
     if (!rc || rc.wiim || rc.sonos) return null;
     const key = rc.key || avrNeedKey(channels(s));
     const cands = [];
-    TIER_ORDER.forEach(function (lvl) { const a = AVRS[key][lvl]; if (a && a.cur === "strong" && TIER_ORDER.indexOf(lvl) >= TIER_ORDER.indexOf(s.tier)) cands.push({ level: lvl, alt: "", brand: a.brand, m: a.m, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), price: a.price }); });
-    (rc.alts || []).forEach(function (a) { if (a.cur === "strong") cands.push({ level: rc.tier, alt: a.brand + " " + a.m, brand: a.brand, m: a.m, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), price: a.price }); });
+    TIER_ORDER.forEach(function (lvl) { const a = AVRS[key][lvl]; if (a && a.cur === "strong" && cleanFit(s, a) && TIER_ORDER.indexOf(lvl) >= TIER_ORDER.indexOf(s.tier)) cands.push({ level: lvl, alt: "", brand: a.brand, m: a.m, short: a.m.replace(/ \d+\.\d-ch.*$/, ""), price: a.price }); });
+    (rc.alts || []).forEach(function (a) { if (a.cur === "strong" && cleanFit(s, a)) cands.push({ level: rc.tier, alt: a.brand + " " + a.m, brand: a.brand, m: a.m, short: a.short || a.m.replace(/ \d+\.\d-ch.*$/, ""), price: a.price }); });
     if (!cands.length) return null;
     cands.sort(function (a, b) { return a.price - b.price; });
     return cands[0];
   }
+  // The power note for the build: what the speakers need, what the amp gives and on what basis, and whether the margin is a published one.
   function loadCheck(s, rc) {
-    if (s.lcr) return { kind: "soft", html: "<b>Passive, so it needs a proper amp.</b> " + esc(s.brand + " " + s.series) + " has no amplifier inside. The build adds the " + esc(rc ? rc.brand + " " + rc.short : "amp") + (rc ? " (" + money(rc.total) + ")" : "") + ", one multichannel unit for all three fronts. Do not stack 2- or 3-channel amps for it. A 4-ohm load needs real current, so do not swap in a receiver rated only for 6 ohms or more." };
-    if (s.bar) return s.tv || s.tech ? { kind: "soft", html: (s.tv ? "<b>Pairs best with " + esc(s.tv) + ".</b> " : "") + esc(s.tech || "") } : null;
-    const L = s.load; const d = demanding(s); if (!d) return null;
-    const spec = (L.ohm ? L.ohm + " ohm nominal" : "") + (L.min ? ", " + L.min + " ohm minimum" : "") + (L.sens ? " · " + L.sens + " dB" : "");
-    const name = s.brand + " " + s.series;
-    const what = d.needs4 ? (L.min && L.min < 4 ? "dips to " + L.min + " ohms" : "is a 4-ohm load") + (d.lowSens ? " and is only " + L.sens + " dB" : "") : "is only " + L.sens + " dB, among the least sensitive here";
+    const name = esc(s.brand + " " + s.series);
     const extra = s.loadNote ? " " + esc(s.loadNote) : "";
+    const f1 = function (r) { return String(Math.round(r * 10) / 10); };
     const recBtn = function (r) { return r ? " <button type='button' class='btn link' data-rec-level='" + esc(r.level) + "' data-rec-alt='" + esc(r.alt) + "'>Switch to the " + esc(r.brand + " " + r.short) + " (" + money(r.price) + ")</button>" : ""; };
-    const wiimHint = channels(s) <= 2 && WIIM && WIIM.premium ? " For a stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") is rated down to 2 ohms and has no caveat either." : "";
+    const caveat = function (p) {
+      return (p.est ? " The all-channel figure is estimated from the stereo rating, because the maker does not publish one." : "") +
+        (p.low ? " The speakers dip to " + f1(p.R) + " ohms, under the 4-ohm rating; the maker publishes no lower figure, so this margin is not a published one." : "") +
+        (p.tight ? " It clears the need by under 25%, so it has little headroom at loud levels." : "");
+    };
+    if (s.bar) return s.tv || s.tech ? { kind: "soft", html: (s.tv ? "<b>Pairs best with " + esc(s.tv) + ".</b> " : "") + esc(s.tech || "") } : null;
+    if (!s.load) return { kind: "soft", html: "<b>Not power-checked.</b> " + name + " has no impedance or sensitivity on file in the app. Confirm the minimum impedance and sensitivity on the maker's spec sheet before you quote this pairing." };
+    if (s.lcr) {
+      if (!rc) return { kind: "bad", html: "<b>No passive amp clears this.</b> " + name + " (" + esc(loadWhat(s)) + ") needs three amplified channels, and no amp in the line is rated for its load." };
+      const pl = rc.power || powerCheck(s, rc, 3);
+      if (!pl.ok) return { kind: "bad", html: "<b>Not enough power.</b> " + name + ". " + esc(powerSentence(pl)) };
+      return { kind: pl.est || pl.tight || pl.low ? "soft" : "good", html: "<b>Passive, so it needs a proper amp.</b> " + name + " has no amplifier inside. The build adds the " + esc(rc.brand + " " + rc.short) + " (" + money(rc.total) + "), one multichannel unit for all three fronts. Do not stack 2- or 3-channel amps for it. " + esc(powerSentence(pl)) + caveat(pl) };
+    }
     if (!rc) {
-      const fl = ampOptions(s, avrNeedKey(channels(s)), floorLevel(s))[0];
-      return { kind: "soft", html: "<b>Needs a real amp.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). Make sure the customer's own receiver is rated for 4 ohms and has the current for it" + (fl ? "; the floor here is the " + esc(fl.brand + " " + (fl.short || fl.m.replace(/ \d+\.\d-ch.*$/, ""))) + " (" + money(fl.price) + ")." : ".") + extra };
+      const fl = ampOptions(s, avrNeedKey(chanCount(s)), floorLevel(s))[0];
+      return { kind: "soft", html: "<b>Customer's own receiver.</b> " + name + " (" + esc(loadWhat(s)) + ") needs " + Math.round(powerNeed(s)) + " W per channel into " + f1(loadR(s.load)) + " ohms. The app cannot check the customer's receiver, so confirm its rating for that load on the manual's spec sheet" + (fl ? "; the floor here is the " + esc(fl.brand + " " + (fl.short || fl.m.replace(/ \d+\.\d-ch.*$/, ""))) + " (" + money(fl.price) + ")" : "") + "." + extra };
     }
-    if (rc.wiim) {
-      if (rc.cur === "strong") return { kind: "good", html: "<b>Good match.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the WiiM " + esc(rc.short) + " is rated down to 2 ohms and doubles its power into 4, so there is nothing to work around." + extra };
-      return { kind: "soft", html: "<b>Works, with a caveat.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). The WiiM " + esc(rc.short) + " is rated for it but it is the small amp. <button type='button' class='btn link' data-wiim='premium'>Switch to the " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ")</button>" + extra };
-    }
-    const rec = recommendAmp(s, rc);
-    if (s.loadNote && rc.tier !== "reference") return { kind: "bad", html: "<b>Not enough amp.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + ")." + extra + recBtn(rec && TIER_ORDER.indexOf(rec.level) >= 3 ? rec : { level: "reference", alt: "", brand: (AVRS[rc.key].reference || {}).brand || "Reference", short: ((AVRS[rc.key].reference || {}).m || "electronics").replace(/ \d+\.\d-ch.*$/, ""), price: (AVRS[rc.key].reference || {}).price || 0 }) };
-    if (rc.cur === "easy") return { kind: "bad", html: "<b>Wrong receiver for these.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the " + esc(rc.brand + " " + rc.short) + " is rated for 6 to 16 ohms only." + recBtn(rec) + wiimHint };
-    if (rc.cur === "strong") return { kind: "good", html: "<b>" + (rc.floor ? "This is what you need." : "Good match, a step above the floor.") + "</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "); the " + esc(rc.brand + " " + rc.short) + " has the current for it, no caveat. Set the speaker-impedance menu the way the manual says and give it ventilation." + extra };
-    return { kind: "soft", html: "<b>Works, with a caveat.</b> " + esc(name) + " " + esc(what) + " (" + esc(spec) + "). The " + esc(rc.brand + " " + rc.short) + " is rated for 4 ohms, but it does not have the current reserve these want and will run warm at volume." + recBtn(rec) + wiimHint + extra };
+    const p = rc.power || powerCheck(s, rc, chanCount(s));
+    if (!p.ok) return { kind: "bad", html: "<b>Not enough power.</b> " + name + " (" + esc(loadWhat(s)) + "). " + esc(powerSentence(p)) + extra };
+    const soft = !!(p.est || p.tight || p.low);
+    return { kind: soft ? "soft" : "good", html: (soft ? "<b>Works, with a caveat.</b> " : "<b>Good match.</b> ") + name + " (" + esc(loadWhat(s)) + "). " + esc(powerSentence(p)) + caveat(p) + (soft ? recBtn(recommendAmp(s, rc)) : "") + extra };
   }
+
   function lineSku(l) { if (l.nosku) return null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
   function skuHtml(l) {
     if (l.nosku) return "";
@@ -1271,7 +1420,7 @@
     syncAvr();
     const rc = receiver(); const n = channels(); const tier = avrTier();
     const ampIn = ampInBundle(s);
-    $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : lcr ? "Front three, passive · needs 3 amplified channels into 4 ohms" : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
+    $("avrNeed").textContent = s.id === "sonos-arch" ? n + " speakers · " + Math.ceil(n / 2) + " Sonos Amp" + (Math.ceil(n / 2) > 1 ? "s" : "") : lcr ? "Front three, passive · needs 3 amplified channels, rated for the speakers' load" : n + " speakers to drive" + (state.subs ? " + " + state.subs + " sub" : "") + " · needs " + AVRS[avrNeedKey(n)].need;
     $("avrCtl").querySelector("span").textContent = s.id === "sonos-arch" || lcr ? "Amplifier" : "What you need, then above it";
     if (state.avr === "wiim" && !wiimOK()) state.avr = "auto";
     const floor = floorLevel(s); const levels = s.id === "sonos-arch" || lcr ? [] : levelsFor(s);
@@ -1288,7 +1437,7 @@
     const d = demanding(s); const above = levels.slice(levels.indexOf(floor) + 1);
     const aboveText = above.length ? " Above it: " + above.map(function (l) { return "<b>" + esc(l) + "</b>"; }).join(", ") + "." : " Nothing above it on the floor.";
     const wiimText = wiimOK() ? (d ? " For a music-first stereo room the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") clears the floor too." : " For a music-first 2.1, try the WiiM amp.") : "";
-    $("avrAuto").innerHTML = lcr ? "<b>Passive, so it needs an amp.</b> The front three have no amplifier inside, so the build adds " + esc(rc ? rc.brand + " " + rc.short : "an amp") + " as one multichannel unit rated for 4 ohms. No stacked 2- or 3-channel amps." + (rc && rc.alts.length ? " Tap an amp below to swap it." : "") :
+    $("avrAuto").innerHTML = lcr ? "<b>Passive, so it needs an amp.</b> The front three have no amplifier inside, so the build adds " + esc(rc ? rc.brand + " " + rc.short : "an amp") + " as one multichannel unit, rated for the speakers' load. No stacked 2- or 3-channel amps." + (rc && rc.alts.length ? " Tap an amp below to swap it." : "") :
       s.id === "sonos-arch"
       ? (tier === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so the level chips are off here.")
       : state.avr === "wiim" ? "WiiM streaming amp instead of a receiver: HDMI ARC from the TV, sub out, room correction, every streaming service in the app. No surround, no path to a center or rears. " + wiimRow() + " <button type='button' class='btn link' id='avrReset'>Back to a receiver</button>"
@@ -1537,10 +1686,11 @@
     if (rc) {
       out.push(rc.sonos ? "AMPLIFIER" : rc.wiim ? "STREAMING AMP (WiiM, 2 channels)" : "RECEIVER (" + rc.tier + " · " + rc.need + ")");
       out.push(line(rc));
+      if (!rc.sonos && !rc.wiim) unitLines(s, rc).slice(1).forEach(function (l) { out.push("    " + l); });
       if (rc.note) out.push("  " + rc.note);
     } else { const ai = s.bar ? null : ampInBundle(s); out.push(s.bar ? "RECEIVER: none needed; the bar is the amplifier (TV connects over HDMI eARC)" : ai ? "RECEIVER: " + ai.brand + " " + ai.m + " — included in the package above" : "RECEIVER: customer's own"); }
-    const warn = loadCheck(s, rc);
-    if (warn) out.push("  NOTE: " + warn.html.replace(/<[^>]+>/g, ""));
+    const warn = !rc && !s.bar && ampInBundle(s) ? null : loadCheck(s, rc);
+    if (warn) out.push("  NOTE: " + plainNote(warn.html));
     out.push("", "CABLES AND ACCESSORIES");
     acc.forEach(function (a) { out.push("  " + a.role + ": " + a.model + " — " + a.qty + " × " + money(a.each) + " = " + money(a.total)); });
     out.push("  Accessories subtotal: " + money(accSum));
@@ -1564,6 +1714,20 @@
     return out.join("\n");
   }
   // Scope of work in the Custom SOW Fill Out format: Room Name, Equipment, Scope, Watch, Listen, Disclaimers. Room Control only when there is automation.
+  // Part SKUs for the amplifier boxes in a combo, only where on file (Best Buy, checked). Any other box prints "no SKU on file".
+  const PART_SKU = { "Rotel RMB-1587 MKII": "6571770", "Rotel RMB-1585 MKII": "6571702", "Rotel RMB-1555": "5708426", "Rotel RB-1552 MKII": "5708743", "Marantz AMP 10": "6522067", "Arcam AVA15": "6679268" };
+  // The SOW lines for a separates unit: the processor, then each amplifier box with its quantity, so every box in a combo is ordered.
+  function unitLines(s, rc) {
+    const whole = rc.brand + " " + rc.model;
+    const u = unitsFor(s).find(function (x) { return x.brand + " " + x.m === whole; });
+    if (!u || !u.parts || !u.parts.length) { const k = SALES.sku(whole); return [rc.qty + " × " + whole + (k ? " (SKU " + k + ")" : "")]; }
+    const proc = u.m.split(" + ")[0]; const pk = SALES.sku(u.brand + " " + proc);
+    const lines = [rc.qty + " × " + u.brand + " " + proc + (pk ? " (SKU " + pk + ")" : " (no SKU on file)")];
+    const counts = {}; const order = [];
+    boxesFor(u).forEach(function (bx) { if (!counts[bx.name]) { counts[bx.name] = 0; order.push(bx.name); } counts[bx.name]++; });
+    order.forEach(function (name) { const k = PART_SKU[name]; lines.push(rc.qty * counts[name] + " × " + name + " amplifier" + (k ? " (SKU " + k + ")" : " (no SKU on file)")); });
+    return lines;
+  }
   function sowText() {
     const r = build(); const s = r.series; const rc = receiver();
     const acc = accessories(r, rc).filter(function (a) { return a.on; });
@@ -1602,7 +1766,7 @@
       out.push(b("Mount the three speakers as one left, center and right array below or above the display, tweeters at ear height, aimed toward the main seat"));
       if (state.subs > 0) out.push(b("Place " + (state.subs === 2 ? "two subwoofers" : "the subwoofer") + " in a front corner; sub crawl for the best spot; crossover at 80 Hz"));
       out.push(b("Run all speaker wire concealed along the baseboard or behind the stand; label both ends"));
-      out.push(b("Set the amp to 4-ohm speaker impedance per the manual; give it ventilation and a surge-protected outlet"));
+      out.push(b("Set the amp's speaker-impedance setting as the manual directs for these speakers; give it ventilation and a surge-protected outlet"));
       out.push(b("HDMI sources into the amp; amp HDMI out to the TV eARC port; run room correction; set levels and crossovers; label inputs"));
       out.push(b("Walk the customer through the remote, input switching and the app; play a stereo and a Dolby Digital demo before leaving"));
       out.push("", "WATCH");
@@ -1613,10 +1777,10 @@
       out.push("", "DISCLAIMERS");
       out.push(b("Equipment at Best Buy list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
       out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText(installKind()) + " range for this kind of job)"));
-      out.push(b("One multichannel amp drives all three fronts; no stacked 2- or 3-channel amps. Customer to confirm the amp's 4-ohm rating and channel count before quoting"));
+      out.push(b("One multichannel amp drives all three fronts; no stacked 2- or 3-channel amps. " + (rc && rc.power ? powerSentence(rc.power) : "Customer to confirm the amp's rating for the speakers' load before quoting")));
       return out.join("\n");
     }
-    if (rc) out.push(b(rc.qty + " × " + rc.brand + " " + rc.model + (SALES.sku(rc.brand + " " + rc.model) ? " (SKU " + SALES.sku(rc.brand + " " + rc.model) + ")" : ""))); else if (ampInBundle(s)) out.push(b("1 × " + ampInBundle(s).brand + " " + ampInBundle(s).m + " — amplifier, included in the package above")); else out.push(b("Receiver: customer's existing unit (confirm channel count and 4-ohm rating)"));
+    if (rc) unitLines(s, rc).forEach(function (l) { out.push(b(l)); }); else if (ampInBundle(s)) out.push(b("1 × " + ampInBundle(s).brand + " " + ampInBundle(s).m + " — amplifier, included in the package above")); else out.push(b("Receiver: customer's existing unit (confirm channel count and its rating for the speakers' load)"));
     acc.forEach(function (a) { out.push(b(a.qty + " × " + a.brand + " " + a.model + (a.note ? " (" + a.note + ")" : ""))); });
     out.push("", "SCOPE");
     if (s.arch) {
@@ -1646,8 +1810,8 @@
     if (ceilHeights || st !== "series" || s.arch) out.push(b("In-wall and in-ceiling work assumes drywall with accessible attic or crawl space; plaster, brick, fire blocking or blown insulation add time and may change placement"));
     out.push(b("Customer to confirm wall type, stud and joist layout, and that any new outlets are installed by a licensed electrician"));
     out.push(b("Mounts, back boxes, wall plates and extra wire billed as used"));
-    const warn = loadCheck(s, rc);
-    if (warn) out.push(b(warn.html.replace(/<[^>]+>/g, "")));
+    const warn = !rc && !s.bar && ampInBundle(s) ? null : loadCheck(s, rc);
+    if (warn) out.push(b(plainNote(warn.html)));
     return out.join("\n");
   }
   function copyText(text, msg) {
