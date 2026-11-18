@@ -28,7 +28,7 @@
     // MartinLogan
     ["motion xt f100", 6531287], ["motion xt f200", 6531263], ["motion xt c100", 6531266], ["motion xt b100", 6531277],
     ["motion foundation f2", 6548309], ["motion foundation f1", 6548326], ["motion foundation c1", 6548307], ["motion foundation b2", 6548313],
-    ["motion f20", 6531279], ["motion f10", 6531262], ["motion c10", 6531270],
+    ["motion 20i", 6371193], ["motion f20", 6531279], ["motion f10", 6531262], ["motion c10", 6531270],
     ["dynamo 800x", 6255495], ["dynamo 10,", 6587719], ["dynamo 12,", 6587721], ["dynamo 1100x", 6255497], ["dynamo 600x", 6255491],
     [" mc6-ht", 6457010], [" mc6", 6456997], [" mc8", 6457016], [" mc4", 6457008], [" mw6", 6457015], [" mw4lcr", 6457009],
     ["xtc8-ht", null], ["xtc8", 6457017], ["xtw6lcr", 6457006], ["xtw6", 6457019], ["xtw5lcr", 6457021],
@@ -147,7 +147,7 @@
   // The photo that stands for a whole family (builder cards, guide rows).
   const LEAD = {
     "bw-700": "Bowers & Wilkins 703 S3 tower", "kef-r": "KEF R7 Meta tower", "ml-xt": "MartinLogan Motion XT F200 tower", "dali-opticon": "DALI Opticon 8 Mk2 tower",
-    "svs-ultra": "SVS Ultra Evolution Tower", "kef-q": "KEF Q7 Meta tower", "bw-600": "Bowers & Wilkins 603 S3 tower", "ml-foundation": "MartinLogan Motion Foundation F2 tower",
+    "svs-ultra": "SVS Ultra Evolution Tower", "kef-q": "KEF Q7 Meta tower", "bw-600": "Bowers & Wilkins 603 S3 tower", "ml-foundation": "MartinLogan Motion Foundation F2 tower", "ml-20i": "MartinLogan Motion 20i tower",
     "klipsch-rp2": "Klipsch RP-8000F II tower", "polk-reserve": "Polk Audio R700 tower", "deftech-dym": "Definitive Technology DM70 tower", "dali-oberon": "DALI Oberon 7 tower",
     "sonance-vp": "Sonance VP62 LCR in-wall", "sonance-is": "Sonance IS8 invisible in-ceiling", "svs-prime": "SVS Prime Tower",
     "klipsch-ref": "Klipsch R-800F tower", "polk-es": "Polk Audio ES60 tower", "sonos-arch": "Sonos Architectural in-ceiling", "sonance-vx": "Sonance VX62 in-wall",
