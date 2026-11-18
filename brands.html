@@ -59,7 +59,7 @@
     <h2>Every in-wall and in-ceiling, line by line.</h2>
     <p class="muted">For each brand in the app, the in-wall and in-ceiling models Best Buy itself sells and ships, with the prices bestbuy.com showed when pulled (Nov 12 and 13, 2026; every open item re-checked on the product page Nov 13). Marketplace listings, discontinued models and anything Best Buy does not carry are left out entirely. Promo prices move weekly, so confirm before you quote.</p>
     <div class="jump">
-      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#bose">Bose</a><a href="#rel">REL</a><a href="#rotel">Rotel</a><a href="#arcam">Arcam</a><a href="#wiim">WiiM</a><a href="#soundbars">Soundbars</a>
+      <a href="#klipsch">Klipsch</a><a href="#polk">Polk</a><a href="#kef">KEF</a><a href="#martinlogan">MartinLogan</a><a href="#deftech">Definitive Technology</a><a href="#bw">Bowers &amp; Wilkins</a><a href="#jbl">JBL</a><a href="#sonance">Sonance</a><a href="#yamaha">Yamaha</a><a href="#sonos">Sonos</a><a href="#russound">Russound</a><a href="#rel">REL</a><a href="#rotel">Rotel</a><a href="#arcam">Arcam</a><a href="#wiim">WiiM</a><a href="#soundbars">Soundbars</a>
     </div>
     <div class="use">
       <div><b>Reading the sheets</b><span>Every row is a model Best Buy itself sells and ships. "Verify" or "price in cart" means Best Buy lists it but the price was not on the page when pulled; a maker's price fills the gap where the note says so. Third-party marketplace listings on bestbuy.com are not here at all.</span></div>
@@ -181,12 +181,6 @@
     <p class="muted">Ceilings sold as singles. Whole-home audio pieces that pair with Russound or Sonance amplifiers.</p>
     <div class="card"><div class="tbl" id="russ-t"></div></div>
   </section>
-  <section class="sec" id="bose">
-    <p class="eyebrow">Bose</p>
-    <h2>Bose, the one passive line.</h2>
-    <p class="muted">Everything else Bose sells at Best Buy is wireless (Lifestyle Ultra, Surround Speakers, soundbars), so this is the only Bose row.</p>
-    <div class="card"><div class="tbl" id="bose-t"></div></div>
-  </section>
 
   <section class="sec" id="rel">
     <p class="eyebrow">REL · sold and shipped by Best Buy</p>
@@ -236,7 +230,7 @@
 
 <script>
 (function () {
-  const BRAND = { "yam-t": "Yamaha", "sonos-t": "Sonos", "russ-t": "Russound", "bose-t": "Bose",
+  const BRAND = { "yam-t": "Yamaha", "sonos-t": "Sonos", "russ-t": "Russound",
     "klipsch-t": "Klipsch", "polk-t": "Polk Audio", "kef-t": "KEF", "ml-t": "MartinLogan", "deftech-t": "Definitive Technology", "bw-t": "Bowers & Wilkins", "jbl-t": "JBL" };
   function bby(q, id) { return "https://www.bestbuy.com/site/searchpage.jsp?st=" + encodeURIComponent((BRAND[id] || "Sonance") + " " + q); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); }
@@ -428,9 +422,6 @@
       ["6.5 in all-purpose in-ceiling", "Each. 0.75 in pivoting silk tweeter, polypropylene woofer, toolless install, paintable grille.", "$218 each", "confirmed; a second listing at $229"],
       ["6.5 in enhanced-performance in-ceiling", "Each. The step-up driver set for a main room.", "$399 each", "confirmed"],
       ["Acclaim 5 Series 5.25 in Outback Mk 2", "Indoor/outdoor/bookshelf pair, black. Patios and garages.", "price in cart", "Best Buy; the 6.5 in and the white versions are marketplace only"],
-    ],
-    "bose-t": [
-      ["Virtually Invisible 791 In-Ceiling Speakers II", "Pair, white. Two angled drivers per speaker (Stereo Everywhere), near-bezel-free grille. 4.9 stars.", "$599 pair", "confirmed; also listed at $599.99"],
     ],
     "amps-t": [
       ["UA 2-125", "2-channel 125 W into 8 ohms DSP amplifier, ultra-compact, SonARC app. Drives a pair of ceiling or outdoor speakers from a streamer.", "$999.99", ""],

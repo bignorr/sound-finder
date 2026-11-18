@@ -70,8 +70,6 @@
     ["vpsub", 6253955], ["r12sub", 6253942], ["bps6 tl", 6552707], ["bps6", 5683415],
     // Yamaha
     ["ns-ic600", 2052555],
-    // Bose
-    ["791", 4664000],
     // Sonos
     ["architectural in-ceiling", 6325620], ["architectural in-wall", 11446051], ["in-ceiling 8", 6635492], ["in-ceiling 6 in", 6325620], ["sub (gen 3)", 6411140], ["sub mini", 6520132], ["sonos amp", 6312857],
     // Russound
@@ -126,7 +124,7 @@
     if (/receiver|avr-|cinema \d|tx-rz|tx-nr|vsx-|str-dh|str-an|dra-|av 10|model 10|michi|rotel|arcam|radia|integrated|preamplifier|power amplifier|processor/.test(t)) return "avr";
     if (/sonos amp|ua 2-125|amplifier|wiim amp|amp ultra|streamer/.test(t)) return "amp";
     if (/sub|sw\d|kube|kc62|kc92|dynamo|descend|depth 21|hts |pb-|pb17|sb-1|sb-2|sb-3|ms10|impact i|bps6|db[13]d|reference 8b|carbon special|\bt\/\d|t\/zero|ht\/1|classic 9[89]|planar pl/.test(t) && !/sb46/.test(t)) return "sub";
-    if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|791|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|2[68]0c\b|\d{3}w\b|\d{3}wl\b|\diw\b|studio 6|conceal|marine 6|i[cw]-d|installer/.test(t)) return "arch";
+    if (/in-ceiling|in-wall|invisible|ceiling|lcr|mag\d|vx\d|vp\d|is[68]|ic\d|iw\d|cdt-|r-\d{4}-[wc]|-rt\b|-ls\b|rc6s|\bci\d|ccm|cwm|\bmc[468]|\bmw[46]|xtc8|xtw[56]|dc-\d|dw-\d|dw max|di \d|lcr-|helos|3xw|5xw|csa\b|2[68]0c\b|\d{3}w\b|\d{3}wl\b|\diw\b|studio 6|conceal|marine 6|i[cw]-d|installer/.test(t)) return "arch";
     if (/module|atmos|elevation|-sa |sa ii|es90|r900|240h|dm90|alteco|ss-cse|r8 meta|q8 meta|rp-500sa|r-40sa/.test(t)) return "module";
     if (/center|vokal|htm|c100|c1\b|c2\b|c10\b|dc53|dc63|r400|r50c|r-50c|es35|245c|ss-cs8|q6 meta|r6 meta|rp-504c|c444|c210|dm30|reference [24] meta|c34a|c18\b|esl c\b/.test(t)) return "center";
     if (/tower|floor|f100|f200|f2\b|f1\b|f20|f10|\b60[3]\b|\b70[34]\b|r700|r600|es60|280f|260f|r-800f|r-600f|rp-8000|rp-6000|rp-5000|q7|q11|r7 meta|r11|r5 meta|oberon [57]|opticon [68]|dm70|dm60|ns-555|ns-f210|df63|df53|pinnacle|ss-cs3|prime tower|evolution tower|80[34] d4|reference [35] meta|blade|esl 1[135]a|esl x\b|ls60/.test(t)) return "tower";
@@ -153,7 +151,7 @@
     "klipsch-rp2": "Klipsch RP-8000F II tower", "polk-reserve": "Polk Audio R700 tower", "deftech-dym": "Definitive Technology DM70 tower", "dali-oberon": "DALI Oberon 7 tower",
     "sonance-vp": "Sonance VP62 LCR in-wall", "sonance-is": "Sonance IS8 invisible in-ceiling", "svs-prime": "SVS Prime Tower",
     "klipsch-ref": "Klipsch R-800F tower", "polk-es": "Polk Audio ES60 tower", "sonos-arch": "Sonos Architectural in-ceiling", "sonance-vx": "Sonance VX62 in-wall",
-    "bose-791": "Bose Virtually Invisible 791 II in-ceiling", "russound": "Russound 6.5 in in-ceiling", "jbl-stage2": "JBL Stage 2 280F tower", "sony-core": "Sony SS-CS3 tower", "sonance-mag": "Sonance MAG6R in-ceiling",
+    "russound": "Russound 6.5 in in-ceiling", "jbl-stage2": "JBL Stage 2 280F tower", "sony-core": "Sony SS-CS3 tower", "sonance-mag": "Sonance MAG6R in-ceiling",
     "klipsch-ci": "Klipsch R-5502-W II in-wall", "polk-ci": "Polk Audio 265-RT in-wall", "deftech-ci": "Definitive Technology DC-65 MAX in-ceiling", "ml-ci": "MartinLogan Motion CI MC6-HT in-ceiling",
     "kef-ci": "KEF Ci160QR in-ceiling", "jbl-ci": "JBL Stage 250WL in-wall", "ml-xtci": "MartinLogan Motion XT CI XTW6 in-wall", "bw-ci600": "Bowers & Wilkins CCM664 in-ceiling", "bw-ci700": "Bowers & Wilkins CCM7.5 S2 in-ceiling",
     "bw-800": "Bowers & Wilkins 803 D4 tower", "kef-reference": "KEF Reference 5 Meta tower", "kef-blade": "KEF Blade One Meta tower", "ml-esl": "MartinLogan Renaissance ESL 15A tower",

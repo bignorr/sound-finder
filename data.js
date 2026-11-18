@@ -40,7 +40,6 @@ window.SF_QUAL = {
   "sonos-arch":    { detail: 3, bass: 3, dyn: 3, imaging: 3, build: 4, form: "arch", best: ["Sonos Amp homes", "Trueplay tuning"] },
   "sonance-vx":    { detail: 3, bass: 3, dyn: 3, imaging: 2, build: 3, form: "arch", best: ["Hidden TV sound", "Secondary rooms"] },
   "jbl-stage2":    { detail: 3, bass: 3, dyn: 4, imaging: 3, build: 3, form: "box",  best: ["Cinema brand", "Entry price"] },
-  "bose-791":      { detail: 3, bass: 2, dyn: 3, imaging: 3, build: 3, form: "arch", best: ["Bose households", "Stereo from one spot"] },
   "russound":      { detail: 3, bass: 2, dyn: 3, imaging: 2, build: 3, form: "arch", best: ["Whole-home audio", "Russound amps"] },
   "sony-core":     { detail: 2, bass: 2, dyn: 2, imaging: 2, build: 2, form: "box",  best: ["Lowest price", "Complete family"] },
   "sonance-mag":   { detail: 2, bass: 2, dyn: 3, imaging: 2, build: 3, form: "arch", best: ["Heights", "Surrounds", "$500 5.1"] },
