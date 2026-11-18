@@ -828,12 +828,14 @@
     return TIER_ORDER.indexOf(state.avr) < TIER_ORDER.indexOf(f) ? f : state.avr;
   }
   function wiimOK() { return !!WIIM && channels() <= 2 && !currentSeries().bar && currentSeries().id !== "sonos-arch" && wiimLevels(currentSeries()).length > 0; }
-  // The WiiM levels this family may use. WiiM is the entry and mid build only: premium and reference speakers get a receiver or integrated amp, never a streamer.
-  // Each WiiM amp must sit at or above the speakers' floor, the same rule the receivers follow. Speakers that need current only get the Amp Ultra.
+  // The WiiM levels this family may use. For ordinary speakers WiiM is the entry and mid build: premium and reference speakers get a receiver or integrated amp, never a streamer.
+  // Speakers that need current (4 ohm or low sensitivity) take the Amp Ultra alone at a premium floor, when the power check clears it; they never take the Amp.
+  // Each WiiM amp must sit at or above the speakers' floor, the same rule the receivers follow, so reference floors never take a WiiM.
   function wiimLevels(s) {
     const f = TIER_ORDER.indexOf(floorLevel(s));
-    if (f > TIER_ORDER.indexOf("mid")) return [];
-    return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && TIER_ORDER.indexOf(WIIM[k].level) >= f && (!demanding(s) || WIIM[k].level === "premium") && powerOk(s, WIIM[k], 2); });
+    const need = !!demanding(s);
+    if (f > TIER_ORDER.indexOf("mid") && !need) return [];
+    return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && TIER_ORDER.indexOf(WIIM[k].level) >= f && (!need || WIIM[k].level === "premium") && powerOk(s, WIIM[k], 2); });
   }
   function wiimPick(s) {
     const ok = wiimLevels(s); const lvl = state.wiim === "auto" ? s.tier : state.wiim;
@@ -897,7 +899,8 @@
     $("unofferedNote").innerHTML = unpowered.length ? "Not offered at this size, because no amp in the line can power them to spec: " + unpowered.map(function (s) { return esc(s.brand + " " + s.series) + " (" + esc(offerReason(s)) + ")"; }).join("; ") + "." : "";
     if (!shown.length) { list.innerHTML = "<p class='muted small'>" + (cap ? "Nothing builds this size for " + money(cap) + ". Change the size above or raise the ceiling." : "No families match both filters.") + "</p>"; return; }
     if (isBar()) { if (!shown.some(function (s) { return s.id === state.bar; })) state.bar = shown[0].id; }
-    else if (!shown.some(function (s) { return s.id === state.series; })) state.series = shown[0].id;
+    // A family the customer tapped from "Just over" stays on screen, marked over, while the ceiling is on.
+    else if (!shown.some(function (s) { return s.id === state.series; }) && !(cap && pool.some(function (s) { return s.id === state.series; }))) state.series = shown[0].id;
     list.innerHTML = shown.map(function (s) {
       if (s.bar) {
         const room = cap ? cap - s.sys : 0;
@@ -931,8 +934,9 @@
   }
   $("overNote").addEventListener("click", function (e) {
     const b = e.target.closest("button[data-pick]"); if (!b) return;
-    state.series = b.dataset.pick; state.budget = "all"; state.max = 0; $("budgetMax").value = ""; state.brand = "all"; persist(); render();
-    toast("Budget cleared to show it");
+    // Keep the ceiling on: the build shows by how much it runs over, with the budget accessories.
+    state.series = b.dataset.pick; persist(); render();
+    toast("Shown over budget, with the amount over");
   });
   $("seriesList").addEventListener("click", function (e) {
     const b = e.target.closest(".ser"); if (!b) return;
@@ -1151,7 +1155,8 @@
     if (s.id === "sonos-arch") return powerOk(s, SONOS_AMP, 2);
     if (levelsFor(s).length > 0) return true;
     if (channels(s) <= 2 && WIIM && wiimLevels(s).length > 0) return true;
-    return bundlesFor(s).length > 0;
+    // A package only makes a family powered when it carries a power-valid amp. A speakers-only package does not.
+    return bundlesFor(s).some(function (b) { return !!b.amp; });
   }
 
   // Every receiver the family can use at this channel count, from its floor level up: headline and alternates, one entry per model.
@@ -1171,7 +1176,8 @@
   // The receiver as the accessories see it, before it is picked.
   function rcLike(c, key) { return { separates: c.a.role === "Separates", key: key, tier: c.lvl }; }
   // The accessory kit follows the higher of the speakers' level and the receiver's, so the cables and power match what they feed.
-  function kitLevel(s, rc) { const i = TIER_ORDER.indexOf(s.tier); const j = rc && rc.tier ? TIER_ORDER.indexOf(rc.tier) : -1; return TIER_ORDER[Math.max(i, j, 0)]; }
+  // With a budget ceiling on, the cable kit is the budget kit: no premium conditioner and no AudioQuest runs. The ceiling is a price promise, so the accessories must fit it too.
+  function kitLevel(s, rc) { if (budgetCap() > 0) return "value"; const i = TIER_ORDER.indexOf(s.tier); const j = rc && rc.tier ? TIER_ORDER.indexOf(rc.tier) : -1; return TIER_ORDER[Math.max(i, j, 0)]; }
   // One receiver line. meta.base is the pick the budget or the floor gave; meta.alts are the other fits; meta.isAlt means a manual swap is on.
   function receiverLine(s, c, key, meta) {
     const a = c.a, lvl = c.lvl; const short = a.short || a.m.replace(/ \d+\.\d-ch.*$/, "");
@@ -1444,7 +1450,7 @@
       : tier === "none" ? "No receiver on the list; the customer keeps their own. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>"
       : tier === floor ? "<b>What you need:</b> " + (d ? (floor !== s.tier ? "these speakers want more current than the " + esc(s.tier) + " receiver has, so <b>" + esc(floor) + "</b> is the floor, and only amps with the current for them are offered." : "<b>" + esc(floor) + "</b> is the floor for these speakers, and only amps with the current for them are offered.") : "the series' <b>" + esc(floor) + "</b> level is the floor.") + aboveText + wiimText
       : "Stepped up to <b>" + esc(tier) + "</b>, above the floor. <button type='button' class='btn link' id='avrReset'>Back to what you need (" + esc(floor) + ")</button>";
-    if (rc && rc.budget && !ampIn && !lcr) $("avrAuto").innerHTML += "<br><span class='muted small'>" + (rc.over ? "Over this budget even at the floor: this is the least that works." : "Picked for the budget: the strongest receiver that fits once the speakers and cables are paid for.") + "</span>";
+    if (rc && rc.budget && !ampIn && !lcr) $("avrAuto").innerHTML += "<br><span class='muted small'>" + (rc.over ? "Over this budget by " + money(systemTotal(s) - budgetCap()) + " even at the floor: this is the least that works." :"Picked for the budget: the strongest receiver that fits once the speakers and cables are paid for.") + "</span>";
     if (ampIn) {
       Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = true; });
       $("avrAuto").innerHTML = "The package brings its own amplifier, so no separate receiver is quoted. <button type='button' class='btn link' id='bundleOff'>Drop the package</button> to price a receiver on its own.";
@@ -1472,7 +1478,7 @@
     const ik = installKind();
     $("sumInst").textContent = SALES.installText(ik);
     $("instKind").textContent = "· " + SALES.installBand(ik).label;
-    $("sumNote").textContent = (r.lines.length + (rc ? 1 : 0) + acc.filter(function (a) { return a.on; }).length) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Install is your Settings range; Budget Builder sets the quote.";
+    $("sumNote").textContent = (budgetCap() && grand > budgetCap() ? "Over your " + money(budgetCap()) + " budget by " + money(grand - budgetCap()) + " · " : "") + (r.lines.length + (rc ? 1 : 0) + acc.filter(function (a) { return a.on; }).length) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Install is your Settings range; Budget Builder sets the quote.";
     $("bbyBtn").onclick = function () { window.open(bby(s.brand + " " + s.series), "_blank", "noopener"); };
     if (!$("sowCard").hidden) $("sowText").value = sowText();
     renderCmpBar();
