@@ -1056,7 +1056,7 @@
     const a = pk ? pk.c.a : lead;
     const p = powerCheck(s, a, 3);
     return { role: "Receiver · " + s.tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: "one multichannel unit for all three fronts, rated for this load", tier: s.tier,
-      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: p.R <= 4.5, alts: opts.filter(function (x) { return x !== lead; }), base: base, isAlt: false, picked: !!pk, over: !pk && cap > 0 && totalWithRc(s, null, { a: a }) > cap, sku: a.sku, cur: "strong", key: null, floor: true, separates: false, power: p };
+      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: p.R <= 4.5, alts: opts.filter(function (x) { return x !== lead; }), base: base, isAlt: false, picked: !!pk, over: cap > 0 && totalWithRc(s, null, { a: a }) > cap, sku: a.sku, cur: "strong", key: null, floor: true, separates: false, power: p };
     // The one-unit rule: a passive front three is never powered by stacked 2- or 3-channel amps; the pick is always a multichannel unit.
   }
 
@@ -1303,10 +1303,10 @@
     });
     return out;
   }
-  // The unit the user picked for the family on screen, if it is still in the list and fits the budget. Null otherwise.
+  // The unit the user picked for the family on screen, if it is still in the list. Over the budget is allowed: the build shows by how much.
   function pickedChoice(s) {
     if (!state.avrPick || s.bar || s.id === "sonos-arch" || s.id !== state.series) return null;
-    return avrChoices(s).find(function (x) { return x.fits && x.c.a.brand + " " + x.c.a.m === state.avrPick; }) || null;
+    return avrChoices(s).find(function (x) { return x.c.a.brand + " " + x.c.a.m === state.avrPick; }) || null;
   }
   // One pick row: the unit, its verdict for these speakers, its power figures, the channels it leaves spare for more speakers, its whole-system
   // total with a budget on, and the pick button.
@@ -1318,12 +1318,12 @@
     const verdict = "<span class='vd " + x.v.kind + "'>" + esc(x.v.label) + (x.v.notes.length ? ": " + esc(x.v.notes.join("; ")) : "") + "</span>";
     const spare = x.spare ? "room for " + x.spare + " more speaker" + (x.spare > 1 ? "s" : "") : "";
     const meta = [verdict, esc(power), esc(spare), cap > 0 ? "system " + money(x.total) + (x.fits ? "" : ", over by " + money(x.over)) : "", picked ? "your pick" : on ? "in use" : ""].filter(Boolean).join(" · ");
-    const act = x.fits ? "<button type='button' class='btn' data-pick='" + esc(key) + "'>" + (picked ? "Unpick" : "Pick") + "</button>" : "<span class='muted small'>Over budget</span>";
+    const act = "<button type='button' class='btn' data-pick='" + esc(key) + "'>" + (picked ? "Unpick" : x.fits ? "Pick" : "Pick over budget") + "</button>";
     return "<div class='pickrow" + (on ? " on" : "") + "'><div><div class='model'>" + esc(a.brand + " " + short) + "</div><div class='muted small'>" + meta + "</div></div>" +
       "<div class='price'>" + money(a.price) + "</div>" + act + "</div>";
   }
-  // The picker: a brand filter, then one group per tier rating, cheapest first. With a budget on, the units that fit are the picks; the rest of the
-  // tier follows as reference rows, flagged with the amount over, that cannot be picked until the budget is raised.
+  // The picker: a brand filter, then one group per tier rating, cheapest first. With a budget on, the units that fit come first; the rest of the tier
+  // follows, flagged with the amount over. Those can be picked too: the build then shows the whole-system amount over the budget.
   function tierListHtml(choices, rc, cap) {
     const brands = [];
     choices.forEach(function (x) { if (brands.indexOf(x.c.a.brand) < 0) brands.push(x.c.a.brand); });
@@ -1340,7 +1340,7 @@
       const label = lvl.charAt(0).toUpperCase() + lvl.slice(1);
       const count = cap > 0 ? fit.length + " of " + all.length + " fit" : all.length + " in this tier";
       const rows = fit.length ? fit.map(function (x) { return pickRowHtml(x, rc, cap); }).join("") : "<p class='muted small'>None of these fits with the speakers and cables.</p>";
-      const overRows = over.length ? "<p class='muted small'>Over " + money(cap) + ", for reference: raise the budget to pick one</p>" + over.map(function (x) { return pickRowHtml(x, rc, cap); }).join("") : "";
+      const overRows = over.length ? "<p class='muted small'>Over " + money(cap) + ": these still work with your speakers. Picking one takes the whole system over the budget by the amount shown.</p>" + over.map(function (x) { return pickRowHtml(x, rc, cap); }).join("") : "";
       return "<div class='tier'><div class='tier-h'><b>" + esc(label) + "</b><span class='muted small'>" + count + "</span></div>" + rows + overRows + "</div>";
     }).join("");
     return "<p class='eyebrow'>Pick one" + (cap > 0 ? " · fits " + money(cap) : "") + "</p>" + brandChips + groups;
@@ -1369,7 +1369,7 @@
     if (tier === "none") return null;
     const key = avrNeedKey(n); const cap = budgetCap();
     const pk = pickedChoice(s);
-    if (pk) return receiverLine(s, pk.c, key, { base: pk.c.a, alts: [], isAlt: false, budget: false, over: false, picked: true });
+    if (pk) return receiverLine(s, pk.c, key, { base: pk.c.a, alts: [], isAlt: false, budget: false, over: cap > 0 && !pk.fits, picked: true });
     if (cap > 0) { const p = budgetReceiver(s, key, cap); if (p) return p; }
     let lvl = tier; let opts = ampOptions(s, key, lvl);
     for (let i = TIER_ORDER.indexOf(floorLevel(s)); !opts.length && i < TIER_ORDER.length; i++) { lvl = TIER_ORDER[i]; opts = ampOptions(s, key, lvl); }
@@ -1605,8 +1605,8 @@
       s.id === "sonos-arch"
       ? (state.avr === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so there is nothing to pick here.")
       : state.avr === "none" ? "No receiver on the list; the customer keeps their own." + reset
-      : stale ? "<b>Your pick is not in the list now:</b> it no longer fits the budget or this build, so Auto is showing." + reset
-      : rc && rc.picked ? "You picked <b>" + esc(rc.brand + " " + rc.short) + "</b>. " + verdictHtml(fitVerdict(rc.power, rc.tier, floor), rc.power) + (cap > 0 ?" The whole system is " + money(systemTotal(s)) + " against a " + money(cap) + " budget." : "") + reset
+      : stale ? "<b>Your pick is not in the list now:</b> it is not offered for this family or build, so Auto is showing." + reset
+      : rc && rc.picked ? "You picked <b>" + esc(rc.brand + " " + rc.short) + "</b>. " + verdictHtml(fitVerdict(rc.power, rc.tier, floor), rc.power) + (cap > 0 ? (systemTotal(s) > cap ? " The whole system is " + money(systemTotal(s)) + ", over the " + money(cap) + " budget by " + money(systemTotal(s) - cap) + "." : " The whole system is " + money(systemTotal(s)) + " against a " + money(cap) + " budget.") : "") + reset
       : "<b>Floor for these speakers: " + esc(floor) + ".</b> Auto picks from " + esc(floor) + " up. The list also has units rated lower that clear the power, each with a caveat" + (d ? ". These speakers are hard to drive, so only amps with enough current are listed" : "") + "." + wiimText;
     if (rc && !rc.picked && !ampIn && cap > 0 && (rc.budget || rc.over)) $("avrAuto").innerHTML += "<br><span class='muted small'>" + (rc.over ? "Over this budget by " + money(systemTotal(s) - cap) + " even at the floor: this is the least that works." : "Auto picks the strongest receiver that fits " + money(cap) + " with the speakers and cables.") + "</span>";
     if (ampIn) {
