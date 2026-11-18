@@ -543,12 +543,6 @@
       surround: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 }, inceiling: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 },
       sub: { m: "SB-1000 Pro", each: 600, brand: "SVS" }, subAlt: { m: "Sonance MS10SUB", each: 429 },
       kit: "Sold as singles ($218, $229 and $399 each at Best Buy). Russound also lists Acclaim 5 Outback indoor/outdoor bookshelf speakers. No Russound sub at Best Buy; pair with SVS or the Sonance MS10SUB. Best fit: whole-home audio on Russound or Sonance amps." },
-    { id: "bose-791", brand: "Bose", series: "Virtually Invisible 791 II", tier: "mid", arch: true, frontLabels: ["791 II (pair)", "791 II (pair)"],
-      tower: { m: "Virtually Invisible 791 II in-ceiling (pair)", pair: 599, note: "Bose Stereo Everywhere: both channels from each speaker" }, bookshelf: { m: "Virtually Invisible 791 II in-ceiling (pair)", pair: 599 },
-      center: { m: "791 II (one of a second pair)", each: 300, note: "Pairs only. One model, one job: ceilings." },
-      surround: { m: "Virtually Invisible 791 II (pair)", pair: 599 }, inceiling: { m: "Virtually Invisible 791 II (pair)", pair: 599 },
-      sub: { m: "SB-1000 Pro", each: 600, brand: "SVS" }, subAlt: { m: "Sonance MS10SUB", each: 429 },
-      kit: "The only passive Bose line Best Buy sells: 791 II pair $599, 4.9 stars. Two drivers angled so each speaker throws both channels, good for a hallway or kitchen with one speaker. No Bose center, in-wall or passive sub; everything else Bose is wireless." },
   ];
   // Passive LCR speakers (bars.js SF_LCR): no amp inside, so they are the front three of a speaker system, not a soundbar. Shown at the 3-channel size only.
   (window.SF_LCR || []).forEach(function (b) {
@@ -674,7 +668,7 @@
   // Sonos Architectural speakers run on one Sonos Amp per pair (two channels each).
   const SONOS_AMP = { pk: "Sonos Amp", brand: "Sonos", m: "Amp", price: 699, why: "125 W per channel at 8 ohms. Sonos Architectural speakers run on Sonos Amp, one Amp per pair; it tunes them with Trueplay and the Sonos Sub pairs wirelessly" };
 
-  const BRAND_PAGES = { Sonance: "sonance", Sonos: "sonos", Russound: "russound", Bose: "bose",
+  const BRAND_PAGES = { Sonance: "sonance", Sonos: "sonos", Russound: "russound",
     Klipsch: "klipsch", "Polk Audio": "polk", KEF: "kef", MartinLogan: "martinlogan", "Definitive Technology": "deftech", "Bowers & Wilkins": "bw", JBL: "jbl" };
   const $ = function (id) { return document.getElementById(id); };
   const IMG = window.SF_IMG;
