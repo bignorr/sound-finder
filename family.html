@@ -331,6 +331,14 @@
       tower: { m: "Prime Tower", pair: 1200 }, bookshelf: { m: "Prime Bookshelf", pair: 650 }, center: { m: "Prime Center", each: 450 },
       surround: { m: "Prime Satellite", pair: 300 }, height: { m: "Prime Elevation", pair: 500, kind: "speaker" },
       sub: { m: "SB-1000 Pro", each: 600 }, subAlt: { m: "PB-1000 Pro", each: 700 } },
+    // Motion 20i floor speaker, Matte White (MO20IMW, Best Buy SKU 6371193): $499.99 each, sold by Best Buy (screenshot Nov 18, 2026), so pair = 2 x each.
+    // Load from the maker: 4 ohms nominal, compatible with 4/6/8 ohm amps; 90 dB at 2.83 V / 1 m (MartinLogan brochure; Best Buy lists the same 4 ohm and 90 dB).
+    // Center, bookshelf, ceiling, in-wall and sub are the Motion Foundation and Dynamo parts from the ml-foundation and ml sub rows, since the 20i line has no center or sub in the app yet.
+    { id: "ml-20i", brand: "MartinLogan", series: "Motion 20i", tier: "value", load: { ohm: 4, sens: 90 },
+      tower: { m: "Motion 20i Matte White", pair: 999.98 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at Best Buy ($439.99 on promo); the bigger C2 if it is stocked" },
+      inceiling: { m: "Installer Series IC6 in-ceiling", pair: 500, note: "$249.99 each; Motion CI MC6 ($499.99 each) adds the Folded Motion tweeter" },
+      inwall: { m: "Installer Series IW6 in-wall", pair: 560, note: "$279.99 each; Motion CI MW6 ($599.99 each) adds the Folded Motion tweeter" },
+      sub: { m: "Dynamo 600X", each: 700 } },
     { id: "klipsch-rp2", brand: "Klipsch", series: "Reference Premiere II", tier: "mid", load: { ohm: 8, sens: 94 },
       tower: { m: "RP-8000F II", pair: 2400 }, towerAlt: { m: "RP-6000F II", pair: 1800 }, bookshelf: { m: "RP-600M II", pair: 750 }, center: { m: "RP-504C II", each: 1000 },
       surround: { m: "RP-502S II", pair: 1000 }, height: { m: "RP-500SA II", pair: 700, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322, note: "$160.99 each; CDT-5800-C II 8 in is $199.99 each for a big room" },
@@ -569,23 +577,32 @@
   // Receivers Best Buy sells and ships, one per price level for each channel count. Prices are bestbuy.com list on Nov 13, 2026.
   // Nov 18, 2026: added as alternates the receivers with a Best Buy seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not Best Buy on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
   // Marantz CINEMA Series 2 (Best Buy SKUs 6687403 / 6687404 / 6687405, sold by Best Buy) replaces the first-generation Cinema 50, 60 and 70s. Their prices are the Marantz list prices ($1,500 / $2,000 / $3,000); confirm the Best Buy price in norrito. Cinema 30 and Cinema 40 stay first generation.
+  // Nov 18, 2026: the Denon and Marantz AVRs from the Best Buy app screenshots are alternates marked pickOnly. They are picker options only. Auto, the floor, the budget pick, the power-note switch and the not-offered reason never see them, so Auto keeps the units it had.
+  // Denon and Marantz publish no all-channel rating, so the 5, 7 and 9-channel units pass the power check only on two-channel builds (as spare-channel options), never on a build of five channels or more.
   // ohm4: informational only. Whether a unit can drive a load is decided by powerCheck, from the SF_POWER ratings in bars.js.
   const AVRS = {
     2: { need: "2 amplified channels",
       value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "4K HDR and Bluetooth; five channels, so the stereo pair can grow into a 5.1 later. 90 W x 2 at 6 ohms (minimum RMS); Sony publishes no 8-ohm figure",
         alts: [{ brand: "Rotel", m: "A10 MKII 2.0-ch integrated amplifier", cur: "ok", price: 699, role: "Integrated amp", sku: "6571776", why: "50 W x 2 Class AB, phono input, Bluetooth; a real stereo amp at the price of a budget receiver, two channels only" },
-               { brand: "Rotel", m: "A11 MKII 2.0-ch integrated amplifier", cur: "ok", price: 949, role: "Integrated amp", sku: "6571771", why: "50 W x 2 into 8 ohms; the Ken Ishiwata-tuned A11 with Bluetooth and phono. No 4-ohm figure published" }] },
+               { brand: "Rotel", m: "A11 MKII 2.0-ch integrated amplifier", cur: "ok", price: 949, role: "Integrated amp", sku: "6571771", why: "50 W x 2 into 8 ohms; the Ken Ishiwata-tuned A11 with Bluetooth and phono. No 4-ohm figure published" },
+               { brand: "Marantz", m: "PM6007 2.0-ch integrated amplifier", pickOnly: true, cur: "easy", price: 750, role: "Integrated amp", sku: "6510171", why: "45 W x 2 into 8 ohms and 60 W at 4 ohms, per Marantz; two channels with a built-in phono stage" },
+               { brand: "Denon", m: "CEOL RCD-N12 2.0-ch receiver", pickOnly: true, cur: "ok", price: 699, role: "Stereo receiver", sku: "6561378", why: "65 W x 2 into 4 ohms, HEOS and Alexa; Denon publishes no 8-ohm figure, so it is checked only on loads of 4.5 ohms or less" }] },
       mid: { brand: "Denon", m: "DRA-900H 2.2-ch stereo receiver", cur: "ok", price: 799, why: "True two-channel: 100 W x 2 into 8 ohms (120 W at 6 ohms), 8K HDMI, HEOS streaming, two sub outs",
         alts: [{ brand: "Rotel", m: "A12 MKII 2.0-ch integrated amplifier", cur: "ok", price: 1199, role: "Integrated amp", sku: "6557356", why: "60 W x 2 with a built-in DAC, phono and Bluetooth; showed $200 off $1,399" },
                { brand: "Rotel", m: "A14 MKII 2.0-ch integrated amplifier", cur: "ok", price: 1599, role: "Integrated amp", sku: "6557360", why: "80 W x 2, DAC, phono, Bluetooth; showed $300 off $1,899" },
                { brand: "Rotel", m: "S14 2.0-ch streaming amplifier", cur: "ok", price: 1999, role: "Streaming amp", sku: "6635556", why: "80 W x 2 with streaming built in (AirPlay 2, Chromecast, Roon Ready): the one-box music system" },
                { brand: "Arcam", m: "Radia A15+ 2.0-ch integrated amplifier", cur: "ok", price: 1500, role: "Integrated amp", sku: "6642223", why: "80 W x 2 Class AB with a DAC and phono; 120 W x 2 at 4 ohms; Arcam's mid Radia" },
-               { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs, and five channels in reserve if the room grows" }] },
+               { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs, and five channels in reserve if the room grows" },
+               { brand: "Marantz", m: "MODEL M1 2.0-ch streaming amplifier", pickOnly: true, cur: "strong", price: 1000, role: "Streaming amp", sku: "6583368", why: "100 W x 2 into 8 ohms and 125 W at 4 ohms, per Marantz; HEOS streaming and eARC" },
+               { brand: "Marantz", m: "STEREO 70s 2.0-ch stereo receiver", pickOnly: true, cur: "easy", price: 1200, role: "Stereo receiver", sku: "6561073", why: "75 W x 2 into 8 ohms, per Marantz; no 4- or 6-ohm figure published" },
+               { brand: "Marantz", m: "MODEL 60n 2.0-ch network integrated amplifier", pickOnly: true, cur: "ok", price: 1600, role: "Integrated amp", sku: "6599651", why: "60 W x 2 into 8 ohms and 80 W at 4 ohms, per Marantz; network streaming" }] },
       premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms, for a premium stereo pair, with five channels in reserve for a full theater",
         alts: [{ brand: "Rotel", m: "RA-1572 MKII 2.0-ch integrated amplifier", cur: "strong", price: 2299, role: "Integrated amp", sku: "6557369", why: "120 W x 2 Class AB, DAC, phono, Bluetooth; showed $400 off $2,699" },
                { brand: "Arcam", m: "Radia A25+ 2.0-ch integrated amplifier", cur: "strong", price: 2000, role: "Integrated amp", sku: "6642221", why: "100 W x 2 into 8 ohms and 165 W at 4 ohms, Class G, in the Radia line" },
                { brand: "Rotel", m: "RA-1592 MKII 2.0-ch integrated amplifier", cur: "strong", price: 3699, role: "Integrated amp", sku: "6557371", why: "200 W x 2 Class AB; Rotel's biggest integrated; showed $500 off" },
-               { brand: "Michi", m: "Prestige X430 2.0-ch integrated amplifier", cur: "strong", price: 4999, role: "Integrated amp", sku: "6678050", why: "210 W x 2 into 8 ohms, Rotel's Michi build: two-channel only, for the music room that will stay two-channel" }] },
+               { brand: "Michi", m: "Prestige X430 2.0-ch integrated amplifier", cur: "strong", price: 4999, role: "Integrated amp", sku: "6678050", why: "210 W x 2 into 8 ohms, Rotel's Michi build: two-channel only, for the music room that will stay two-channel" },
+               { brand: "Marantz", m: "MODEL 50 2.0-ch integrated amplifier", pickOnly: true, cur: "ok", price: 2000, role: "Integrated amp", sku: "6565497", why: "70 W x 2 into 8 ohms and 100 W at 4 ohms, per Marantz; HDAM SA-3 circuitry, two channels" },
+               { brand: "Marantz", m: "MODEL 30 2.0-ch integrated amplifier", pickOnly: true, cur: "strong", price: 3500, role: "Integrated amp", sku: "6461445", why: "100 W x 2 into 8 ohms and 200 W at 4 ohms, per Marantz; Sound Master tuning, two channels" }] },
       reference: { brand: "Marantz", m: "Model 10 2.0-ch integrated amplifier", cur: "strong", price: 15000, role: "Integrated amp", why: "250 W x 2 into 8 ohms, the flagship Marantz integrated",
         alts: [{ brand: "Michi", m: "X5 Series 2 2.0-ch integrated amplifier", cur: "strong", price: 9499, role: "Integrated amp", sku: "6572433", why: "Michi's flagship: 350 W x 2 into 8 ohms. No 4-ohm figure published" },
                { brand: "Michi", m: "X3 Series 2 2.0-ch integrated amplifier", cur: "strong", price: 7499, role: "Integrated amp", sku: "6557355", why: "200 W x 2 into 8 ohms; Michi build with a smaller footprint. No 4-ohm figure published" },
@@ -598,7 +615,9 @@
                { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by Best Buy at $799.95" },
                { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by Best Buy at $849" },
                { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by Best Buy at $849 on sale, $949 comparable" },
-               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" }] },
+               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" },
+               { brand: "Denon", m: "AVR-S570BT 5.2-ch receiver", pickOnly: true, cur: "easy", price: 449, sku: "6517803", why: "70 W x 2 into 8 ohms and 90 W at 6 ohms, per Denon; no all-channel rating published" },
+               { brand: "Marantz", m: "NR1510 5.2-ch receiver", pickOnly: true, cur: "easy", price: 700, sku: "6345924", why: "50 W x 2 into 8 ohms and 60 W at 6 ohms, per Marantz; slim chassis; no all-channel rating published" }] },
       mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", cur: "ok", price: 649, why: "75 W x 2 into 8 ohms and 100 W at 6 ohms; 8K HDMI, HEOS, Audyssey room correction, phono input, Alexa; no all-channel rating published",
         alts: [{ brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs and Audyssey MultEQ XT; two channels spare for heights later" },
                { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" },
@@ -618,11 +637,13 @@
                { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by Best Buy at $799.95" },
                { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by Best Buy at $849" },
                { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by Best Buy at $849 on sale, $949 comparable" },
-               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" }] },
+               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" },
+               { brand: "Denon", m: "AVR-S980H 7.2-ch receiver", pickOnly: true, cur: "ok", price: 949, sku: "6666186", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, per Denon; HEOS and 8K HDMI; no all-channel rating published" }] },
       mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs, Audyssey MultEQ XT; the step up in amplifier quality",
         alts: [{ brand: "JBL", m: "MA7100HP 7.2-ch receiver", cur: "ok", price: 1060, sku: "6584072", why: "125 W x 2 into 8 ohms and 175 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $1,059.95" },
                { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB, 8K HDMI, Google Cast; built like a stereo amp with seven channels" },
-               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by Best Buy at $1,199.99" }] },
+               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by Best Buy at $1,199.99" },
+               { brand: "Denon", m: "AVR-X2900H 7.2-ch receiver", pickOnly: true, cur: "strong", price: 1349, sku: "6665560", why: "95 W x 2 into 8 ohms and 125 W at 6 ohms, per Denon; 8K and Dolby Atmos; no all-channel rating published" }] },
       premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms, with the Marantz voicing for music-first rooms",
         alts: [{ brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "90 W x 7 at 8 ohms and 110 W x 7 at 4 ohms; Class AB; the Arcam for a 7.1 or 5.1.2 that will stay seven channels" },
                { brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "100 W x 7 at 8 ohms and 180 W x 7 at 4 ohms; Class G with Dirac Live: the step from receiver to reference without going to separates" }] },
@@ -634,9 +655,12 @@
         alts: [{ brand: "Pioneer Elite", m: "VSX-LX305 9.2-ch receiver", cur: "ok", price: 749, sku: "6405450", why: "100 W x 2 into 8 ohms (minimum RMS); no all-channel rating published; sold by Best Buy at $749, comparable $1,199" }] },
       mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", cur: "strong", price: 1799, why: "105 W x 2 into 8 ohms and 135 W at 6 ohms; four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse",
         alts: [{ brand: "JBL", m: "MA9100HP 9.2-ch receiver", cur: "ok", price: 1760, sku: "6584075", why: "140 W x 2 into 8 ohms (FTC) and 240 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $1,759.95" },
-               { brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by Best Buy at $2,299.99, comparable $2,899.99" }] },
+               { brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by Best Buy at $2,299.99, comparable $2,899.99" },
+               { brand: "Denon", m: "AVR-X3900H 9.4-ch receiver", pickOnly: true, cur: "strong", price: 1849, sku: "6665561", why: "105 W x 2 into 8 ohms and 135 W at 6 ohms, per Denon; 4K/8K and Dolby Atmos; no all-channel rating published" }] },
       premium: { brand: "Marantz", m: "CINEMA 50 Series 2 9.4-ch receiver", sku: "6687405", cur: "strong", price: 3000, why: "110 W x 2 into 8 ohms and 150 W at 6 ohms; no all-channel or 4-ohm rating published; 9.4 channels, Dirac Live upgradeable",
-        alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 65 W each into 8 ohms; 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" }] },
+        alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 65 W each into 8 ohms; 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" },
+               { brand: "Denon", m: "AVR-X4800H 9.4-ch receiver", pickOnly: true, cur: "strong", price: 2799, sku: "6518168", why: "125 W x 2 into 8 ohms and 165 W at 6 ohms, per Denon; Dirac Live ready; no all-channel rating published" },
+               { brand: "Marantz", m: "CINEMA 40 9.4-ch receiver", pickOnly: true, cur: "strong", price: 3800, sku: "6522073", why: "110 W x 2 into 8 ohms, per Marantz (its 125 W figure is marketing); HDAM and HEOS; no all-channel rating published" }] },
       reference: { brand: "Marantz", m: "AV 10 processor + 2 x AMP 10 amplifiers", cur: "strong", short: "AV 10 + 2 x AMP 10", price: 24000, role: "Separates", sku: null, parts: ["Marantz AMP 10"], rep: 2, why: "$8,000 + 2 x $8,000: 15.4 processing. Each AMP 10 drives five channels at 200 W into 8 ohms (Marantz infosheet), so two units cover nine. Denon AVR-A1H ($7,199) if it has to be one box",
         alts: [{ brand: "Arcam", m: "AVP45 processor + AVA15 12-ch AV amplifier", cur: "strong", short: "AVP45 + AVA15", price: 10500, role: "Separates", sku: "6679207", parts: ["Arcam AVA15"], why: "$5,999.95 + $4,499.95: Arcam's 16-channel processor in front of the AVA15's nine amplified channels at 65 W each into 8 ohms; all Arcam, Dirac-ready" },
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RB-1552 MKII 2-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RB-1552", price: 14498, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII", "Rotel RB-1552 MKII"], why: "$8,000 + $4,799 + $1,699: nine channels of Rotel Class AB (155 W x 7 plus 130 W x 2 for the heights, both into 8 ohms)" }] } },
@@ -800,9 +824,10 @@
   // Every amp at one level for this build, base first. Speakers that need current only get the amps rated for it.
   // A speaker that is 6 ohms nominal or dips below 6 ohms can never take an amp rated for 6 to 16 ohms only.
   function ohmBelow6(s) { const L = s.load; return !!L && ((!!L.ohm && L.ohm <= 6) || (!!L.min && L.min < 6)); }
-  function ampOptions(s, key, level) {
+  // pickOnly units (the Nov 18 additions) are offered to the picker alone: forPicker is set only by pickerReceivers. Every other caller gets the units it always had.
+  function ampOptions(s, key, level, forPicker) {
     const a = AVRS[key] && AVRS[key][level]; if (!a) return [];
-    const all = [a].concat(a.alts || []).filter(function (x) { return !(x.cur === "easy" && ohmBelow6(s)) && powerOk(s, x, chanCount(s)); });
+    const all = [a].concat(a.alts || []).filter(function (x) { return (forPicker || !x.pickOnly) && !(x.cur === "easy" && ohmBelow6(s)) && powerOk(s, x, chanCount(s)); });
     return demanding(s) ? all.filter(function (x) { return x.cur === "strong"; }) : all;
   }
   function floorLevel(s) {
@@ -1122,7 +1147,7 @@
   // Every unit a family could be given at its channel count: the passive amps for a passive LCR, else each level's lead and alternates.
   function unitsFor(s) {
     const out = [];
-    const add = function (a) { if (a) { out.push(a); (a.alts || []).forEach(function (x) { out.push(x); }); } };
+    const add = function (a) { if (a) { if (!a.pickOnly) out.push(a); (a.alts || []).forEach(function (x) { if (!x.pickOnly) out.push(x); }); } };
     if (s.lcr) { add(PASSIVE_AMP.mid); add(PASSIVE_AMP.premium); return out; }
     const key = avrNeedKey(chanCount(s));
     TIER_ORDER.forEach(function (lvl) { add(AVRS[key] && AVRS[key][lvl]); });
@@ -1212,7 +1237,7 @@
     const need = avrNeedKey(channels(s)); const cands = [];
     [2, 5, 7, 9, 11, 13].forEach(function (key) {
       if (key < need) return;
-      TIER_ORDER.forEach(function (lvl) { ampOptions(s, key, lvl).forEach(function (a) { cands.push({ a: a, lvl: lvl, key: key, own: ownKey(a) === key }); }); });
+      TIER_ORDER.forEach(function (lvl) { ampOptions(s, key, lvl, true).forEach(function (a) { cands.push({ a: a, lvl: lvl, key: key, own: ownKey(a) === key }); }); });
     });
     cands.sort(function (x, y) { return (y.own - x.own) || (x.key - y.key) || (TIER_ORDER.indexOf(x.lvl) - TIER_ORDER.indexOf(y.lvl)); });
     const out = [];
@@ -1357,7 +1382,7 @@
   // The cheapest unit that fits the budget, is rated strong, and clears these speakers with headroom (cleanFit): the one the power note's switch offers.
   function recommendAmp(s, rc) {
     if (!rc || rc.wiim || rc.sonos) return null;
-    const cands = avrChoices(s).filter(function (x) { return x.fits && !x.below && (s.lcr || x.key === avrNeedKey(channels(s))) && x.c.a.cur === "strong" && cleanFit(s, x.c.a); });
+    const cands = avrChoices(s).filter(function (x) { return x.fits && !x.below && (s.lcr || x.key === avrNeedKey(channels(s))) && !x.c.a.pickOnly && x.c.a.cur === "strong" && cleanFit(s, x.c.a); });
     if (!cands.length) return null;
     const best = cands.sort(function (x, y) { return x.c.a.price - y.c.a.price; })[0].c.a;
     return { key: best.brand + " " + best.m, brand: best.brand, short: best.short || best.m.replace(/ \d+\.\d-ch.*$/, ""), price: best.price };
@@ -1435,13 +1460,21 @@
       streamer: { brand: "WiiM", model: "Ultra streamer", each: 349, sku: "6684567" },
       interconnect: { brand: "AudioQuest", model: "Big Sur RCA interconnect, 16.4 ft pair", each: 379.95, sku: "6460309" } }
   };
-  // The choices a customer can make on the cable and power lines. Each is an item already in the kit above, with the SKU on file.
-  // Only the options that fit the budget are offered, and a pick that stops fitting drops back to the kit's own item.
-  const HDMI_OPTS = [ACC_KIT.value.hdmi, AQ_HDMI];
+  // The choices a customer can make on the cable and power lines: the kit's own item, then the AudioQuest HDMI and PowerQuest 2 tiers, in price order.
+  // Options over the budget stay listed and pickable, flagged with the amount over. SKUs are shown where the Best Buy page was checked.
+  const AQ_PEARL = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 4.9 ft", each: 59.95, sku: "6428744" };
+  const AQ_CINNAMON = { brand: "AudioQuest", model: "Cinnamon 48 HDMI cable, 4.9 ft", each: 229.95, sku: "6428735" };
+  const AQ_CARBON = { brand: "AudioQuest", model: "Carbon 48 HDMI cable, 4.9 ft", each: 399.95, sku: "6428747" };
+  const AQ_VODKA = { brand: "AudioQuest", model: "Vodka 48 HDMI cable, 4.9 ft", each: 750, sku: "6428740" };
+  const AQ_THUNDERBIRD = { brand: "AudioQuest", model: "ThunderBird 48 in-wall HDMI cable, 9.8 ft", each: 1750, sku: "6428721" };
+  const AQ_FIREBIRD = { brand: "AudioQuest", model: "FireBird 48 in-wall HDMI cable, 9.8 ft", each: 2950, sku: "6428730" };
+  const AQ_DRAGON = { brand: "AudioQuest", model: "Dragon 48 in-wall HDMI cable, 9.8 ft", each: 4495, sku: "6428743" };
+  const HDMI_OPTS = [ACC_KIT.value.hdmi, AQ_PEARL, AQ_HDMI, AQ_CINNAMON, AQ_CARBON, AQ_VODKA, AQ_THUNDERBIRD, AQ_FIREBIRD, AQ_DRAGON];
   const SURGE8 = { brand: "Rocketfish", model: "8-outlet surge protector", each: 60 };
   const SURGE6 = { brand: "Rocketfish", model: "6-outlet surge protector", each: 40 };
-  const POWER_RECEIVER_OPTS = [SURGE8, ACC_KIT.premium.power, ACC_KIT.reference.power];
-  const POWER_BAR_OPTS = [SURGE6, ACC_KIT.premium.power, ACC_KIT.reference.power];
+  const PQ2 = { brand: "PowerQuest", model: "2 6-outlet surge protector", each: 279.95, sku: "6320328" };
+  const POWER_RECEIVER_OPTS = [SURGE8, PQ2, ACC_KIT.premium.power, ACC_KIT.reference.power];
+  const POWER_BAR_OPTS = [SURGE6, PQ2, ACC_KIT.premium.power, ACC_KIT.reference.power];
   function isCond(a) { return /conditioner/.test(a.model); }
   // Each line is a checkbox the customer can untick. A line the customer has not touched takes its default (a streamer can start off).
   function accessories(r, rc) {
