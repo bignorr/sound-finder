@@ -104,7 +104,7 @@
     ["wiim amp", 6684568], ["amp ultra", 6684569], ["b1 × wiim", 6596730], ["wiim ultra (streamer)", 6684567], ["wiim pro plus", 6685646], ["wiim pro (streamer)", 6684566], ["wiim mini", 6684570], ["wiim sound (speaker)", 6684943], ["wiim sound lite", 6684942],
     // Receivers
     ["avr-s670h", 6551304], ["avr-s770h", 6551305], ["avr-x2800h", 6518172], ["avr-x3800h", 6518170], ["avr-x6800h", 6563194], ["dra-900h", 6561384],
-    ["cinema 70s", 6522069], ["cinema 60", 6522070], ["cinema 50", 6522072], ["cinema 30", 6573671],
+    ["cinema 70s series 2", 6687403], ["cinema 60 series 2", 6687404], ["cinema 50 series 2", 6687405], ["cinema 30", 6573671],
     ["tx-rz30", 6594911], ["vsx-lx805", 6562899],
   ].sort(function (a, b) { return b[0].length - a[0].length; }); // longest phrase wins
 
