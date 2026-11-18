@@ -1254,39 +1254,29 @@
     return pickerPool(s).map(function (c) {
       const key = c.key != null ? c.key : (s.lcr ? null : avrNeedKey(channels(s)));
       const total = totalWithRc(s, key, c, r); const p = powerCheck(s, c.a, n); const ch = ampChannels(c.a);
-      return { c: c, key: key, total: total, p: p, v: fitVerdict(p, c.lvl, floor), spare: !s.lcr && ch && ch > have ? ch - have : 0,
+      return { c: c, key: key, total: total, over: cap > 0 ? total - cap : 0, p: p, v: fitVerdict(p, c.lvl, floor), spare: !s.lcr && ch && ch > have ? ch - have : 0,
         below: TIER_ORDER.indexOf(c.lvl) < TIER_ORDER.indexOf(floor), fits: !(cap > 0) || total <= cap };
     });
   }
   // The cable and power options a customer can pick. A pick is held by line (hdmi, power) and by the option's brand and model.
   function accKey(a) { return a.brand + " " + a.model; }
   function accPicked(id, def, opts) { const k = state.accPick && state.accPick[id]; const o = k && opts.find(function (x) { return accKey(x) === k; }); return o || def; }
-  // The options for one cable or power line, each with the whole-system total it would give and whether that fits the budget (always, with no budget).
+  // The options for one cable or power line, each with the whole-system total it would give, how far over the budget that is (0 when it fits or with no budget), and whether it fits.
   function accOptions(s, id) {
     const list = id === "hdmi" ? HDMI_OPTS : s.bar ? POWER_BAR_OPTS : POWER_RECEIVER_OPTS;
     const cap = budgetCap(); const saved = state.accPick[id]; const out = [];
     try {
-      list.forEach(function (o) { state.accPick[id] = accKey(o); const total = systemTotal(s); out.push({ o: o, total: total, fits: !(cap > 0) || total <= cap }); });
+      list.forEach(function (o) { state.accPick[id] = accKey(o); const total = systemTotal(s); out.push({ o: o, total: total, over: cap > 0 ? total - cap : 0, fits: !(cap > 0) || total <= cap }); });
     } finally { if (saved === undefined) delete state.accPick[id]; else state.accPick[id] = saved; }
     return out;
   }
-  // For each pick line on the card: the options that fit, plus the line's own item even when it does not fit.
+  // For each pick line on the card: every option, each with its whole-system total. Options over the budget stay listed and pickable, flagged with the amount over.
   function accSelects(s, acc) {
     const out = {};
     ["hdmi", "power"].forEach(function (id) {
-      const line = acc.find(function (a) { return a.pick === id; }); if (!line) return;
-      out[id] = accOptions(s, id).filter(function (x) { return x.fits || accKey(x.o) === line.ref; });
+      if (acc.some(function (a) { return a.pick === id; })) out[id] = accOptions(s, id);
     });
     return out;
-  }
-  // A cable or power pick that no longer fits the budget is dropped, so the build goes back to the kit's own item (as a receiver pick does).
-  function dropStaleAccPicks(s) {
-    if (!state.accPick || !(budgetCap() > 0)) return;
-    ["hdmi", "power"].forEach(function (id) {
-      const k = state.accPick[id]; if (!k) return;
-      const hit = accOptions(s, id).find(function (x) { return accKey(x.o) === k; });
-      if (hit && !hit.fits) { state.accPick[id] = ""; persist(); }
-    });
   }
   // The unit the user picked for the family on screen, if it is still in the list and fits the budget. Null otherwise.
   function pickedChoice(s) {
@@ -1302,14 +1292,16 @@
     const power = p && p.cap != null ? "gives " + Math.round(p.cap) + " W, needs " + Math.round(p.need) + " W at " + f1(p.R) + " ohms" : "";
     const verdict = "<span class='vd " + x.v.kind + "'>" + esc(x.v.label) + (x.v.notes.length ? ": " + esc(x.v.notes.join("; ")) : "") + "</span>";
     const spare = x.spare ? "room for " + x.spare + " more speaker" + (x.spare > 1 ? "s" : "") : "";
-    const meta = [verdict, esc(power), esc(spare), cap > 0 ? "system " + money(x.total) : "", picked ? "your pick" : on ? "in use" : ""].filter(Boolean).join(" · ");
+    const meta = [verdict, esc(power), esc(spare), cap > 0 ? "system " + money(x.total) + (x.fits ? "" : ", over by " + money(x.over)) : "", picked ? "your pick" : on ? "in use" : ""].filter(Boolean).join(" · ");
+    const act = x.fits ? "<button type='button' class='btn' data-pick='" + esc(key) + "'>" + (picked ? "Unpick" : "Pick") + "</button>" : "<span class='muted small'>Over budget</span>";
     return "<div class='pickrow" + (on ? " on" : "") + "'><div><div class='model'>" + esc(a.brand + " " + short) + "</div><div class='muted small'>" + meta + "</div></div>" +
-      "<div class='price'>" + money(a.price) + "</div><button type='button' class='btn' data-pick='" + esc(key) + "'>" + (picked ? "Unpick" : "Pick") + "</button></div>";
+      "<div class='price'>" + money(a.price) + "</div>" + act + "</div>";
   }
-  // The picker: a brand filter, then one group per tier rating, cheapest first. With a budget on, only the units that fit are listed.
+  // The picker: a brand filter, then one group per tier rating, cheapest first. With a budget on, the units that fit are the picks; the rest of the
+  // tier follows as reference rows, flagged with the amount over, that cannot be picked until the budget is raised.
   function tierListHtml(choices, rc, cap) {
     const brands = [];
-    choices.forEach(function (x) { if (brands.indexOf(x.c.a.brand) < 0 && (x.fits || !(cap > 0))) brands.push(x.c.a.brand); });
+    choices.forEach(function (x) { if (brands.indexOf(x.c.a.brand) < 0) brands.push(x.c.a.brand); });
     brands.sort();
     const want = brands.indexOf(state.avrBrand) >= 0 ? state.avrBrand : "all";
     const brandChips = "<div class='chips brandchips' role='group' aria-label='Brand'>" + ["all"].concat(brands).map(function (b) {
@@ -1319,10 +1311,12 @@
       const all = choices.filter(function (x) { return x.c.lvl === lvl && (want === "all" || x.c.a.brand === want); }).sort(function (x, y) { return x.c.a.price - y.c.a.price; });
       if (!all.length) return "";
       const fit = all.filter(function (x) { return x.fits; });
+      const over = all.filter(function (x) { return !x.fits; });
       const label = lvl.charAt(0).toUpperCase() + lvl.slice(1);
       const count = cap > 0 ? fit.length + " of " + all.length + " fit" : all.length + " in this tier";
       const rows = fit.length ? fit.map(function (x) { return pickRowHtml(x, rc, cap); }).join("") : "<p class='muted small'>None of these fits with the speakers and cables.</p>";
-      return "<div class='tier'><div class='tier-h'><b>" + esc(label) + "</b><span class='muted small'>" + count + "</span></div>" + rows + "</div>";
+      const overRows = over.length ? "<p class='muted small'>Over " + money(cap) + ", for reference: raise the budget to pick one</p>" + over.map(function (x) { return pickRowHtml(x, rc, cap); }).join("") : "";
+      return "<div class='tier'><div class='tier-h'><b>" + esc(label) + "</b><span class='muted small'>" + count + "</span></div>" + rows + overRows + "</div>";
     }).join("");
     return "<p class='eyebrow'>Pick one" + (cap > 0 ? " · fits " + money(cap) : "") + "</p>" + brandChips + groups;
   }
@@ -1497,10 +1491,10 @@
     if (rc && rc.separates) add("interconnect", "Interconnects", kit.interconnect || ACC_KIT.premium.interconnect, 1, "Preamp to power amp, RCA pair");
     return out;
   }
-  // One cable or power line. A line with a pick shows its options (those that fit the budget) as a select.
+  // One cable or power line. A line with a pick shows every option as a select, each with the whole system's total (and the amount over, if any).
   function accHtml(a, opts) {
     const pick = a.pick && opts && opts.length ? "<label class='accpick'><span class='muted small'>Pick</span><select data-accpick='" + a.pick + "' aria-label='" + esc(a.role) + " choice'>" +
-      opts.map(function (x) { return "<option value='" + esc(accKey(x.o)) + "'" + (accKey(x.o) === a.ref ? " selected" : "") + ">" + esc(x.o.brand + " " + x.o.model + " · " + money(x.o.each)) + (x.fits ? "" : " (over budget)") + "</option>"; }).join("") + "</select></label>" : "";
+      opts.map(function (x) { return "<option value='" + esc(accKey(x.o)) + "'" + (accKey(x.o) === a.ref ? " selected" : "") + ">" + esc(x.o.brand + " " + x.o.model + " · " + money(x.o.each)) + (budgetCap() > 0 ? " · system " + money(x.total) + (x.fits ? "" : ", over by " + money(x.over)) : "") + "</option>"; }).join("") + "</select></label>" : "";
     return "<div class='aline" + (a.on ? "" : " off") + "'><input type='checkbox' data-acc='" + a.id + "'" + (a.on ? " checked" : "") + " aria-label='Include " + esc(a.model) + "'>" +
       "<div><div class='role'>" + esc(a.role) + "</div><div class='model'>" + esc(a.brand + " " + a.model) + "</div><div class='qty'>" + a.qty + " × " + money(a.each) + (a.note ? " · " + esc(a.note) : "") + (a.sku ? " · <a href='https://www.bestbuy.com/site/" + a.sku + ".p' target='_blank' rel='noopener'>SKU " + esc(a.sku) + "</a>" : "") + "</div>" + pick + "</div>" +
       "<div class='price'>" + money(a.total) + "</div></div>";
@@ -1522,7 +1516,6 @@
     renderSeries();
     if (bar) { renderBar(); persist(); return; }
     const s = SERIES.find(function (x) { return x.id === state.series; });
-    dropStaleAccPicks(s);
     const lcr = !!s.lcr;
     $("frontsCtl").hidden = lcr; $("heightsCtl").hidden = lcr; $("avrChips").hidden = lcr;
     $("subBrandChips").querySelector("[data-v='series']").textContent = lcr ? "SVS" : "Series sub";
@@ -1623,7 +1616,6 @@
   function barHasRears(s) { return !!(s.rearsIn || (state.barRears && s.rears)); }
   function renderBar() {
     const s = currentSeries();
-    dropStaleAccPicks(s);
     $("bundleCard").hidden = true;
     const r = build(s);
     // chips reflect what this bar ships with: no "bar only" when the sub is in the box, no rears choice when the brand offers none
