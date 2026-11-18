@@ -672,7 +672,7 @@
   const SALES = window.SF_SALES;
   const state = { tier: "all", form: "box", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
     acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all",
-    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrPick: "", bundle: "" };
+    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrPick: "", avrBrand: "all", accPick: {}, bundle: "" };
   // WiiM streaming amps (bars.js): a 2-channel alternative to a receiver for stereo and 2.1 music rooms.
   const WIIM = (window.SF_WIIM && window.SF_WIIM.amps) || null;
   // Package deals (bundles.js): a complete system or a receiver-plus-speakers package that prices lower than the lines add up to.
@@ -733,6 +733,8 @@
     if (saved && typeof saved === "object") { const acc = Object.assign({}, state.acc, saved.acc || {}); Object.assign(state, saved); state.acc = acc; }
     if (["auto", "none"].indexOf(state.avr) < 0) state.avr = "auto"; // older tier and WiiM settings read as Auto; the tier list picks the unit now
     if (typeof state.avrPick !== "string") state.avrPick = "";
+    if (typeof state.avrBrand !== "string") state.avrBrand = "all";
+    if (!state.accPick || typeof state.accPick !== "object") state.accPick = {};
     if (state.form !== "arch") state.form = "box"; // physical is the default; an old "all" setting is read as physical
     const q = new URLSearchParams(location.search);
     const cfg = (q.get("cfg") || "").split(".");
@@ -842,6 +844,7 @@
   const avrBtns = $("avrChips").querySelectorAll("button");
   // The picker: a tap takes that unit; a tap on the unit already picked goes back to Auto.
   $("avrTiers").addEventListener("click", function (e) {
+    const bb = e.target.closest("button[data-brand]"); if (bb) { state.avrBrand = bb.dataset.brand; persist(); render(); return; }
     const b = e.target.closest("button[data-pick]"); if (!b) return;
     state.avr = "auto"; state.avrPick = state.avrPick === b.dataset.pick ? "" : b.dataset.pick; persist(); render();
   });
@@ -1179,7 +1182,7 @@
   // One receiver line. meta.base is the unit the rule gave (Auto, or the floor); meta.picked means the user picked it from the tier list.
   function receiverLine(s, c, key, meta) {
     const a = c.a, lvl = c.lvl; const short = a.short || a.m.replace(/ \d+\.\d-ch.*$/, "");
-    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, picked: !!meta.picked, wiim: !!a.wiim, power: powerCheck(s, a, chanCount(s)) };
+    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: c.key != null ? c.key : key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, picked: !!meta.picked, wiim: !!a.wiim, power: powerCheck(s, a, chanCount(s)) };
   }
   // WiiM amps as budget candidates on a stereo build, at the level the WiiM data gives them (Amp value, Amp Ultra premium), so the cable kit matches the manual WiiM pick. wiimLevels keeps the Ultra alone for demanding speakers. Same floor rule as the receivers.
   function wiimCandidates(s) {
@@ -1199,30 +1202,121 @@
   }
   // The whole-system total with this unit in place: the speakers, the unit, and the cables that suit it.
   function totalWithRc(s, key, c, r) { const b = r || build(s); return b.total + c.a.price + accTotal(accessories(b, rcLike(c, key))); }
-  // Every pool unit with its whole-system total, its power figures, and whether it fits the budget (always, with no budget).
+  // The amplified channels a unit carries, from its name: "7.2-ch" is 7. Null for separates and any unit without a count in its name.
+  function ampChannels(a) { const m = /(\d+)\.\d-ch/.exec(a.m || ""); return m ? Number(m[1]) : null; }
+  // The channel count a unit is rated for: the smallest listed count that holds all its amplified channels.
+  function ownKey(a) { const c = ampChannels(a); return c ? avrNeedKey(c) : null; }
+  // Every receiver the build can use: this build's channel count or a bigger one (room to add speakers later), at each tier rating it clears
+  // the power check at. A model is listed once, under its own channel count and the tier it is rated for there.
+  function pickerReceivers(s) {
+    const need = avrNeedKey(channels(s)); const cands = [];
+    [2, 5, 7, 9, 11, 13].forEach(function (key) {
+      if (key < need) return;
+      TIER_ORDER.forEach(function (lvl) { ampOptions(s, key, lvl).forEach(function (a) { cands.push({ a: a, lvl: lvl, key: key, own: ownKey(a) === key }); }); });
+    });
+    cands.sort(function (x, y) { return (y.own - x.own) || (x.key - y.key) || (TIER_ORDER.indexOf(x.lvl) - TIER_ORDER.indexOf(y.lvl)); });
+    const out = [];
+    cands.forEach(function (c) { if (out.some(function (o) { return o.a.brand === c.a.brand && o.a.m === c.a.m; })) return; out.push({ a: c.a, lvl: c.lvl, key: c.key }); });
+    return out;
+  }
+  // WiiM amps for a stereo build, at each level they clear the speakers' load at. The product rule of wiimLevels still holds: none for a premium or
+  // reference floor, and a speaker that needs current takes the Amp Ultra alone.
+  function wiimPicker(s) {
+    if (!WIIM || channels(s) > 2 || s.bar || s.lcr || s.id === "sonos-arch") return [];
+    const need = !!demanding(s);
+    if (!need && TIER_ORDER.indexOf(floorLevel(s)) > TIER_ORDER.indexOf("mid")) return [];
+    return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && (!need || WIIM[k].level === "premium") && powerOk(s, WIIM[k], 2); })
+      .map(function (k) { const w = WIIM[k]; return { lvl: w.level, key: 2, a: { brand: "WiiM", m: w.m, short: w.m, price: w.price, role: "Streaming amp", kind: "amp", why: w.why, sku: w.sku, ohm4: true, cur: k === "premium" ? "strong" : "ok", wiim: true } }; });
+  }
+  // The picker's pool, strongest first. An LCR keeps its passive amps; a soundbar and Sonos have none. Auto still draws on avrPool (its floor rule).
+  function pickerPool(s) {
+    if (s.bar || s.id === "sonos-arch") return [];
+    if (s.lcr) return avrPool(s);
+    return pickerReceivers(s).concat(wiimPicker(s)).sort(strongerFirst);
+  }
+  // The verdict on one unit for these speakers. Power decides: a unit that fails is not good. A unit that clears with a caveat (an estimated all-channel
+  // figure, under 25% headroom, a load under 4 ohms with no published margin, or a rating below the family's floor) works, and each caveat is named.
+  function fitVerdict(p, lvl, floor) {
+    if (!p || !p.ok) return { kind: "bad", label: "Not good", notes: [] };
+    const notes = [];
+    if (p.est) notes.push("the all-channel figure is estimated, because the maker does not publish one");
+    if (p.low) notes.push("the speakers dip under 4 ohms, and the maker publishes no lower rating");
+    if (p.tight) notes.push("it clears the need with under 25% to spare, so it has little headroom at loud levels");
+    if (lvl && floor && TIER_ORDER.indexOf(lvl) < TIER_ORDER.indexOf(floor)) notes.push("it is rated below this family's " + floor + " level");
+    return notes.length ? { kind: "soft", label: "Works, with a caveat", notes: notes } : { kind: "good", label: "Good match", notes: [] };
+  }
+  // The picked unit's verdict as one sentence for the card: the label, the power figures, and any caveat named.
+  function verdictHtml(v, p) { return "<b>" + esc(v.label) + ".</b> " + esc(powerSentence(p)) + (v.notes.length ? " Caveat: " + esc(v.notes.join("; ")) + "." : ""); }
+  // Every pool unit with its whole-system total, its power figures, its verdict for these speakers, the channels it leaves spare, and whether it
+  // fits the budget (always, with no budget).
   function avrChoices(s) {
-    const cap = budgetCap(); const key = s.lcr ? null : avrNeedKey(channels(s)); const r = build(s); const n = chanCount(s);
-    return avrPool(s).map(function (c) { const total = totalWithRc(s, key, c, r); return { c: c, total: total, p: powerCheck(s, c.a, n), fits: !(cap > 0) || total <= cap }; });
+    const cap = budgetCap(); const r = build(s); const n = chanCount(s); const floor = floorLevel(s); const have = channels(s);
+    return pickerPool(s).map(function (c) {
+      const key = c.key != null ? c.key : (s.lcr ? null : avrNeedKey(channels(s)));
+      const total = totalWithRc(s, key, c, r); const p = powerCheck(s, c.a, n); const ch = ampChannels(c.a);
+      return { c: c, key: key, total: total, p: p, v: fitVerdict(p, c.lvl, floor), spare: !s.lcr && ch && ch > have ? ch - have : 0,
+        below: TIER_ORDER.indexOf(c.lvl) < TIER_ORDER.indexOf(floor), fits: !(cap > 0) || total <= cap };
+    });
+  }
+  // The cable and power options a customer can pick. A pick is held by line (hdmi, power) and by the option's brand and model.
+  function accKey(a) { return a.brand + " " + a.model; }
+  function accPicked(id, def, opts) { const k = state.accPick && state.accPick[id]; const o = k && opts.find(function (x) { return accKey(x) === k; }); return o || def; }
+  // The options for one cable or power line, each with the whole-system total it would give and whether that fits the budget (always, with no budget).
+  function accOptions(s, id) {
+    const list = id === "hdmi" ? HDMI_OPTS : s.bar ? POWER_BAR_OPTS : POWER_RECEIVER_OPTS;
+    const cap = budgetCap(); const saved = state.accPick[id]; const out = [];
+    try {
+      list.forEach(function (o) { state.accPick[id] = accKey(o); const total = systemTotal(s); out.push({ o: o, total: total, fits: !(cap > 0) || total <= cap }); });
+    } finally { if (saved === undefined) delete state.accPick[id]; else state.accPick[id] = saved; }
+    return out;
+  }
+  // For each pick line on the card: the options that fit, plus the line's own item even when it does not fit.
+  function accSelects(s, acc) {
+    const out = {};
+    ["hdmi", "power"].forEach(function (id) {
+      const line = acc.find(function (a) { return a.pick === id; }); if (!line) return;
+      out[id] = accOptions(s, id).filter(function (x) { return x.fits || accKey(x.o) === line.ref; });
+    });
+    return out;
+  }
+  // A cable or power pick that no longer fits the budget is dropped, so the build goes back to the kit's own item (as a receiver pick does).
+  function dropStaleAccPicks(s) {
+    if (!state.accPick || !(budgetCap() > 0)) return;
+    ["hdmi", "power"].forEach(function (id) {
+      const k = state.accPick[id]; if (!k) return;
+      const hit = accOptions(s, id).find(function (x) { return accKey(x.o) === k; });
+      if (hit && !hit.fits) { state.accPick[id] = ""; persist(); }
+    });
   }
   // The unit the user picked for the family on screen, if it is still in the list and fits the budget. Null otherwise.
   function pickedChoice(s) {
     if (!state.avrPick || s.bar || s.id === "sonos-arch" || s.id !== state.series) return null;
     return avrChoices(s).find(function (x) { return x.fits && x.c.a.brand + " " + x.c.a.m === state.avrPick; }) || null;
   }
-  // One pick row: the unit, its power figures, its whole-system total with a budget on, and the pick button.
+  // One pick row: the unit, its verdict for these speakers, its power figures, the channels it leaves spare for more speakers, its whole-system
+  // total with a budget on, and the pick button.
   function pickRowHtml(x, rc, cap) {
     const a = x.c.a; const key = a.brand + " " + a.m; const short = a.short || a.m.replace(/ \d+\.\d-ch.*$/, "");
     const on = !!rc && rc.brand + " " + rc.model === key; const picked = on && !!rc.picked;
     const p = x.p; const f1 = function (v) { return String(Math.round(v * 10) / 10); };
     const power = p && p.cap != null ? "gives " + Math.round(p.cap) + " W, needs " + Math.round(p.need) + " W at " + f1(p.R) + " ohms" : "";
-    const meta = [power, cap > 0 ? "system " + money(x.total) : "", picked ? "your pick" : on ? "in use" : ""].filter(Boolean).join(" · ");
-    return "<div class='pickrow" + (on ? " on" : "") + "'><div><div class='model'>" + esc(a.brand + " " + short) + "</div><div class='muted small'>" + esc(meta) + "</div></div>" +
+    const verdict = "<span class='vd " + x.v.kind + "'>" + esc(x.v.label) + (x.v.notes.length ? ": " + esc(x.v.notes.join("; ")) : "") + "</span>";
+    const spare = x.spare ? "room for " + x.spare + " more speaker" + (x.spare > 1 ? "s" : "") : "";
+    const meta = [verdict, esc(power), esc(spare), cap > 0 ? "system " + money(x.total) : "", picked ? "your pick" : on ? "in use" : ""].filter(Boolean).join(" · ");
+    return "<div class='pickrow" + (on ? " on" : "") + "'><div><div class='model'>" + esc(a.brand + " " + short) + "</div><div class='muted small'>" + meta + "</div></div>" +
       "<div class='price'>" + money(a.price) + "</div><button type='button' class='btn' data-pick='" + esc(key) + "'>" + (picked ? "Unpick" : "Pick") + "</button></div>";
   }
-  // The picker: one group per tier rating, cheapest first. With a budget on, only the units that fit are listed.
+  // The picker: a brand filter, then one group per tier rating, cheapest first. With a budget on, only the units that fit are listed.
   function tierListHtml(choices, rc, cap) {
+    const brands = [];
+    choices.forEach(function (x) { if (brands.indexOf(x.c.a.brand) < 0 && (x.fits || !(cap > 0))) brands.push(x.c.a.brand); });
+    brands.sort();
+    const want = brands.indexOf(state.avrBrand) >= 0 ? state.avrBrand : "all";
+    const brandChips = "<div class='chips brandchips' role='group' aria-label='Brand'>" + ["all"].concat(brands).map(function (b) {
+      return "<button type='button' data-brand='" + esc(b) + "' aria-pressed='" + (want === b) + "'>" + (b === "all" ? "All brands" : esc(b)) + "</button>";
+    }).join("") + "</div>";
     const groups = TIER_ORDER.map(function (lvl) {
-      const all = choices.filter(function (x) { return x.c.lvl === lvl; }).sort(function (x, y) { return x.c.a.price - y.c.a.price; });
+      const all = choices.filter(function (x) { return x.c.lvl === lvl && (want === "all" || x.c.a.brand === want); }).sort(function (x, y) { return x.c.a.price - y.c.a.price; });
       if (!all.length) return "";
       const fit = all.filter(function (x) { return x.fits; });
       const label = lvl.charAt(0).toUpperCase() + lvl.slice(1);
@@ -1230,7 +1324,7 @@
       const rows = fit.length ? fit.map(function (x) { return pickRowHtml(x, rc, cap); }).join("") : "<p class='muted small'>None of these fits with the speakers and cables.</p>";
       return "<div class='tier'><div class='tier-h'><b>" + esc(label) + "</b><span class='muted small'>" + count + "</span></div>" + rows + "</div>";
     }).join("");
-    return "<p class='eyebrow'>Pick one" + (cap > 0 ? " · fits " + money(cap) : "") + "</p>" + groups;
+    return "<p class='eyebrow'>Pick one" + (cap > 0 ? " · fits " + money(cap) : "") + "</p>" + brandChips + groups;
   }
   // Budget on Auto: the strongest unit that still fits once the speakers and the cables that suit it are paid for.
   // If nothing fits, the least expensive floor unit, flagged over budget.
@@ -1269,7 +1363,7 @@
   // The cheapest unit that fits the budget, is rated strong, and clears these speakers with headroom (cleanFit): the one the power note's switch offers.
   function recommendAmp(s, rc) {
     if (!rc || rc.wiim || rc.sonos) return null;
-    const cands = avrChoices(s).filter(function (x) { return x.fits && x.c.a.cur === "strong" && cleanFit(s, x.c.a); });
+    const cands = avrChoices(s).filter(function (x) { return x.fits && !x.below && (s.lcr || x.key === avrNeedKey(channels(s))) && x.c.a.cur === "strong" && cleanFit(s, x.c.a); });
     if (!cands.length) return null;
     const best = cands.sort(function (x, y) { return x.c.a.price - y.c.a.price; })[0].c.a;
     return { key: best.brand + " " + best.m, brand: best.brand, short: best.short || best.m.replace(/ \d+\.\d-ch.*$/, ""), price: best.price };
@@ -1283,7 +1377,7 @@
     const caveat = function (p) {
       return (p.est ? " The all-channel figure is estimated from the stereo rating, because the maker does not publish one." : "") +
         (p.low ? " The speakers dip to " + f1(p.R) + " ohms, under the 4-ohm rating; the maker publishes no lower figure, so this margin is not a published one." : "") +
-        (p.tight ? " It clears the need by under 25%, so it has little headroom at loud levels." : "");
+        (p.tight ? " It clears the need with under 25% to spare, so it has little headroom at loud levels." : "");
     };
     if (s.bar) return s.tv || s.tech ? { kind: "soft", html: (s.tv ? "<b>Pairs best with " + esc(s.tv) + ".</b> " : "") + esc(s.tech || "") } : null;
     if (!s.load) return { kind: "soft", html: "<b>Not power-checked.</b> " + name + " has no impedance or sensitivity on file in the app. Confirm the minimum impedance and sensitivity on the maker's spec sheet before you quote this pairing." };
@@ -1347,18 +1441,27 @@
       streamer: { brand: "WiiM", model: "Ultra streamer", each: 349, sku: "6684567" },
       interconnect: { brand: "AudioQuest", model: "Big Sur RCA interconnect, 16.4 ft pair", each: 379.95, sku: "6460309" } }
   };
+  // The choices a customer can make on the cable and power lines. Each is an item already in the kit above, with the SKU on file.
+  // Only the options that fit the budget are offered, and a pick that stops fitting drops back to the kit's own item.
+  const HDMI_OPTS = [ACC_KIT.value.hdmi, AQ_HDMI];
+  const SURGE8 = { brand: "Rocketfish", model: "8-outlet surge protector", each: 60 };
+  const SURGE6 = { brand: "Rocketfish", model: "6-outlet surge protector", each: 40 };
+  const POWER_RECEIVER_OPTS = [SURGE8, ACC_KIT.premium.power, ACC_KIT.reference.power];
+  const POWER_BAR_OPTS = [SURGE6, ACC_KIT.premium.power, ACC_KIT.reference.power];
+  function isCond(a) { return /conditioner/.test(a.model); }
   // Each line is a checkbox the customer can untick. A line the customer has not touched takes its default (a streamer can start off).
   function accessories(r, rc) {
     const s = r.series; const kit = ACC_KIT[kitLevel(s, rc)] || ACC_KIT.value; const out = [];
     const add = function (id, role, a, qty, note, defOn) {
       const saved = state.acc[id];
-      out.push({ id: id, role: role, brand: a.brand, model: a.model, qty: qty, each: a.each, sku: a.sku || null, note: note || "", total: qty * a.each, on: saved === undefined ? defOn !== false : saved !== false });
+      out.push({ id: id, role: role, brand: a.brand, model: a.model, qty: qty, each: a.each, sku: a.sku || null, note: note || "", total: qty * a.each, on: saved === undefined ? defOn !== false : saved !== false,
+        pick: id === "hdmi" ? "hdmi" : id === "surge" || id === "conditioner" ? "power" : null, ref: a.brand + " " + a.model });
     };
     if (s.bar) {
-      add("hdmi", "HDMI", kit.hdmi, s.hdmi ? 2 : 1, s.hdmi ? "TV eARC to the bar, plus the main source into the bar" : "TV eARC to the bar; sources plug into the TV");
+      add("hdmi", "HDMI", accPicked("hdmi", kit.hdmi, HDMI_OPTS), s.hdmi ? 2 : 1, s.hdmi ? "TV eARC to the bar, plus the main source into the bar" : "TV eARC to the bar; sources plug into the TV");
       const where = "bar" + (barHasSub(s) ? ", sub" : "") + (barHasRears(s) ? ", rears" : "") + ", TV";
-      if (kit.surge) add("surge", "Power", { brand: "Rocketfish", model: "6-outlet surge protector", each: 40 }, 1, where);
-      if (kit.power) add("conditioner", "Power conditioner", kit.power, 1, where);
+      const pw = accPicked("power", kit.surge ? SURGE6 : kit.power || null, POWER_BAR_OPTS);
+      if (pw) add(isCond(pw) ? "conditioner" : "surge", isCond(pw) ? "Power conditioner" : "Power", pw, 1, where);
       return out;
     }
     // A passive LCR is the three fronts only, so it has no height speakers.
@@ -1380,25 +1483,32 @@
     add("wire", "Speaker wire", { brand: "Rocketfish", model: wire.m, each: wire.each }, spools, "about " + ft + " ft of runs, longest " + longest + " ft" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : thick ? (demand ? "; 14 gauge for a 4-ohm load" : "; 14 gauge for runs over 50 ft") : ""));
     if (state.subs > 0) add("subcable", "Subwoofer cable", kit.sub, state.subs, state.subs === 2 ? "one per sub" : "");
     const hdmiQty = rc && (rc.sonos || rc.wiim) ? 1 : 2;
-    add("hdmi", "HDMI", kit.hdmi, hdmiQty, rc && rc.sonos ? "TV eARC to the Amp" : rc && rc.wiim ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source; 48 Gbps for 4K120 and 8K");
+    add("hdmi", "HDMI", accPicked("hdmi", kit.hdmi, HDMI_OPTS), hdmiQty, rc && rc.sonos ?"TV eARC to the Amp" : rc && rc.wiim ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source; 48 Gbps for 4K120 and 8K");
     const ch = channels(s);
     add("banana", "Connectors", { brand: "Rocketfish", model: "Banana plugs, 12-pack", each: 25 }, Math.ceil(ch / 3), "4 per channel, " + ch + " channels");
     // Power follows the receiver's draw: a separates or 11-channel-plus receiver is heavy and steps up one conditioner.
     const heavy = !!rc && !rc.sonos && !rc.wiim && (!!rc.separates || (rc.key || 0) >= 11);
     const kl = kitLevel(s, rc);
-    const power = kl === "reference" || (heavy && kl === "premium") ? ACC_KIT.reference.power : kl === "premium" || heavy ? ACC_KIT.premium.power : null;
-    if (power) add("conditioner", "Power conditioner", power, 1, (heavy ? "sized for a heavy receiver: " : "") + "receiver, subs, display");
-    else add("surge", "Power", { brand: "Rocketfish", model: "8-outlet surge protector", each: 60 }, 1, "receiver, subs, display");
+    const power = kl === "reference" || (heavy && kl === "premium") ? ACC_KIT.reference.power : kl === "premium" || heavy ? ACC_KIT.premium.power : SURGE8;
+    const pw = accPicked("power", power, POWER_RECEIVER_OPTS);
+    if (isCond(pw)) add("conditioner", "Power conditioner", pw, 1, (heavy ? "sized for a heavy receiver: " : "") + "receiver, subs, display");
+    else add("surge", "Power", pw, 1, "receiver, subs, display");
     if (kit.streamer && !(rc && (rc.sonos || rc.wiim))) add("streamer", "Streamer", kit.streamer, 1, "Streams music apps into the receiver; off unless the customer wants it", kit.streamer.defOn);
     if (rc && rc.separates) add("interconnect", "Interconnects", kit.interconnect || ACC_KIT.premium.interconnect, 1, "Preamp to power amp, RCA pair");
     return out;
   }
-  function accHtml(a) {
+  // One cable or power line. A line with a pick shows its options (those that fit the budget) as a select.
+  function accHtml(a, opts) {
+    const pick = a.pick && opts && opts.length ? "<label class='accpick'><span class='muted small'>Pick</span><select data-accpick='" + a.pick + "' aria-label='" + esc(a.role) + " choice'>" +
+      opts.map(function (x) { return "<option value='" + esc(accKey(x.o)) + "'" + (accKey(x.o) === a.ref ? " selected" : "") + ">" + esc(x.o.brand + " " + x.o.model + " · " + money(x.o.each)) + (x.fits ? "" : " (over budget)") + "</option>"; }).join("") + "</select></label>" : "";
     return "<div class='aline" + (a.on ? "" : " off") + "'><input type='checkbox' data-acc='" + a.id + "'" + (a.on ? " checked" : "") + " aria-label='Include " + esc(a.model) + "'>" +
-      "<div><div class='role'>" + esc(a.role) + "</div><div class='model'>" + esc(a.brand + " " + a.model) + "</div><div class='qty'>" + a.qty + " × " + money(a.each) + (a.note ? " · " + esc(a.note) : "") + (a.sku ? " · <a href='https://www.bestbuy.com/site/" + a.sku + ".p' target='_blank' rel='noopener'>SKU " + esc(a.sku) + "</a>" : "") + "</div></div>" +
+      "<div><div class='role'>" + esc(a.role) + "</div><div class='model'>" + esc(a.brand + " " + a.model) + "</div><div class='qty'>" + a.qty + " × " + money(a.each) + (a.note ? " · " + esc(a.note) : "") + (a.sku ? " · <a href='https://www.bestbuy.com/site/" + a.sku + ".p' target='_blank' rel='noopener'>SKU " + esc(a.sku) + "</a>" : "") + "</div>" + pick + "</div>" +
       "<div class='price'>" + money(a.total) + "</div></div>";
   }
-  $("accLines").addEventListener("change", function (e) { const i = e.target.closest("input[data-acc]"); if (!i) return; state.acc[i.dataset.acc] = i.checked; persist(); render(); });
+  $("accLines").addEventListener("change", function (e) {
+    const sel = e.target.closest("select[data-accpick]"); if (sel) { state.accPick[sel.dataset.accpick] = sel.value; persist(); render(); return; }
+    const i = e.target.closest("input[data-acc]"); if (!i) return; state.acc[i.dataset.acc] = i.checked; persist(); render();
+  });
   function accTotal(list) { return list.reduce(function (a, x) { return a + (x.on ? x.total : 0); }, 0); }
   function installKind() { const s = currentSeries(); if (s.bar) return "bar"; if (s.lcr) return SALES.installKind({ path: "avr", around: 3, heights: 0 }); return SALES.installKind({ path: "avr", arch: !!s.arch, around: state.around, heights: state.heights, heightType: !s.height ? "inceiling" : state.heightType, surroundType: surroundType() }); }
 
@@ -1412,6 +1522,7 @@
     renderSeries();
     if (bar) { renderBar(); persist(); return; }
     const s = SERIES.find(function (x) { return x.id === state.series; });
+    dropStaleAccPicks(s);
     const lcr = !!s.lcr;
     $("frontsCtl").hidden = lcr; $("heightsCtl").hidden = lcr; $("avrChips").hidden = lcr;
     $("subBrandChips").querySelector("[data-v='series']").textContent = lcr ? "SVS" : "Series sub";
@@ -1469,8 +1580,8 @@
       ? (state.avr === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so there is nothing to pick here.")
       : state.avr === "none" ? "No receiver on the list; the customer keeps their own." + reset
       : stale ? "<b>Your pick is not in the list now:</b> it no longer fits the budget or this build, so Auto is showing." + reset
-      : rc && rc.picked ? "You picked <b>" + esc(rc.brand + " " + rc.short) + "</b>." + (cap > 0 ? " The whole system is " + money(systemTotal(s)) + " against a " + money(cap) + " budget." : "") + reset
-      : "<b>Floor for these speakers: " + esc(floor) + ".</b> Nothing below it is offered" + (d ? ", and only amps with the current for them are listed" : "") + "." + wiimText;
+      : rc && rc.picked ? "You picked <b>" + esc(rc.brand + " " + rc.short) + "</b>. " + verdictHtml(fitVerdict(rc.power, rc.tier, floor), rc.power) + (cap > 0 ?" The whole system is " + money(systemTotal(s)) + " against a " + money(cap) + " budget." : "") + reset
+      : "<b>Floor for these speakers: " + esc(floor) + ".</b> Auto picks from " + esc(floor) + " up. The list also has units rated lower that clear the power, each with a caveat" + (d ? ". These speakers are hard to drive, so only amps with enough current are listed" : "") + "." + wiimText;
     if (rc && !rc.picked && !ampIn && cap > 0 && (rc.budget || rc.over)) $("avrAuto").innerHTML += "<br><span class='muted small'>" + (rc.over ? "Over this budget by " + money(systemTotal(s) - cap) + " even at the floor: this is the least that works." : "Auto picks the strongest receiver that fits " + money(cap) + " with the speakers and cables.") + "</span>";
     if (ampIn) {
       Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = true; });
@@ -1487,7 +1598,8 @@
     $("loadWarn").innerHTML = warn ? "<div class='warn " + (warn.kind || "") + "'>" + warn.html + "</div>" : "";
     // cables and accessories
     const acc = accessories(r, rc);
-    $("accLines").innerHTML = acc.map(accHtml).join("");
+    const accSel = accSelects(s, acc);
+    $("accLines").innerHTML = acc.map(function (a) { return accHtml(a, accSel[a.pick]); }).join("");
     const accSum = accTotal(acc);
     $("accTotal").textContent = money(accSum);
     // finalized totals
@@ -1511,6 +1623,7 @@
   function barHasRears(s) { return !!(s.rearsIn || (state.barRears && s.rears)); }
   function renderBar() {
     const s = currentSeries();
+    dropStaleAccPicks(s);
     $("bundleCard").hidden = true;
     const r = build(s);
     // chips reflect what this bar ships with: no "bar only" when the sub is in the box, no rears choice when the brand offers none
@@ -1534,7 +1647,8 @@
     const warn = loadCheck(s, null);
     $("loadWarn").hidden = true;
     const acc = accessories(r, null);
-    $("accLines").innerHTML = acc.map(accHtml).join("");
+    const accSel = accSelects(s, acc);
+    $("accLines").innerHTML = acc.map(function (a) { return accHtml(a, accSel[a.pick]); }).join("");
     const accSum = accTotal(acc);
     $("accTotal").textContent = money(accSum);
     const grand = r.total + accSum;
