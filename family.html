@@ -166,11 +166,10 @@
       </div>
     </div>
     <div class="ctl" id="formCtl">
-      <span>Type</span>
+      <span>Physical or architectural</span>
       <div class="chips" id="formChips">
-        <button type="button" data-v="all" aria-pressed="true">All</button>
-        <button type="button" data-v="box" aria-pressed="false">Towers and bookshelf</button>
-        <button type="button" data-v="arch" aria-pressed="false">In-wall and in-ceiling</button>
+        <button type="button" data-v="box" aria-pressed="true">Physical: towers and bookshelf</button>
+        <button type="button" data-v="arch" aria-pressed="false">Architectural: in-wall and in-ceiling</button>
       </div>
     </div>
     <div class="ctl">
@@ -596,10 +595,12 @@
                { brand: "Arcam", m: "Radia SA45 2.2-ch integrated amplifier", cur: "strong", price: 5500, role: "Integrated amp", sku: "6622108", why: "180 W x 2 Class G with two sub outs; Arcam's flagship integrated" },
                { brand: "Michi", m: "Prestige X430 2.0-ch integrated amplifier", cur: "strong", price: 4999, role: "Integrated amp", sku: "6678050", why: "210 W x 2 into 8 ohms; the entry to Michi" }] } },
     5: { need: "5 amplified channels",
-      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration" },
+      value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration",
+        alts: [{ brand: "JBL", m: "MA310 5.2-ch receiver", cur: "ok", price: 440, sku: "6584222", why: "Bluetooth, HDR and a voice assistant in a 5.2 receiver; sold by Best Buy at $439.95" }] },
       mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", cur: "ok", price: 649, why: "8K HDMI, HEOS, Audyssey room correction, phono input, Alexa",
         alts: [{ brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W with a proper 4-ohm mode, pre-outs and Audyssey MultEQ XT; the amp a 4-ohm 5.1 needs, with two channels spare for heights later" },
-               { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" }] },
+               { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" },
+               { brand: "JBL", m: "MA510 5.2-ch receiver", cur: "ok", price: 660, sku: "6584083", why: "75 W x 5 at 8 ohms; sold by Best Buy at $659.95" }] },
       premium: { brand: "Marantz", m: "Cinema 70s 7.2-ch slim receiver", cur: "ok", price: 1300, why: "Slim Marantz with Dolby Atmos and two spare channels for heights",
         alts: [{ brand: "Marantz", m: "Cinema 60 7.2-ch receiver", cur: "strong", price: 1800, why: "100 W HDAM amplification in the full-size chassis; the Marantz with the current for 4-ohm speakers, two channels spare for heights" },
                { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; the Arcam sound at the first step" },
@@ -609,9 +610,11 @@
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1585 MKII 5-ch amplifier", cur: "strong", short: "AV 10 + RMB-1585 MKII", price: 12599, role: "Separates", sku: "6571702", why: "$8,000 + $4,599: 15.4 processing in front of 210 W x 5 (340 W into 4 ohms) of Rotel Class AB; separates for a 5.1 that is all about the speakers" }] } },
     7: { need: "7 amplified channels",
       value: { brand: "Denon", m: "AVR-S770H 7.2-ch receiver", cur: "ok", price: 749, why: "Dolby Atmos and DTS:X, 8K HDMI, HEOS; promoted around $599 to $649 most weeks",
-        alts: [{ brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ and Google Cast; the audiophile step from a value receiver" }] },
+        alts: [{ brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "85 W x 7 Class AB with Dirac EQ and Google Cast; the audiophile step from a value receiver" },
+               { brand: "JBL", m: "MA710 7.2-ch receiver", cur: "ok", price: 700, sku: "6584069", why: "90 W x 7 at 8 ohms, with 110 W x 2 for the front pair; sold by Best Buy at $699.95, comp $879.95" }] },
       mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W, pre-outs, Audyssey MultEQ XT; the step up in amplifier quality",
-        alts: [{ brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; built like a stereo amp with seven channels" }] },
+        alts: [{ brand: "JBL", m: "MA7100HP 7.2-ch receiver", cur: "ok", price: 1060, sku: "6584072", why: "125 W x 2 and 100 W x 7 continuous at 8 ohms; sold by Best Buy at $1,059.95" },
+               { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "85 W x 7 Class AB, 8K HDMI, Google Cast; built like a stereo amp with seven channels" }] },
       premium: { brand: "Marantz", m: "Cinema 60 7.2-ch receiver", cur: "strong", price: 1800, why: "100 W HDAM amplification and the Marantz voicing for music-first rooms",
         alts: [{ brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "110 W x 7 Class G; the Arcam for a 7.1 or 5.1.2 that will stay seven channels" },
                { brand: "Arcam", m: "AVR31 7.1-ch receiver", cur: "strong", price: 6900, sku: "6504706", why: "180 W x 7 Class G with Dirac Live: the step from receiver to reference without going to separates" }] },
@@ -620,7 +623,8 @@
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch amplifier", cur: "strong", short: "AV 10 + RMB-1587 MKII", price: 12799, role: "Separates", sku: "6571770", why: "$8,000 + $4,799: 15.4 processing in front of 155 W x 7 of Rotel Class AB" }] } },
     9: { need: "9 amplified channels",
       value: { brand: "Onkyo", m: "TX-RZ30 9.2-ch receiver", cur: "strong", price: 1000, why: "Dirac Live room correction included, IMAX Enhanced, THX; comp value $1,249.99" },
-      mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", cur: "strong", price: 1799, why: "Four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse. Denon lists it at $1,399, so ask for a match" },
+      mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", cur: "strong", price: 1799, why: "Four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse. Denon lists it at $1,399, so ask for a match",
+        alts: [{ brand: "JBL", m: "MA9100HP 9.2-ch receiver", cur: "ok", price: 1760, sku: "6584075", why: "140 W x 2 and 125 W x 9 at 8 ohms; sold by Best Buy at $1,759.95" }] },
       premium: { brand: "Marantz", m: "Cinema 50 9.4-ch receiver", cur: "strong", price: 2800, why: "110 W HDAM, 9.4 channels; the premium pick under B&W, KEF R and Motion XT",
         alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 100 W, 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" }] },
       reference: { brand: "Marantz", m: "AV 10 processor + AMP 10 16-ch amplifier", cur: "strong", short: "AV 10 + AMP 10", price: 16000, sku: "6522068", role: "Separates", why: "$8,000 + $8,000: 15.4 processing, 200 W x 16 at 8 ohms, high-current enough for electrostatics and 4-ohm Blades. Denon AVR-A1H ($7,199) if it has to be one box",
@@ -646,7 +650,7 @@
   const $ = function (id) { return document.getElementById(id); };
   const IMG = window.SF_IMG;
   const SALES = window.SF_SALES;
-  const state = { tier: "all", form: "all", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
+  const state = { tier: "all", form: "box", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
     acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all",
     kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrAlt: "", bundle: "" };
   // WiiM streaming amps (bars.js): a 2-channel alternative to a receiver for stereo and 2.1 music rooms.
@@ -705,6 +709,7 @@
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem("sf-family") || "null"); } catch (e) {}
     if (saved && typeof saved === "object") { const acc = Object.assign({}, state.acc, saved.acc || {}); Object.assign(state, saved); state.acc = acc; }
+    if (state.form !== "arch") state.form = "box"; // physical is the default; an old "all" setting is read as physical
     const q = new URLSearchParams(location.search);
     const cfg = (q.get("cfg") || "").split(".");
     if (cfg.length >= 2) {
@@ -722,7 +727,8 @@
     else if (tier && ["value", "mid", "premium", "reference"].indexOf(tier) >= 0) {
       state.tier = tier;
       const cur = SERIES.find(function (s) { return s.id === state.series; });
-      if (!cur || cur.tier !== tier) state.series = SERIES.find(function (s) { return s.tier === tier; }).id;
+      const inForm = function (s) { return s.tier === tier && (state.form === "arch") === !!s.arch; };
+      if (!cur || !inForm(cur)) state.series = (SERIES.find(inForm) || SERIES.find(function (s) { return s.tier === tier; })).id;
     }
     if (q.get("fronts") === "bookshelf" || q.get("fronts") === "tower") state.fronts = q.get("fronts");
   })();
@@ -822,7 +828,7 @@
     const cap = budgetCap();
     let pool = isBar()
       ? BARS.filter(function (s) { return state.tier === "all" || s.tier === state.tier; })
-      : SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "all" || (state.form === "arch") === !!s.arch); });
+      : SERIES.filter(function (s) { return (state.tier === "all" || s.tier === state.tier) && (state.form === "arch") === !!s.arch; });
     pool.forEach(function (s) { s.sys = systemTotal(s); });
     let fits = pool, over = [];
     if (cap) {
@@ -946,7 +952,7 @@
   }
 
   function configString() { const s = currentSeries(); if (s && s.bar) return s.cfg || "soundbar"; return state.around + "." + state.subs + (state.heights ? "." + state.heights : ""); }
-  function surroundType() { return state.around >= 5 ? state.surroundType : "series"; }
+  function surroundType() { return "series"; } // physical or architectural is chosen once, above the series list
   function channels() { return state.around + state.heights; }
   function avrNeedKey(n) { return [2, 5, 7, 9, 11, 13].find(function (c) { return n <= c; }) || 13; }
   // The receiver line for the current build: Sonos Amps for Sonos Architectural, otherwise the chosen level's receiver for the channel count.
@@ -1087,7 +1093,7 @@
     fc.querySelector("[data-v='tower']").textContent = s.frontLabels ? s.frontLabels[0] : (s.arch ? "In-wall" : "Towers");
     fc.querySelector("[data-v='bookshelf']").textContent = s.frontLabels ? s.frontLabels[1] : (s.arch ? "In-ceiling" : "Bookshelf");
     // surround type: only for box families with surrounds in the build; architectural families are already in the wall or ceiling
-    $("surroundTypeCtl").hidden = s.arch || state.around < 5;
+    $("surroundTypeCtl").hidden = true;
     const sc = $("surroundTypeChips");
     sc.querySelector("[data-v='series']").textContent = s.surround ? "Series surrounds" : "Bookshelf";
     sc.querySelector("[data-v='inwall']").textContent = s.inwall ? "In-wall" : "In-wall (Klipsch)";
@@ -1098,6 +1104,13 @@
     hc.disabled = !s.height;
     $("heightTypeChips").querySelector("[data-v='inceiling']").textContent = s.inceiling || s.arch ? "In-ceiling" : "In-ceiling (Klipsch)";
     if (!s.height && state.heightType === "series") { hc.setAttribute("aria-pressed", "false"); $("heightTypeChips").querySelector("[data-v='inceiling']").setAttribute("aria-pressed", "true"); }
+    const archMode = state.form === "arch";
+    hc.hidden = archMode; // architectural builds put the heights in the ceiling
+    const icChip = $("heightTypeChips").querySelector("[data-v='inceiling']");
+    icChip.hidden = !archMode && !s.inceiling && !s.arch; // physical builds offer only this family's own ceiling speaker, never a swap
+    if (archMode) state.heightType = "inceiling";
+    else if (icChip.hidden && state.heightType === "inceiling" && s.height) state.heightType = "series";
+    syncHeightType();
     if (state.bundle && !bundlesFor(s).some(function (b) { return b.id === state.bundle; })) state.bundle = "";
     const r = build();
     renderBundles(s, r);
