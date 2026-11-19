@@ -578,7 +578,7 @@
   // Nov 18, 2026: added as alternates the receivers with a Best Buy seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not Best Buy on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
   // Marantz CINEMA Series 2 (Best Buy SKUs 6687403 / 6687404 / 6687405, sold by Best Buy) replaces the first-generation Cinema 50, 60 and 70s. Their prices are the Marantz list prices ($1,500 / $2,000 / $3,000); confirm the Best Buy price in norrito. Cinema 30 and Cinema 40 stay first generation.
   // Nov 18, 2026: the Denon and Marantz AVRs from the Best Buy app screenshots are alternates marked pickOnly. They are picker options only. Auto, the floor, the budget pick, the power-note switch and the not-offered reason never see them, so Auto keeps the units it had.
-  // Denon and Marantz publish no all-channel rating, so the 5, 7 and 9-channel units pass the power check only on two-channel builds (as spare-channel options), never on a build of five channels or more.
+  // Denon and Marantz publish no all-channel rating. On a build of five channels or more their 8-ohm two-channel figure stands in, flagged est, so those units show in the picker only, with the caveat.
   // ohm4: informational only. Whether a unit can drive a load is decided by powerCheck, from the SF_POWER ratings in bars.js.
   const AVRS = {
     2: { need: "2 amplified channels",
@@ -824,10 +824,15 @@
   // Every amp at one level for this build, base first. Speakers that need current only get the amps rated for it.
   // A speaker that is 6 ohms nominal or dips below 6 ohms can never take an amp rated for 6 to 16 ohms only.
   function ohmBelow6(s) { const L = s.load; return !!L && ((!!L.ohm && L.ohm <= 6) || (!!L.min && L.min < 6)); }
-  // pickOnly units (the Nov 18 additions) are offered to the picker alone: forPicker is set only by pickerReceivers. Every other caller gets the units it always had.
+  // pickOnly units (the Nov 18 additions) and units on a stand-in all-channel figure (est) are offered to the picker alone: forPicker is set only by pickerReceivers.
+  // Every other caller gets the units it always had.
   function ampOptions(s, key, level, forPicker) {
     const a = AVRS[key] && AVRS[key][level]; if (!a) return [];
-    const all = [a].concat(a.alts || []).filter(function (x) { return (forPicker || !x.pickOnly) && !(x.cur === "easy" && ohmBelow6(s)) && powerOk(s, x, chanCount(s)); });
+    const all = [a].concat(a.alts || []).filter(function (x) {
+      if (!(forPicker || !x.pickOnly) || (x.cur === "easy" && ohmBelow6(s))) return false;
+      const p = powerCheck(s, x, chanCount(s));
+      return p.ok && (forPicker || !p.est);
+    });
     return demanding(s) ? all.filter(function (x) { return x.cur === "strong"; }) : all;
   }
   function floorLevel(s) {
@@ -1084,23 +1089,27 @@
   }
   // The rating one box gives for the channels it drives at this load, and what that figure is.
   // Two channels: the 4-ohm figure at 4 ohms or under; otherwise the 6-ohm figure, or the 8-ohm figure when no 6-ohm figure is published (the safer of the two at 6 ohms).
-  // Three or more channels: the maker's all-channel figure only. Where none is published the box has no rating, so the unit fails the check. Nothing is estimated.
-  function boxRating(row, k, R) {
+  // Three or more channels: the maker's all-channel figure. Where none is published the box has no rating, so the unit fails the check. The one exception is a Denon or
+  // Marantz receiver with no all-channel figure at all: its two-channel figure (8 ohms, or 4 ohms at 4 ohms or under) stands in, flagged est. Those units are for the picker only.
+  function boxRating(row, k, R, name) {
     if (!row) return null;
     if (k <= 2) {
       if (R <= 4.5) return row.w4 != null ? { v: row.w4, est: false, basis: "4-ohm stereo rating" } : null;
       if (row.w6 != null) return { v: row.w6, est: false, basis: "6-ohm stereo rating" };
       return row.w8 != null ? { v: row.w8, est: false, basis: "8-ohm stereo rating, the safer figure at 6 ohms" } : null;
     }
+    const standIn = row.m4 == null && row.m8 == null && /^(Denon|Marantz) /.test(String(name || ""));
     if (R <= 4.5) {
       if (row.m4 != null) return { v: row.m4, est: false, basis: "maker's all-channel rating at 4 ohms" };
+      if (standIn && row.w4 != null) return { v: row.w4, est: true, basis: "two-channel 4-ohm rating, standing in for an all-channel figure the maker does not publish" };
       return null;
     }
     if (row.m8 != null) return { v: row.m8, est: false, basis: "maker's all-channel rating at 8 ohms, the safer figure at 6 ohms" };
+    if (standIn && row.w8 != null) return { v: row.w8, est: true, basis: "two-channel 8-ohm rating, standing in for an all-channel figure the maker does not publish" };
     return null;
   }
   // The power check for one unit on one speaker set with n channels driven. Boxes take channels in order, up to their mMax (2 where the sheet gives none).
-  // ok: every channel is covered by a published rating and the weakest box clears the need. tight: it clears by under 25%. est: always false now.
+  // ok: every channel is covered by a published rating and the weakest box clears the need. tight: it clears by under 25%. est: a Denon or Marantz stand-in figure (see boxRating).
   // low: the speakers dip under 4 ohms, below the lowest rating on file, so the margin is not a published one.
   function powerCheck(s, x, n) {
     const L = s && s.load;
@@ -1115,7 +1124,7 @@
     if (left > 0) return { ok: false, reason: "channels", R: R, need: need };
     let cap = Infinity, est = false, basis = "", missing = null;
     used.forEach(function (u) {
-      const r = boxRating(u.row, u.k, R);
+      const r = boxRating(u.row, u.k, R, u.name);
       if (!r) { if (!missing) missing = u.name; return; }
       if (r.est) est = true;
       if (r.v < cap) { cap = r.v; basis = r.basis; }
@@ -1159,7 +1168,7 @@
     const R = loadR(s.load); const n = chanCount(s);
     if (!(R >= 1)) return "its " + R + " ohm minimum is under 1 ohm, below any rating on file, so no unit can be shown to power it";
     let best = null;
-    unitsFor(s).forEach(function (x) { const p = powerCheck(s, x, n); if (p.cap != null && isFinite(p.cap) && (best === null || p.cap > best)) best = p.cap; });
+    unitsFor(s).forEach(function (x) { const p = powerCheck(s, x, n); if (!p.est && p.cap != null && isFinite(p.cap) && (best === null || p.cap > best)) best = p.cap; });
     if (best === null) return "no unit in its line has a maker rating for a " + R + " ohm load";
     return "the strongest unit in its line gives " + Math.round(best) + " W per channel into " + R + " ohms, and these speakers need " + Math.round(powerNeed(s)) + " W";
   }
