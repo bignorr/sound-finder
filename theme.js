@@ -5,7 +5,7 @@
   function apply(t) {
     document.documentElement.setAttribute("data-theme", t);
     var m = document.querySelector('meta[name="theme-color"]:not([media])');
-    if (m) m.setAttribute("content", t === "dark" ? "#15171c" : "#f5f6f8");
+    if (m) m.setAttribute("content", t === "dark" ? "#1c1509" : "#fbf5e6");
   }
   apply(get());
   function install() {

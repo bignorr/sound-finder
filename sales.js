@@ -1,18 +1,18 @@
 // Sound Finder sales tools, shared by every page: your settings (contact, financing promos, install bands, demo clips),
-// monthly-payment math, install ranges, the customer-facing view, Best Buy SKU links, and the floor cards (openers, objections).
+// monthly-payment math, install ranges, the customer-facing view, norrito SKU links, and the floor cards (openers, objections).
 // Everything is saved on this phone only (localStorage), nothing leaves the device.
 (function () {
   const KEY = "sf-settings";
   const DEFAULTS = {
     phone: "", email: "",
-    // Financing promos on the Best Buy card. Starting points only: edit them to match this week's offer.
+    // Financing promos on the norrito card. Starting points only: edit them to match this week's offer.
     promos: [
       { months: 12, min: 299, on: true },
       { months: 18, min: 499, on: false },
       { months: 24, min: 799, on: true },
       { months: 36, min: 1999, on: false },
     ],
-    // Install labor bands, equipment excluded. Starting points: replace with your store's Budget Builder numbers.
+    // Install labor bands, equipment excluded. Starting points: replace with your store's norrito numbers.
     install: {
       bar: { low: 100, high: 250 },
       setup: { low: 150, high: 350 },
@@ -77,7 +77,7 @@
   function monthlyHtml(total, cls) {
     const p = plan(total);
     if (!p) return "";
-    return "<div class='fin " + (cls || "") + "'><b>" + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the Best Buy card<br><em>equal payments on " + money(total) + " · confirm this week's terms" + (total > 20000 ? " · a purchase this size depends on the customer's credit line" : "") + "</em></span></div>";
+    return "<div class='fin " + (cls || "") + "'><b>" + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the norrito card<br><em>equal payments on " + money(total) + " · confirm this week's terms" + (total > 20000 ? " · a purchase this size depends on the customer's credit line" : "") + "</em></span></div>";
   }
 
   // ---------- install ----------
@@ -182,8 +182,8 @@
       "<div class='row between'><h3>Settings</h3><button class='btn link' type='button' data-close>Close</button></div>" +
       "<p class='muted small'>Saved on this phone only. Nothing here goes to a server.</p>" +
       "<div class='sgroup'><p class='eyebrow'>You</p><div class='grid2'><label>Your mobile <input type='tel' inputmode='tel' data-f='phone' value='" + esc(s.phone) + "' placeholder='For Text me this lead'></label><label>Your email <input type='email' inputmode='email' data-f='email' value='" + esc(s.email) + "' placeholder='For Email me this lead'></label></div></div>" +
-      "<div class='sgroup'><p class='eyebrow'>Financing on the Best Buy card</p><p class='muted small'>Equal monthly payments. The app shows the longest promo a total qualifies for. Edit to match this week's offer.</p>" + promoRows + "</div>" +
-      "<div class='sgroup'><p class='eyebrow'>Install ranges (labor only)</p><p class='muted small'>Starting points. Replace with the low and high Budget Builder gives you for each kind of job.</p>" + installRows + "</div>" +
+      "<div class='sgroup'><p class='eyebrow'>Financing on the norrito card</p><p class='muted small'>Equal monthly payments. The app shows the longest promo a total qualifies for. Edit to match this week's offer.</p>" + promoRows + "</div>" +
+      "<div class='sgroup'><p class='eyebrow'>Install ranges (labor only)</p><p class='muted small'>Starting points. Replace with the low and high norrito gives you for each kind of job.</p>" + installRows + "</div>" +
       "<div class='sgroup'><p class='eyebrow'>Your demo clips</p><p class='muted small'>The demo script names these. Leave blank and it describes the kind of scene to use.</p>" + clipRows + "</div>" +
       "<div class='row'><button class='btn primary' type='button' data-save>Save</button><button class='btn link' type='button' data-reset>Reset to defaults</button></div>" +
       "</form>";

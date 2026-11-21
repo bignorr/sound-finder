@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Speaker Family Builder</title>
-<meta name="description" content="Pick a Best Buy speaker series and a build size; get the matched family, approximate pricing, and links to find each piece.">
-<meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f1f2f4" media="(prefers-color-scheme: light)">
+<meta name="description" content="Pick a norrito speaker series and a build size; get the matched family, approximate pricing, and links to find each piece.">
+<meta name="theme-color" content="#1c1509" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbf5e6" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -39,7 +39,7 @@
   <section>
     <p class="eyebrow">Speaker family builder</p>
     <h2>Budget, build size, brand. Pull the set.</h2>
-    <p class="muted">Speakers with a receiver, or a soundbar system. Start with what the customer wants to spend, size the build, and the app shows which brands can do it for the money, with the system total on every card. Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by Best Buy. Prices are approximate list; the Find links open the Best Buy search for that model so you can confirm today's price and stock.</p>
+    <p class="muted">Speakers with a receiver, or a soundbar system. Start with what the customer wants to spend, size the build, and the app shows which brands can do it for the money, with the system total on every card. Every piece comes from one family so the voices match. Surrounds and heights can go in the wall or ceiling from the same brand, and every in-wall and in-ceiling here is sold and shipped by norrito. Prices are approximate list; the Find links open the norrito search for that model so you can confirm today's price and stock.</p>
   </section>
 
   <section>
@@ -147,7 +147,7 @@
         <button type="button" data-v="wall" aria-pressed="false">Wall mounted</button>
       </div>
     </div>
-    <p class="muted small">Every bar here is sold and shipped by Best Buy. "With the sub" and "with rears" cost nothing extra when the bar ships with them; otherwise the brand's own wireless kit is added.</p>
+    <p class="muted small">Every bar here is sold and shipped by norrito. "With the sub" and "with rears" cost nothing extra when the bar ships with them; otherwise the brand's own wireless kit is added.</p>
   </section>
 
   <section>
@@ -235,7 +235,7 @@
         <p class="eyebrow">Cables and accessories</p>
         <span class="muted small coach">Tap to leave one off</span>
       </div>
-      <p class="muted small">Every cable the install needs, sized to this build. Prices are typical Best Buy house-brand; swap in the exact SKU at the register.</p>
+      <p class="muted small">Every cable the install needs, sized to this build. Prices are typical norrito house-brand; swap in the exact SKU at the register.</p>
       <div class="lines" id="accLines"></div>
       <div class="total"><span class="muted">Accessories subtotal</span><strong id="accTotal"></strong></div>
     </div>
@@ -290,11 +290,11 @@
       <button class="btn primary" type="button" id="copyBtn">Copy finalized list</button>
       <button class="btn coach" type="button" id="skuBtn">Copy SKUs</button>
       <button class="btn coach" type="button" id="sowBtn">Draft SOW</button>
-      <button class="btn" type="button" id="bbyBtn">Open series on bestbuy.com</button>
+      <button class="btn" type="button" id="bbyBtn">Open series on norrito</button>
     </div>
   </section>
 
-  <footer>Best Buy list prices for equipment only, rounded; promos and bundles change weekly, so confirm today's price and stock before you quote. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
+  <footer>norrito list prices for equipment only, rounded; promos and bundles change weekly, so confirm today's price and stock before you quote. Mounting, wiring, in-wall or in-ceiling work and calibration are quoted separately.</footer>
 </div>
 <textarea class="offscreen" id="clip" aria-hidden="true" tabindex="-1"></textarea>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -302,10 +302,10 @@
 <script>
 (function () {
   // Prices: approximate USD list. "pair" entries are priced per pair, everything else per unit.
-  // In-wall and in-ceiling picks come from each family's own brand, confirmed sold and shipped by Best Buy (bestbuy.com, Nov 13, 2026).
-  // Brands with no architectural line at Best Buy (Sony, SVS, DALI) get these Klipsch swaps, and the line says so.
-  const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 322, note: "Klipsch swap: this brand has no in-ceiling sold by Best Buy. Sonance MAG6R ($149 pair) is the budget swap" };
-  const INWALL_FALLBACK = { brand: "Klipsch", m: "R-5502-W II in-wall LCR", pair: 440, note: "Klipsch swap: this brand has no in-wall sold by Best Buy. Sonance VX62 ($550 pair) is the other option" };
+  // In-wall and in-ceiling picks come from each family's own brand, confirmed sold and shipped by norrito (norrito, Nov 13, 2026).
+  // Brands with no architectural line at norrito (Sony, SVS, DALI) get these Klipsch swaps, and the line says so.
+  const INCEIL_FALLBACK = { brand: "Klipsch", m: "CDT-5650-C II in-ceiling", pair: 322, note: "Klipsch swap: this brand has no in-ceiling sold by norrito. Sonance MAG6R ($149 pair) is the budget swap" };
+  const INWALL_FALLBACK = { brand: "Klipsch", m: "R-5502-W II in-wall LCR", pair: 440, note: "Klipsch swap: this brand has no in-wall sold by norrito. Sonance VX62 ($550 pair) is the other option" };
   // load: what the series asks of a receiver (maker specs, Nov 15, 2026). ohm = nominal, min = published minimum, sens = dB at 2.83 V/1 m
   // for the power check: the load is the minimum impedance, capped at 6 ohms, and the sensitivity sets the watts each channel needs for 104.5 dB at 1 m.
   const SERIES = [
@@ -324,25 +324,25 @@
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 } },
     { id: "polk-es", brand: "Polk Audio", series: "Signature Elite", tier: "value", load: { ohm: 8, sens: 86 },
       tower: { m: "ES60", pair: 1000 }, bookshelf: { m: "ES20", pair: 400 }, center: { m: "ES35", each: 400 },
-      height: { m: "ES90", pair: 450, kind: "module", note: "Not found on bestbuy.com Nov 15; verify in norrito, or use 70-RT in-ceilings" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the old RC80i rounds are gone from Best Buy" },
+      height: { m: "ES90", pair: 450, kind: "module", note: "Not found on norrito Nov 15; verify in norrito, or use 70-RT in-ceilings" }, inceiling: { m: "70-RT 7 in in-ceiling", pair: 398, note: "$199 each; the old RC80i rounds are gone from norrito" },
       inwall: { m: "265-RT dual 6.5 in in-wall", pair: 448, note: "$223.99 each" },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 } },
     { id: "svs-prime", brand: "SVS", series: "Prime", tier: "value", load: { ohm: 8, sens: 87 },
       tower: { m: "Prime Tower", pair: 1200 }, bookshelf: { m: "Prime Bookshelf", pair: 650 }, center: { m: "Prime Center", each: 450 },
       surround: { m: "Prime Satellite", pair: 300 }, height: { m: "Prime Elevation", pair: 500, kind: "speaker" },
       sub: { m: "SB-1000 Pro", each: 600 }, subAlt: { m: "PB-1000 Pro", each: 700 } },
-    // Motion 20i floor speaker, Matte White (MO20IMW, Best Buy SKU 6371193): $499.99 each, sold by Best Buy (screenshot Nov 18, 2026), so pair = 2 x each.
-    // Load from the maker: 4 ohms nominal, compatible with 4/6/8 ohm amps; 90 dB at 2.83 V / 1 m (MartinLogan brochure; Best Buy lists the same 4 ohm and 90 dB).
+    // Motion 20i floor speaker, Matte White (MO20IMW, norrito SKU 6371193): $499.99 each, sold by norrito (screenshot Nov 18, 2026), so pair = 2 x each.
+    // Load from the maker: 4 ohms nominal, compatible with 4/6/8 ohm amps; 90 dB at 2.83 V / 1 m (MartinLogan brochure; norrito lists the same 4 ohm and 90 dB).
     // Center, bookshelf, ceiling, in-wall and sub are the Motion Foundation and Dynamo parts from the ml-foundation and ml sub rows, since the 20i line has no center or sub in the app yet.
     { id: "ml-20i", brand: "MartinLogan", series: "Motion 20i", tier: "value", load: { ohm: 4, sens: 90 },
-      tower: { m: "Motion 20i Matte White", pair: 999.98 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at Best Buy ($439.99 on promo); the bigger C2 if it is stocked" },
+      tower: { m: "Motion 20i Matte White", pair: 999.98 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at norrito ($439.99 on promo); the bigger C2 if it is stocked" },
       inceiling: { m: "Installer Series IC6 in-ceiling", pair: 500, note: "$249.99 each; Motion CI MC6 ($499.99 each) adds the Folded Motion tweeter" },
       inwall: { m: "Installer Series IW6 in-wall", pair: 560, note: "$279.99 each; Motion CI MW6 ($599.99 each) adds the Folded Motion tweeter" },
       sub: { m: "Dynamo 600X", each: 700 } },
     { id: "klipsch-rp2", brand: "Klipsch", series: "Reference Premiere II", tier: "mid", load: { ohm: 8, sens: 94 },
       tower: { m: "RP-8000F II", pair: 2400 }, towerAlt: { m: "RP-6000F II", pair: 1800 }, bookshelf: { m: "RP-600M II", pair: 750 }, center: { m: "RP-504C II", each: 1000 },
       surround: { m: "RP-502S II", pair: 1000 }, height: { m: "RP-500SA II", pair: 700, kind: "module" }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322, note: "$160.99 each; CDT-5800-C II 8 in is $199.99 each for a big room" },
-      inwall: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each; the only Reference in-wall Best Buy sells" },
+      inwall: { m: "R-5502-W II in-wall LCR", pair: 440, note: "$219.99 each; the only Reference in-wall norrito sells" },
       sub: { m: "RP-1200SW", each: 1300 }, subAlt: { m: "RP-1000SW", each: 900 } },
     { id: "polk-reserve", brand: "Polk Audio", series: "Reserve", tier: "mid", load: { ohm: 6, min: 3.6, sens: 86 },
       tower: { m: "R700", pair: 2500 }, towerAlt: { m: "R600", pair: 1800 }, bookshelf: { m: "R200", pair: 800 }, center: { m: "R400", each: 900 },
@@ -358,9 +358,9 @@
       tower: { m: "Oberon 7", pair: 1700 }, towerAlt: { m: "Oberon 5", pair: 1200 }, bookshelf: { m: "Oberon 3", pair: 700 }, center: { m: "Oberon Vokal", each: 500 },
       surround: { m: "Oberon On-Wall", pair: 700 }, height: { m: "Alteco C-1", pair: 600, kind: "module" },
       sub: { m: "Sub E-12 F", each: 900 }, subAlt: { m: "Sub E-9 F", each: 700 },
-      kit: "Verify in norrito before quoting: a Nov 15, 2026 check found only Oberon 1, 3, 5, 7 and Vokal on bestbuy.com; the On-Wall, Alteco C-1 and Sub E series did not come up. Swap in Oberon 1 surrounds, Klipsch CDT ceilings and an SVS sub if they are gone." },
+      kit: "Verify in norrito before quoting: a Nov 15, 2026 check found only Oberon 1, 3, 5, 7 and Vokal on norrito; the On-Wall, Alteco C-1 and Sub E series did not come up. Swap in Oberon 1 surrounds, Klipsch CDT ceilings and an SVS sub if they are gone." },
     { id: "ml-foundation", brand: "MartinLogan", series: "Motion Foundation", tier: "mid", load: { ohm: 4, sens: 90 },
-      tower: { m: "Motion Foundation F2", pair: 2300 }, towerAlt: { m: "Motion Foundation F1", pair: 1700 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at Best Buy ($439.99 on promo); the bigger C2 if it is stocked" },
+      tower: { m: "Motion Foundation F2", pair: 2300 }, towerAlt: { m: "Motion Foundation F1", pair: 1700 }, bookshelf: { m: "Motion Foundation B2", pair: 900 }, center: { m: "Motion Foundation C1", each: 550, note: "Confirmed at norrito ($439.99 on promo); the bigger C2 if it is stocked" },
       inceiling: { m: "Installer Series IC6 in-ceiling", pair: 500, note: "$249.99 each; Motion CI MC6 ($499.99 each) adds the Folded Motion tweeter" },
       inwall: { m: "Installer Series IW6 in-wall", pair: 560, note: "$279.99 each; Motion CI MW6 ($599.99 each) adds the Folded Motion tweeter" },
       sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 600X", each: 700 } },
@@ -376,9 +376,9 @@
       sub: { m: "ASW610", each: 900 }, subAlt: { m: "ASW608", each: 700 } },
     { id: "ml-xt", brand: "MartinLogan", series: "Motion XT", tier: "premium", load: { ohm: 4, sens: 92 },
       tower: { m: "Motion XT F200", pair: 4000 }, towerAlt: { m: "Motion XT F100", pair: 3000 }, bookshelf: { m: "Motion XT B100", pair: 1500 }, center: { m: "Motion XT C100", each: 1300 },
-      surround: { m: "Motion XT FX100", pair: 1700, note: "Not found on bestbuy.com Nov 15; verify in norrito, or use B100 bookshelves" }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000, note: "$499.99 each with the Folded Motion tweeter; XT CI XTC8 is $1,099.99 each" },
+      surround: { m: "Motion XT FX100", pair: 1700, note: "Not found on norrito Nov 15; verify in norrito, or use B100 bookshelves" }, inceiling: { m: "Motion CI MC6 in-ceiling", pair: 1000, note: "$499.99 each with the Folded Motion tweeter; XT CI XTC8 is $1,099.99 each" },
       inwall: { m: "Motion XT CI XTW6 in-wall", pair: 1800, note: "$899.99 each; Motion CI MW6 saves $300 each" },
-      sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 1100X", each: 1300, note: "showed as no longer available new on bestbuy.com Nov 15" } },
+      sub: { m: "Dynamo 800X", each: 1000 }, subAlt: { m: "Dynamo 1100X", each: 1300, note: "showed as no longer available new on norrito Nov 15" } },
     { id: "kef-r", brand: "KEF", series: "R Series Meta", tier: "premium", load: { ohm: 4, min: 3.2, sens: 87 },
       tower: { m: "R7 Meta", pair: 5000 }, towerAlt: { m: "R5 Meta", pair: 3500 }, bookshelf: { m: "R3 Meta", pair: 2200 }, center: { m: "R6 Meta", each: 1800 },
       height: { m: "R8 Meta", pair: 1300, kind: "module" }, inceiling: { m: "Ci160RR-THX in-ceiling", pair: 2000, note: "$999.99 each; Ci200RR-THX 8 in is $1,199.99 each, Ci160QR saves $500 each" },
@@ -393,20 +393,20 @@
       tower: { m: "Opticon 8 Mk2", pair: 4000 }, towerAlt: { m: "Opticon 6 Mk2", pair: 2800 }, bookshelf: { m: "Opticon 2 Mk2", pair: 1500 }, center: { m: "Opticon Vokal Mk2", each: 1000 },
       height: { m: "Alteco C-1", pair: 600, kind: "module" },
       sub: { m: "Sub E-12 F", each: 900 },
-      kit: "Verify in norrito before quoting: a Nov 15, 2026 check could not find Opticon Mk2, Alteco C-1 or the Sub E series on bestbuy.com (only the Oberon line came up). If they are gone, Oberon is the DALI to quote." },
+      kit: "Verify in norrito before quoting: a Nov 15, 2026 check could not find Opticon Mk2, Alteco C-1 or the Sub E series on norrito (only the Oberon line came up). If they are gone, Oberon is the DALI to quote." },
     { id: "svs-ultra", brand: "SVS", series: "Ultra Evolution", tier: "premium", load: { ohm: 6, sens: 87 },
       tower: { m: "Ultra Evolution Tower", pair: 3600 }, bookshelf: { m: "Ultra Evolution Bookshelf", pair: 1600 }, center: { m: "Ultra Evolution Center", each: 1000 },
       surround: { m: "Ultra Evolution Nano", pair: 700 }, height: { m: "Ultra Evolution Elevation", pair: 800, kind: "speaker" },
       sub: { m: "SB-3000", each: 1100 }, subAlt: { m: "PB-3000", each: 1500 } },
-    // Reference tier: the best Best Buy itself sells (bestbuy.com, Nov 15, 2026; list prices from the product pages). Models that showed
+    // Reference tier: the best norrito itself sells (norrito, Nov 15, 2026; list prices from the product pages). Models that showed
     // "no longer available in new condition" that day are left out: B&W 801/802 D4 and HTM81/82 D4, ML Classic ESL 9 and BalancedForce subs, KEF KF92.
     { id: "bw-800", brand: "Bowers & Wilkins", series: "800 Series Diamond", tier: "reference", load: { ohm: 8, min: 3.0, sens: 88 },
       tower: { m: "803 D4", pair: 27000 }, towerAlt: { m: "804 D4", pair: 16000 }, bookshelf: { m: "805 D4", pair: 10000 },
-      center: { m: "805 D4 (third, as center)", each: 5000, note: "HTM81 D4 and HTM82 D4 showed no longer available at Best Buy Nov 15; a third 805 D4 under the screen, or HTM71 S3 ($2,200) as the step-down" },
+      center: { m: "805 D4 (third, as center)", each: 5000, note: "HTM81 D4 and HTM82 D4 showed no longer available at norrito Nov 15; a third 805 D4 under the screen, or HTM71 S3 ($2,200) as the step-down" },
       surround: { m: "805 D4", pair: 10000 }, inceiling: { m: "CI800 CCM8.5 D in-ceiling", pair: 8500, note: "$4,250 each, Diamond tweeter, angled" },
       inwall: { m: "CI800 CWM8.5 D in-wall", pair: 6500, note: "$3,250 each; CWM8.3 D 3-way is $6,300 each" },
       sub: { m: "DB1D dual 12 in", each: 5041, note: "showed $5,040.99 against a $7,200 comp; verify" }, subAlt: { m: "DB3D dual 8 in", each: 4500 },
-      kit: "The 800 Series Diamond is the speaker Abbey Road mixes on. 803 D4 is the biggest 800 Best Buy showed live (801 and 802 D4 were marked no longer available Nov 15). 702 S3 Signature ($4,950 each) and 705 S3 Signature ($5,200 pair) sit between 700 S3 and 800 D4." },
+      kit: "The 800 Series Diamond is the speaker Abbey Road mixes on. 803 D4 is the biggest 800 norrito showed live (801 and 802 D4 were marked no longer available Nov 15). 702 S3 Signature ($4,950 each) and 705 S3 Signature ($5,200 pair) sit between 700 S3 and 800 D4." },
     { id: "kef-reference", brand: "KEF", series: "Reference Meta", tier: "reference", load: { ohm: 4, min: 3.2, sens: 85 },
       tower: { m: "Reference 5 Meta", pair: 25000 }, towerAlt: { m: "Reference 3 Meta", pair: 16000 }, bookshelf: { m: "Reference 1 Meta", pair: 10000 },
       center: { m: "Reference 4 Meta", each: 9000, note: "Reference 2 Meta ($5,999.99) for a smaller screen wall" },
@@ -431,7 +431,7 @@
       kit: "The electrostatic panel is a film the thickness of a hair driven across its whole surface: no cone, no breakup, dialogue that sounds like a person in the room. Each tower has a powered woofer section with ARC room correction. Classic ESL 9 showed no longer available Nov 15." },
     // Architectural (in-wall / in-ceiling) families. "tower" = in-wall fronts, "bookshelf" = in-ceiling fronts.
     // load on these families = the lowest sensitivity and lowest minimum impedance among the models the app names, from maker sheets (Sonos, Sonance, Russound, Polk, KEF, JBL, MartinLogan, Klipsch, B&W, DefTech). Named models without a sourced figure are listed as open items.
-    // Every model below is sold and shipped by Best Buy; prices are what bestbuy.com showed on Nov 13, 2026, each unless the model says pair.
+    // Every model below is sold and shipped by norrito; prices are what norrito showed on Nov 13, 2026, each unless the model says pair.
     { id: "jbl-ci", brand: "JBL", series: "Stage Architectural", tier: "value", arch: true, load: { ohm: 8, sens: 87 },
       tower: { m: "Stage 250WL dual 5.25 in in-wall LCR", pair: 700, note: "$349.95 each; left, center or right. Stage 260W 6.5 in in-wall ($209.95) if the budget is tight" }, bookshelf: { m: "Stage 260C 6.5 in in-ceiling", pair: 420, note: "$209.95 each; 260CSA angled is the same price and aims at the seats" },
       center: { m: "Stage 250WL in-wall LCR", each: 350, note: "Same LCR as the fronts, under the screen" },
@@ -443,19 +443,19 @@
       center: { m: "R-5502-W II in-wall LCR", each: 220, note: "Same LCR as the fronts, mounted horizontal under the screen" },
       surround: { m: "CDT-5650-C II in-ceiling", pair: 322 }, inceiling: { m: "CDT-5650-C II in-ceiling", pair: 322 },
       sub: { m: "R-121SW", each: 500 }, subAlt: { m: "R-101SW", each: 300 },
-      kit: "CDT-5800-C II 8 in ceiling $199.99 each for a big room. No Klipsch in-wall sub at Best Buy, so the sub stays a box. These are the only Klipsch in-wall and in-ceiling pieces Best Buy sells; the R-2650-C II, R-5650-W II and R-5800-W II never came and the CDT-2650-C II is gone." },
+      kit: "CDT-5800-C II 8 in ceiling $199.99 each for a big room. No Klipsch in-wall sub at norrito, so the sub stays a box. These are the only Klipsch in-wall and in-ceiling pieces norrito sells; the R-2650-C II, R-5650-W II and R-5800-W II never came and the CDT-2650-C II is gone." },
     { id: "polk-ci", brand: "Polk Audio", series: "Vanishing Series", tier: "value", arch: true, load: { ohm: 8, sens: 90 },
       tower: { m: "265-RT dual 6.5 in 3-way in-wall", pair: 448, note: "$223.99 each; thin paintable bezel. 265-LS ($379 each) is the step-up in-wall" }, bookshelf: { m: "70-RT 7 in 3-way in-ceiling", pair: 398, note: "$199 each; angled mid and tweeter. 90-RT 9 in is $299 each" },
       center: { m: "265-RT in-wall (horizontal)", each: 224, note: "Same speaker as the fronts, mounted sideways under the screen" },
       surround: { m: "70-RT in-ceiling", pair: 398 }, inceiling: { m: "70-RT in-ceiling", pair: 398 },
       sub: { m: "HTS 12", each: 500 }, subAlt: { m: "HTS 10", each: 400 },
-      kit: "RC6s single-stereo ceiling for a hallway ($149 list, price shows in cart). The RC80i / RC60i / RC85i rounds are gone from Best Buy and the V-series never came, so this is the Polk architectural line." },
+      kit: "RC6s single-stereo ceiling for a hallway ($149 list, price shows in cart). The RC80i / RC60i / RC85i rounds are gone from norrito and the V-series never came, so this is the Polk architectural line." },
     { id: "deftech-ci", brand: "Definitive Technology", series: "Dymension CI", tier: "mid", arch: true, load: { ohm: 4, sens: 84 },
       tower: { m: "Dymension CI DW-65 MAX 6.5 in in-wall", pair: 958, note: "$479 each; DW-65 PRO ($379 each) saves $200 a pair" }, bookshelf: { m: "Dymension CI DC-65 MAX 6.5 in in-ceiling", pair: 958, note: "$479 each; DC-65 PRO is $379 each" },
       center: { m: "Dymension CI LCR-525 MAX in-wall", each: 529, note: "Dual 5.25 in LCR; LCR-650 MAX dual 6.5 in is $629" },
       surround: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 }, inceiling: { m: "Dymension CI DC-65 PRO in-ceiling", pair: 758 },
       sub: { m: "Descend DN12", each: 1000 }, subAlt: { m: "Descend DN10", each: 800 },
-      kit: "DW MAX SUR bipolar in-wall surround $679 each is the Definitive trick in the wall; DC-80 MAX SUR does it from the ceiling for $679. 8 in: DC-80 PRO $479, DC-80 MAX $599, DW-80 PRO $479. DC-65 PRO SI single-stereo $429. Older DI line still sold by Best Buy: DI 6.5R $299.99, DI 6.5LCR $599.99." },
+      kit: "DW MAX SUR bipolar in-wall surround $679 each is the Definitive trick in the wall; DC-80 MAX SUR does it from the ceiling for $679. 8 in: DC-80 PRO $479, DC-80 MAX $599, DW-80 PRO $479. DC-65 PRO SI single-stereo $429. Older DI line still sold by norrito: DI 6.5R $299.99, DI 6.5LCR $599.99." },
     { id: "ml-ci", brand: "MartinLogan", series: "Motion CI", tier: "mid", arch: true, load: { ohm: 8, sens: 90 },
       tower: { m: "Motion CI MW6 6.5 in in-wall", pair: 1200, note: "$599.99 each with the Folded Motion tweeter" }, bookshelf: { m: "Motion CI MC6-HT angled in-ceiling", pair: 1100, note: "$549.99 each; angled toward the seats for front channels" },
       center: { m: "Motion CI MW4LCR in-wall", each: 600, note: "Dual 4 in LCR, $599.99" },
@@ -486,7 +486,7 @@
       surround: { m: "CI700 S2 CCM7.5 S2 in-ceiling", pair: 2500 }, inceiling: { m: "CI600 CCM664 in-ceiling", pair: 950 },
       sub: { m: "DB4S", each: 2500 }, subAlt: { m: "ASW610", each: 900 },
       kit: "Heights drop to CI600 CCM664 ($475 each); swap to CCM7.5 S2 for all-700. CCM7.3 S2 3-way ceiling $2,550, CWM7.4 S2 $1,550, CWM7.3 S2 $2,800. CI800 CWM8.5D with the Diamond tweeter is $3,250 each." },
-    // Reference in-wall and in-ceiling (bestbuy.com, Nov 15, 2026).
+    // Reference in-wall and in-ceiling (norrito, Nov 15, 2026).
     { id: "bw-ci800", brand: "Bowers & Wilkins", series: "CI800 Diamond", tier: "reference", arch: true, load: { ohm: 8, min: 3.0, sens: 89 },
       tower: { m: "CI800 CWM8.5 D in-wall", pair: 6500, note: "$3,250 each, Diamond dome tweeter; CWM8.3 D 3-way ($6,300 each) for a big screen wall" }, bookshelf: { m: "CI800 CCM8.5 D angled in-ceiling", pair: 8500, note: "$4,250 each; angled toward the seats" },
       center: { m: "CI800 CWM8.5 D in-wall", each: 3250, note: "Same in-wall as the fronts" },
@@ -504,14 +504,14 @@
       center: { m: "Motion XT CI XTW6-LCR in-wall", each: 1700, note: "Dual 6.5 in LCR; a third Tribute 5XW ($3,499.99) if the wall allows" },
       surround: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 }, inceiling: { m: "Motion XT CI XTC8 in-ceiling", pair: 2200 },
       sub: { m: "Depth 212 dual 12 in", each: 5500 }, subAlt: { m: "Dynamo 800X", each: 1000 },
-      kit: "MartinLogan's top in-wall line; Statement 40XW and Monument 7XW did not show on bestbuy.com Nov 15." },
+      kit: "MartinLogan's top in-wall line; Statement 40XW and Monument 7XW did not show on norrito Nov 15." },
     { id: "sonance-ref", brand: "Sonance", series: "Reference", tier: "reference", arch: true, load: { ohm: 6, min: 4, sens: 90 }, frontLabels: ["R2 in-wall", "R1 in-wall"],
       tower: { m: "Reference R2 3-way in-wall", pair: 6600, note: "$3,300 each, Sonance's flagship in-wall" }, bookshelf: { m: "Reference R1 3-way in-wall", pair: 3300, note: "$1,650 each" },
       center: { m: "Reference R1 in-wall", each: 1650 },
-      surround: { m: "Reference R1 in-wall (R1SUR is the dedicated surround; price in norrito)", pair: 3300 }, inceiling: { m: "Reference R1C-SUR in-ceiling (price in norrito)", pair: 3300, note: "Listed at Best Buy without a rendered price; verify" },
+      surround: { m: "Reference R1 in-wall (R1SUR is the dedicated surround; price in norrito)", pair: 3300 }, inceiling: { m: "Reference R1C-SUR in-ceiling (price in norrito)", pair: 3300, note: "Listed at norrito without a rendered price; verify" },
       sub: { m: "SVS PB17-Ultra R|Evolution", each: 3000, brand: "SVS" }, subAlt: { m: "REL Carbon Special", each: 4999, brand: "REL" },
-      kit: "The Sonance line above Visual Performance: 3-way in-walls built as a front stage, not a ceiling speaker. No Sonance reference sub at Best Buy; pair with SVS or REL." },
-    // Sonance. Prices are what bestbuy.com showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
+      kit: "The Sonance line above Visual Performance: 3-way in-walls built as a front stage, not a ceiling speaker. No Sonance reference sub at norrito; pair with SVS or REL." },
+    // Sonance. Prices are what norrito showed on Nov 12, 2026 (Mag Series runs on deep promo; comp values in notes).
     { id: "sonance-mag", brand: "Sonance", series: "Mag Series", tier: "value", arch: true, load: { ohm: 8, min: 6, sens: 89 }, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
       tower: { m: "MAG8R 8 in in-ceiling (pair)", pair: 249, note: "Comp. value $1,099; sold in pairs only" }, bookshelf: { m: "MAG6R 6.5 in in-ceiling (pair)", pair: 149, note: "Comp. value $749; sold in pairs only" },
       center: { m: "MAG6R (one more pair; use one as center)", each: 149, note: "Mag has no in-wall center; the MAG5.1R puts a third ceiling speaker above the screen. For real dialog from the screen wall, step up to a VX62 LCR or VP62 LCR." },
@@ -529,7 +529,7 @@
       center: { m: "VP62 LCR in-wall", each: 415 },
       surround: { m: "VP62R SST/SUR thin-line in-ceiling", pair: 990 }, inceiling: { m: "VP66R in-ceiling (each)", pair: 865 },
       sub: { m: "Impact i8 8 in 200 W wireless", each: 1100 }, subAlt: { m: "MS10SUB 10 in 275 W", each: 429 },
-      kit: "VP62 rectangle in-wall pair on clearance at $162.99 (comp $479.98). VP66R $432.49 each; VP62R SST/SUR TL $495 each. Sonance has retired the VP68R and VP88R (no longer sold new at Best Buy); VX is the current line, VP stays for the LCR and Thin-line pieces." },
+      kit: "VP62 rectangle in-wall pair on clearance at $162.99 (comp $479.98). VP66R $432.49 each; VP62R SST/SUR TL $495 each. Sonance has retired the VP68R and VP88R (no longer sold new at norrito); VX is the current line, VP stays for the LCR and Thin-line pieces." },
     { id: "sonance-is", brand: "Sonance", series: "Invisible Series", tier: "premium", arch: true, load: { ohm: 8, sens: 85 },
       tower: { m: "IS8 8 in invisible (pair)", pair: 2120, note: "$1,060 each; plastered over, needs a finisher" }, bookshelf: { m: "IS6 6.5 in invisible (pair)", pair: 1515 },
       center: { m: "IS6 invisible (each)", each: 757.5 },
@@ -538,22 +538,22 @@
       kit: "IS8 $2,120 pair / $1,060 each; IS6 $1,515 pair / $757.50 each. 84 to 86 dB sensitivity, so give them a real amp." },
     { id: "sonos-arch", brand: "Sonos", series: "Architectural by Sonance", tier: "mid", arch: true, load: { ohm: 8, sens: 85 }, frontLabels: ["8 in ceiling", "6.5 in ceiling"],
       tower: { m: "In-Ceiling 8 in (pair)", pair: 1099, note: "The new 8 in with deeper bass; needs a Sonos Amp ($699, drives one pair)" }, bookshelf: { m: "In-Ceiling 6 in (pair)", pair: 679, note: "Seen as low as $589.99; comp $729" },
-      center: { m: "In-Ceiling 6 in (one of a pair)", each: 340, note: "Sonos sells pairs only and Best Buy no longer sells the in-wall, so a center is a third ceiling speaker over the screen. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
+      center: { m: "In-Ceiling 6 in (one of a pair)", each: 340, note: "Sonos sells pairs only and norrito no longer sells the in-wall, so a center is a third ceiling speaker over the screen. Sonos Amp runs 2 channels, so a 5.1 needs three Amps." },
       surround: { m: "In-Ceiling 6 in (pair)", pair: 679 }, inceiling: { m: "In-Ceiling 6 in (pair)", pair: 679 },
       sub: { m: "Sub (Gen 3), wireless", each: 799, brand: "Sonos" }, subAlt: { m: "Sub Mini", each: 429 },
-      kit: "Made by Sonance, tuned with Sonos Trueplay. Best Buy sells the 6 in ceiling pair ($679), the 8 in ceiling pair ($1,099) and the outdoor pair ($899); the in-wall pair has gone to marketplace sellers. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
+      kit: "Made by Sonance, tuned with Sonos Trueplay. norrito sells the 6 in ceiling pair ($679), the 8 in ceiling pair ($1,099) and the outdoor pair ($899); the in-wall pair has gone to marketplace sellers. Every pair needs a Sonos Amp ($699), so a 2.1 is about $2,150 and most buyers stop at stereo or 2.1 per room." },
     { id: "russound", brand: "Russound", series: "In-Ceiling", tier: "value", arch: true, load: { ohm: 8, sens: 88 }, frontLabels: ["6.5 in enhanced", "6.5 in all-purpose"],
-      tower: { m: "6.5 in enhanced-performance in-ceiling (each)", pair: 798, note: "$399 each at Best Buy; toolless install, paintable grille" }, bookshelf: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436, note: "$218 each; pivoting silk tweeter" },
+      tower: { m: "6.5 in enhanced-performance in-ceiling (each)", pair: 798, note: "$399 each at norrito; toolless install, paintable grille" }, bookshelf: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436, note: "$218 each; pivoting silk tweeter" },
       center: { m: "6.5 in all-purpose in-ceiling (each)", each: 218 },
       surround: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 }, inceiling: { m: "6.5 in all-purpose in-ceiling (each)", pair: 436 },
       sub: { m: "SB-1000 Pro", each: 600, brand: "SVS" }, subAlt: { m: "Sonance MS10SUB", each: 429 },
-      kit: "Sold as singles ($218, $229 and $399 each at Best Buy). Russound also lists Acclaim 5 Outback indoor/outdoor bookshelf speakers. No Russound sub at Best Buy; pair with SVS or the Sonance MS10SUB. Best fit: whole-home audio on Russound or Sonance amps." },
+      kit: "Sold as singles ($218, $229 and $399 each at norrito). Russound also lists Acclaim 5 Outback indoor/outdoor bookshelf speakers. No Russound sub at norrito; pair with SVS or the Sonance MS10SUB. Best fit: whole-home audio on Russound or Sonance amps." },
   ];
   // Passive LCR speakers (bars.js SF_LCR): no amp inside, so they are the front three of a speaker system, not a soundbar. Shown at the 3-channel size only.
   (window.SF_LCR || []).forEach(function (b) {
     SERIES.push({ id: b.id, brand: b.brand, series: b.name, tier: b.tier, lcr: true, passive: true, cfg: b.cfg, load: b.load || null, lcrModel: b.m, price: b.price, sku: b.sku, comp: b.comp, tech: b.tech });
   });
-  // Subwoofers by brand and price level, for the Subwoofer brand chips (bestbuy.com prices; REL rows filled Nov 15, 2026).
+  // Subwoofers by brand and price level, for the Subwoofer brand chips (norrito prices; REL rows filled Nov 15, 2026).
   const SUBS = {
     svs: { label: "SVS", value: { m: "SB-1000 Pro", each: 600, sku: "6455214" }, mid: { m: "PB-2000 Pro", each: 1000, sku: "6394985" }, premium: { m: "PB-3000", each: 1500, sku: "6315938" }, reference: { m: "PB17-Ultra R|Evolution", each: 3000, sku: "6603477" } },
     // REL: the HT line is sealed Class D for theater; the T/x line (down-firing passive radiator) is the music pick at each level.
@@ -574,10 +574,11 @@
     return null;
   }
   function subAlts(tier, skip) { return Object.keys(SUBS).filter(function (b) { return b !== skip; }).map(function (b) { return subFor(b, tier); }).filter(Boolean); }
-  // Receivers Best Buy sells and ships, one per price level for each channel count. Prices are bestbuy.com list on Nov 13, 2026.
-  // Nov 18, 2026: added as alternates the receivers with a Best Buy seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not Best Buy on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
-  // Marantz CINEMA Series 2 (Best Buy SKUs 6687403 / 6687404 / 6687405, sold by Best Buy) replaces the first-generation Cinema 50, 60 and 70s. Their prices are the Marantz list prices ($1,500 / $2,000 / $3,000); confirm the Best Buy price in norrito. Cinema 30 and Cinema 40 stay first generation.
-  // Nov 18, 2026: the Denon and Marantz AVRs from the Best Buy app screenshots are alternates marked pickOnly. They are picker options only. Auto, the floor, the budget pick, the power-note switch and the not-offered reason never see them, so Auto keeps the units it had.
+  // Receivers norrito sells and ships, one per price level for each channel count. Prices are norrito list on Nov 13, 2026.
+  // Nov 18, 2026: added as alternates the receivers with a norrito seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not norrito on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
+  // Marantz CINEMA Series 2 (norrito SKUs 6687403 / 6687404 / 6687405, sold by norrito) replaces the first-generation Cinema 50, 60 and 70s. Their prices are the Marantz list prices ($1,500 / $2,000 / $3,000); confirm the norrito price in norrito. Cinema 30 and Cinema 40 stay first generation.
+  // Nov 21, 2026: the Yamaha RX300A (5.2) and RX500A (7.2) from the norrito app screenshot are pickOnly too, in the 5-channel and 7-channel value lists. RX-V6A is $722.99 on sale (was $849.95).
+  // Nov 18, 2026: the Denon and Marantz AVRs from the norrito app screenshots are alternates marked pickOnly. They are picker options only. Auto, the floor, the budget pick, the power-note switch and the not-offered reason never see them, so Auto keeps the units it had.
   // A receiver with no all-channel rating on file stands in on a build of five channels or more: its two-channel figure is used and flagged est, so it shows in the picker only, with the caveat.
   // ohm4: informational only. Whether a unit can drive a load is decided by powerCheck, from the SF_POWER ratings in bars.js.
   const AVRS = {
@@ -611,18 +612,20 @@
                { brand: "Michi", m: "Prestige X430 2.0-ch integrated amplifier", cur: "strong", price: 4999, role: "Integrated amp", sku: "6678050", why: "210 W x 2 into 8 ohms; the entry to Michi" }] } },
     5: { need: "5 amplified channels",
       value: { brand: "Sony", m: "STR-DH590 5.2-ch receiver", cur: "easy", price: 450, ohm4: false, why: "The lowest-cost 5.1 receiver on the floor; 4K HDR, Bluetooth, auto calibration. 90 W x 2 at 6 ohms (minimum RMS); no all-channel rating published",
-        alts: [{ brand: "JBL", m: "MA310 5.2-ch receiver", cur: "ok", price: 440, sku: "6584222", why: "Bluetooth, HDR and a voice assistant in a 5.2 receiver; 50 W x 2 into 8 ohms (FTC); sold by Best Buy at $439.95" },
-               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by Best Buy at $799.95" },
-               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by Best Buy at $849" },
-               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by Best Buy at $849 on sale, $949 comparable" },
-               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" },
+        alts: [{ brand: "JBL", m: "MA310 5.2-ch receiver", cur: "ok", price: 440, sku: "6584222", why: "Bluetooth, HDR and a voice assistant in a 5.2 receiver; 50 W x 2 into 8 ohms (FTC); sold by norrito at $439.95" },
+               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 722.99, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by norrito at $722.99 on sale, $849.95 comparable" },
+               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by norrito at $849" },
+               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by norrito at $849 on sale, $949 comparable" },
+               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by norrito at $849.99" },
                { brand: "Denon", m: "AVR-S570BT 5.2-ch receiver", pickOnly: true, cur: "easy", price: 449, sku: "6517803", why: "70 W x 2 into 8 ohms and 90 W at 6 ohms, per Denon; no all-channel rating published" },
-               { brand: "Marantz", m: "NR1510 5.2-ch receiver", pickOnly: true, cur: "easy", price: 700, sku: "6345924", why: "50 W x 2 into 8 ohms and 60 W at 6 ohms, per Marantz; slim chassis; no all-channel rating published" }] },
+               { brand: "Marantz", m: "NR1510 5.2-ch receiver", pickOnly: true, cur: "easy", price: 700, sku: "6345924", why: "50 W x 2 into 8 ohms and 60 W at 6 ohms, per Marantz; slim chassis; no all-channel rating published" },
+               { brand: "Yamaha", m: "RX300A 5.2-ch receiver", pickOnly: true, cur: "easy", price: 399.95, ohm4: false, sku: "6678613", why: "70 W x 2 into 8 ohms (2 ch driven), per Yamaha's sheet; no all-channel or 4-ohm figure published; sold by norrito at $399.95" },
+               { brand: "Yamaha", m: "RX500A 7.2-ch receiver", pickOnly: true, cur: "easy", price: 599.95, ohm4: false, sku: "6689373", why: "75 W x 2 into 8 ohms (2 ch driven), per Yamaha's sheet; no all-channel or 4-ohm figure published; sold by norrito at $599.95" }] },
       mid: { brand: "Denon", m: "AVR-S670H 5.2-ch receiver", cur: "ok", price: 649, why: "75 W x 2 into 8 ohms and 100 W at 6 ohms; 8K HDMI, HEOS, Audyssey room correction, phono input, Alexa; no all-channel rating published",
         alts: [{ brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs and Audyssey MultEQ XT; two channels spare for heights later" },
                { brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB with Dirac EQ profiles and Google Cast; the entry Arcam, a different class of amplifier from a $649 receiver" },
-               { brand: "JBL", m: "MA510 5.2-ch receiver", cur: "ok", price: 660, sku: "6584083", why: "75 W x 2 into 8 ohms (FTC) and 100 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $659.95" },
-               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by Best Buy at $1,199.99" }] },
+               { brand: "JBL", m: "MA510 5.2-ch receiver", cur: "ok", price: 660, sku: "6584083", why: "75 W x 2 into 8 ohms (FTC) and 100 W x 2 at 4 ohms; no all-channel rating published; sold by norrito at $659.95" },
+               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by norrito at $1,199.99" }] },
       premium: { brand: "Marantz", m: "CINEMA 70S Series 2 7.2-ch slim receiver", sku: "6687403", cur: "ok", price: 1500, why: "Slim Marantz Series 2 with Dolby Atmos and two spare channels for heights; 50 W x 2 into 8 ohms and 70 W at 6 ohms",
         alts: [{ brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms in the full-size chassis; two channels spare for heights" },
                { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB, 8K HDMI, Google Cast; the Arcam sound at the first step" },
@@ -633,16 +636,17 @@
     7: { need: "7 amplified channels",
       value: { brand: "Denon", m: "AVR-S770H 7.2-ch receiver", cur: "ok", price: 749, why: "Dolby Atmos and DTS:X, 8K HDMI, HEOS; 75 W x 2 into 8 ohms and 110 W at 6 ohms",
         alts: [{ brand: "Arcam", m: "AVR5 7.1-ch receiver", cur: "ok", price: 2000, sku: "6473960", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB with Dirac EQ and Google Cast; the audiophile step from a value receiver" },
-               { brand: "JBL", m: "MA710 7.2-ch receiver", cur: "ok", price: 700, sku: "6584069", why: "110 W x 2 into 8 ohms (FTC) and 160 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $699.95, comp $879.95" },
-               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 799.95, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by Best Buy at $799.95" },
-               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by Best Buy at $849" },
-               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by Best Buy at $849 on sale, $949 comparable" },
-               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by Best Buy at $849.99" },
-               { brand: "Denon", m: "AVR-S980H 7.2-ch receiver", pickOnly: true, cur: "ok", price: 949, sku: "6666186", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, per Denon; HEOS and 8K HDMI; no all-channel rating published" }] },
+               { brand: "JBL", m: "MA710 7.2-ch receiver", cur: "ok", price: 700, sku: "6584069", why: "110 W x 2 into 8 ohms (FTC) and 160 W x 2 at 4 ohms; no all-channel rating published; sold by norrito at $699.95, comp $879.95" },
+               { brand: "Yamaha", m: "RX-V6A 7.2-ch receiver", cur: "ok", price: 722.99, ohm4: false, sku: "6422266", why: "100 W x 2 into 8 ohms with Dolby Atmos and MusicCast; no all-channel rating published; sold by norrito at $722.99 on sale, $849.95 comparable" },
+               { brand: "Denon", m: "AVR-X1800H 7.2-ch receiver", cur: "ok", price: 849, sku: "6559381", why: "80 W x 2 into 8 ohms and 120 W at 6 ohms, HEOS and 8K HDMI; no all-channel rating published; sold by norrito at $849" },
+               { brand: "Denon", m: "AVR-S970H 7.2-ch receiver", cur: "ok", price: 849, sku: "6519391", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, HEOS and Dolby Atmos; no all-channel rating published; sold by norrito at $849 on sale, $949 comparable" },
+               { brand: "Sony", m: "STR-AN1000 7.2-ch receiver", cur: "ok", price: 849.99, ohm4: false, sku: "6533290", why: "100 W x 2 at 6 ohms (minimum RMS) with Dolby Atmos and DTS:X; no all-channel rating published; sold by norrito at $849.99" },
+               { brand: "Denon", m: "AVR-S980H 7.2-ch receiver", pickOnly: true, cur: "ok", price: 949, sku: "6666186", why: "90 W x 2 into 8 ohms and 125 W at 6 ohms, per Denon; HEOS and 8K HDMI; no all-channel rating published" },
+               { brand: "Yamaha", m: "RX500A 7.2-ch receiver", pickOnly: true, cur: "easy", price: 599.95, ohm4: false, sku: "6689373", why: "75 W x 2 into 8 ohms (2 ch driven), per Yamaha's sheet; no all-channel or 4-ohm figure published; sold by norrito at $599.95" }] },
       mid: { brand: "Denon", m: "AVR-X2800H 7.2-ch receiver", cur: "strong", price: 1299, why: "95 W x 2 into 8 ohms and 125 W at 6 ohms; pre-outs, Audyssey MultEQ XT; the step up in amplifier quality",
-        alts: [{ brand: "JBL", m: "MA7100HP 7.2-ch receiver", cur: "ok", price: 1060, sku: "6584072", why: "125 W x 2 into 8 ohms and 175 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $1,059.95" },
+        alts: [{ brand: "JBL", m: "MA7100HP 7.2-ch receiver", cur: "ok", price: 1060, sku: "6584072", why: "125 W x 2 into 8 ohms and 175 W x 2 at 4 ohms; no all-channel rating published; sold by norrito at $1,059.95" },
                { brand: "Arcam", m: "AVR11 7.1-ch receiver", cur: "ok", price: 3050, sku: "6504708", why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms; Class AB, 8K HDMI, Google Cast; built like a stereo amp with seven channels" },
-               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by Best Buy at $1,199.99" },
+               { brand: "Sony", m: "STR-AZ1000ES 7.2-ch receiver", cur: "ok", price: 1199.99, ohm4: false, sku: "6568665", why: "ES integrator build with two zones; 70 W x 2 into 8 ohms (FTC); no all-channel rating published; sold by norrito at $1,199.99" },
                { brand: "Denon", m: "AVR-X2900H 7.2-ch receiver", pickOnly: true, cur: "strong", price: 1349, sku: "6665560", why: "95 W x 2 into 8 ohms and 125 W at 6 ohms, per Denon; 8K and Dolby Atmos; no all-channel rating published" }] },
       premium: { brand: "Marantz", m: "CINEMA 60 Series 2 7.2-ch receiver", sku: "6687404", cur: "strong", price: 2000, why: "100 W x 2 into 8 ohms and 140 W at 6 ohms, with the Marantz voicing for music-first rooms",
         alts: [{ brand: "Arcam", m: "AVR21 7.1-ch receiver", cur: "strong", price: 4700, sku: "6504707", why: "90 W x 7 at 8 ohms and 110 W x 7 at 4 ohms; Class AB; the Arcam for a 7.1 or 5.1.2 that will stay seven channels" },
@@ -652,10 +656,10 @@
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch amplifier", cur: "strong", short: "AV 10 + RMB-1587 MKII", price: 12799, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII"], why: "$8,000 + $4,799: 15.4 processing in front of 155 W x 7 at 8 ohms (250 W x 7 at 4 ohms, Rotel brochure) of Rotel Class AB" }] } },
     9: { need: "9 amplified channels",
       value: { brand: "Onkyo", m: "TX-RZ30 9.2-ch receiver", cur: "strong", price: 1000, why: "100 W per channel into 8 ohms (2 channels driven); no 4- or 6-ohm figure published. Dirac Live room correction included, IMAX Enhanced, THX; comp value $1,249.99",
-        alts: [{ brand: "Pioneer Elite", m: "VSX-LX305 9.2-ch receiver", cur: "ok", price: 749, sku: "6405450", why: "100 W x 2 into 8 ohms (minimum RMS); no all-channel rating published; sold by Best Buy at $749, comparable $1,199" }] },
+        alts: [{ brand: "Pioneer Elite", m: "VSX-LX305 9.2-ch receiver", cur: "ok", price: 749, sku: "6405450", why: "100 W x 2 into 8 ohms (minimum RMS); no all-channel rating published; sold by norrito at $749, comparable $1,199" }] },
       mid: { brand: "Denon", m: "AVR-X3800H 9.4-ch receiver", cur: "strong", price: 1799, why: "105 W x 2 into 8 ohms and 135 W at 6 ohms; four independent sub outs, 11.4 processing, Dirac-ready; the 5.2.4 and 7.2.2 workhorse",
-        alts: [{ brand: "JBL", m: "MA9100HP 9.2-ch receiver", cur: "ok", price: 1760, sku: "6584075", why: "140 W x 2 into 8 ohms (FTC) and 240 W x 2 at 4 ohms; no all-channel rating published; sold by Best Buy at $1,759.95" },
-               { brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by Best Buy at $2,299.99, comparable $2,899.99" },
+        alts: [{ brand: "JBL", m: "MA9100HP 9.2-ch receiver", cur: "ok", price: 1760, sku: "6584075", why: "140 W x 2 into 8 ohms (FTC) and 240 W x 2 at 4 ohms; no all-channel rating published; sold by norrito at $1,759.95" },
+               { brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by norrito at $2,299.99, comparable $2,899.99" },
                { brand: "Denon", m: "AVR-X3900H 9.4-ch receiver", pickOnly: true, cur: "strong", price: 1849, sku: "6665561", why: "105 W x 2 into 8 ohms and 135 W at 6 ohms, per Denon; 4K/8K and Dolby Atmos; no all-channel rating published" }] },
       premium: { brand: "Marantz", m: "CINEMA 50 Series 2 9.4-ch receiver", sku: "6687405", cur: "strong", price: 3000, why: "110 W x 2 into 8 ohms and 150 W at 6 ohms; no all-channel or 4-ohm rating published; 9.4 channels, Dirac Live upgradeable",
         alts: [{ brand: "Arcam", m: "AVA15 12-ch AV amplifier", cur: "strong", price: 4500, sku: "6679268", why: "Nine amplified channels at 65 W each into 8 ohms; 12 channels of processing, seven HDMI 2.1 inputs; Arcam's one-box answer to a 5.2.4 or 7.2.2" },
@@ -666,7 +670,7 @@
                { brand: "Marantz / Rotel", m: "AV 10 processor + Rotel RMB-1587 MKII 7-ch + RB-1552 MKII 2-ch amplifiers", cur: "strong", short: "AV 10 + RMB-1587 + RB-1552", price: 14498, role: "Separates", sku: "6571770", parts: ["Rotel RMB-1587 MKII", "Rotel RB-1552 MKII"], why: "$8,000 + $4,799 + $1,699: nine channels of Rotel Class AB (155 W x 7 plus 130 W x 2 for the heights, both into 8 ohms)" }] } },
     11: { need: "11 amplified channels",
       value: { brand: "Pioneer Elite", m: "VSX-LX805 11.4-ch receiver", cur: "strong", price: 1699, why: "150 W x 2 into 8 ohms (FTC); no all-channel rating published. Dirac Live, balanced pre-outs; comp value $2,999",
-        alts: [{ brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by Best Buy at $2,299.99, comparable $2,899.99" }] },
+        alts: [{ brand: "Onkyo", m: "TX-RZ70 11.2-ch receiver", cur: "ok", price: 2299.99, sku: "6562898", why: "11.2 channels; 140 W x 2 into 8 ohms (minimum RMS, both channels driven); sold by norrito at $2,299.99, comparable $2,899.99" }] },
       mid: { brand: "Denon", m: "AVR-X6800H 11.4-ch receiver", cur: "strong", price: 3799, why: "Made in Japan; 140 W x 2 into 8 ohms and 175 W at 6 ohms; no all-channel rating published" },
       premium: { brand: "Marantz", m: "Cinema 30 11.4-ch receiver", cur: "strong", price: 4800, why: "The reference Marantz: 140 W x 2 into 8 ohms and 175 W at 6 ohms; 13.4 pre-outs, HDAM SA-2 modules" },
       reference: { brand: "Marantz", m: "AV 10 processor + 3 x AMP 10 amplifiers", cur: "strong", short: "AV 10 + 3 x AMP 10", price: 32000, role: "Separates", sku: null, parts: ["Marantz AMP 10"], rep: 3, why: "$8,000 + 3 x $8,000: the top of the Marantz line. Each AMP 10 drives five channels at 200 W into 8 ohms (Marantz infosheet), so three units cover 11 with room to spare. Denon AVR-A1H ($7,199, 15 channels) is the one-box option",
@@ -679,7 +683,7 @@
                { brand: "Marantz / Rotel", m: "AV 10 processor + 3 x Rotel RMB-1585 MKII 5-ch amplifiers", cur: "strong", short: "AV 10 + 3 x RMB-1585 MKII", price: 21797, role: "Separates", sku: "6571702", parts: ["Rotel RMB-1585 MKII"], rep: 3, why: "$8,000 + 3 x $4,599: fifteen channels of Rotel Class AB, 210 W x 5 into 8 ohms and 340 W x 5 into 4 ohms (Rotel); the 4-ohm answer for 13" },
                { brand: "Denon", m: "AVR-A1H 15.4-ch receiver", cur: "strong", price: 7199, why: "150 W x 2 into 8 ohms and 190 W at 6 ohms in one box, with four sub outs: 9.4.2 fits with two spare channels; the one-box reference if the speakers are not 4-ohm demanding" }] } },
   };
-  // The amp a passive LCR needs: three amplified channels, checked against the speakers' load (powerCheck). Best Buy prices (bestbuy.com, Nov 17, 2026).
+  // The amp a passive LCR needs: three amplified channels, checked against the speakers' load (powerCheck). norrito prices (norrito, Nov 17, 2026).
   // Mid speakers take the mid amps and premium or reference speakers the premium amps; of the amps that clear the load, the cheapest leads.
   const PASSIVE_AMP = {
     mid: { brand: "Arcam", m: "AVR5 7.1-ch receiver", sku: "6473960", price: 2000, why: "60 W x 7 at 8 ohms and 85 W x 7 at 4 ohms, Class AB, per Arcam's sheet; three of its channels drive the front three, with four to spare",
@@ -736,7 +740,7 @@
     return { series: r.series, lines: lines, total: lines.reduce(function (a, l) { return a + l.total; }, 0), bundle: b, covered: covered, raw: r };
   }
   function ampInBundle(s) { const b = activeBundle(s || currentSeries()); return b && b.amp ? b.amp : null; }
-  // Soundbar systems Best Buy sells and ships (bestbuy.com, checked Nov 15, 2026). price = the bar as sold (with whatever ships in the box).
+  // Soundbar systems norrito sells and ships (norrito, checked Nov 15, 2026). price = the bar as sold (with whatever ships in the box).
   // subIn / rearsIn = ships with them. sub / rears = the brand's own wireless add-on when it does not. tier by bar price: value < $900, mid to $1,500, premium above.
   const BARS = window.SF_BARS || [];
   BARS.forEach(function (b) { b.bar = true; b.series = b.m; });
@@ -1013,7 +1017,7 @@
     else add("Front left + right", s.brand, s.bookshelf.m, 2, s.bookshelf.pair / 2, s.bookshelf.note || "On the console or a shelf flanking the screen", s.frontLabels ? "tower" : "bookshelf");
     // center
     if (state.around >= 3) add("Center", s.brand, s.center.m, 1, s.center.each, s.center.note || (s.arch ? "In-wall LCR under or above the screen; same driver as the fronts" : "Same series as the fronts so dialog matches"), s.arch ? "arch" : "center");
-    // surrounds: the series' own, or the brand's in-wall / in-ceiling (a Klipsch swap when the brand has none at Best Buy)
+    // surrounds: the series' own, or the brand's in-wall / in-ceiling (a Klipsch swap when the brand has none at norrito)
     const surType = s.arch ? "arch" : surroundType();
     let sur = s.surround || s.bookshelf, rear = s.arch ? sur : s.bookshelf, surBrand = s.brand, surKind = s.arch ? "arch" : "bookshelf";
     let sideNote = s.arch ? "In-ceiling or in-wall beside the seats" : (s.surround ? "Dedicated surround model" : "Bookshelf beside the seats, on wall brackets or a shelf");
@@ -1303,7 +1307,7 @@
   function accPicked(id, def, opts) { const k = state.accPick && state.accPick[id]; const o = k && opts.find(function (x) { return accKey(x) === k; }); return o || def; }
   // The options for one cable or power line, each with the whole-system total it would give, how far over the budget that is (0 when it fits or with no budget), and whether it fits.
   function accOptions(s, id) {
-    const list = id === "hdmi" ? HDMI_OPTS : s.bar ? POWER_BAR_OPTS : POWER_RECEIVER_OPTS;
+    const list = id === "hdmi" ? HDMI_OPTS : id === "sub" ? SUB_OPTS : s.bar ? POWER_BAR_OPTS : POWER_RECEIVER_OPTS;
     const cap = budgetCap(); const saved = state.accPick[id]; const out = [];
     try {
       list.forEach(function (o) { state.accPick[id] = accKey(o); const total = systemTotal(s); out.push({ o: o, total: total, over: cap > 0 ? total - cap : 0, fits: !(cap > 0) || total <= cap }); });
@@ -1313,7 +1317,7 @@
   // For each pick line on the card: every option, each with its whole-system total. Options over the budget stay listed and pickable, flagged with the amount over.
   function accSelects(s, acc) {
     const out = {};
-    ["hdmi", "power"].forEach(function (id) {
+    ["hdmi", "power", "sub"].forEach(function (id) {
       if (acc.some(function (a) { return a.pick === id; })) out[id] = accOptions(s, id);
     });
     return out;
@@ -1445,14 +1449,14 @@
       "<div><div class='role'>" + esc(l.role) + "</div><div class='model'>" + esc(l.brand) + " " + esc(l.model) + "</div>" +
       "<div class='qty'>" + l.qty + " × " + money(l.each) + (l.note ? " · " + esc(l.note) : "") + "</div></div>" +
       "<div class='price'>" + (l.included ? "Included" : money(l.total)) + "</div>" +
-      (l.nosku ? "" : "<div class='find'><a href='" + (lineSku(l) ? "https://www.bestbuy.com/site/" + lineSku(l) + ".p" : SALES.bbyUrl(key, l.q || key)) + "' target='_blank' rel='noopener'>" + (lineSku(l) ? "Open on bestbuy.com" : "Find on bestbuy.com") + "</a>" + skuHtml(l) + "</div>") +
+      (l.nosku ? "" : "<div class='find'><a href='" + (lineSku(l) ? "https://www.bestbuy.com/site/" + lineSku(l) + ".p" : SALES.bbyUrl(key, l.q || key)) + "' target='_blank' rel='noopener'>" + (lineSku(l) ? "Open on norrito" : "Find on norrito") + "</a>" + skuHtml(l) + "</div>") +
       "</div>";
   }
   // Inline SKU editor on a line: tap edit, type the SKU, it saves on this phone and the link goes straight to the product page.
   document.addEventListener("click", function (e) {
     const b = e.target.closest("button[data-skukey]"); if (!b) return;
     const span = b.parentNode; const key = b.dataset.skukey;
-    span.innerHTML = "SKU <input type='text' inputmode='numeric' pattern='[0-9]*' value='" + esc(SALES.sku(key) || "") + "' placeholder='1234567' aria-label='Best Buy SKU'> <button type='button' data-skusave='" + esc(key) + "'>save</button>";
+    span.innerHTML = "SKU <input type='text' inputmode='numeric' pattern='[0-9]*' value='" + esc(SALES.sku(key) || "") + "' placeholder='1234567' aria-label='norrito SKU'> <button type='button' data-skusave='" + esc(key) + "'>save</button>";
     span.querySelector("input").focus();
   });
   document.addEventListener("click", function (e) {
@@ -1461,8 +1465,8 @@
     toast(v ? "SKU saved on this phone" : "SKU cleared"); render();
   });
 
-  // Cables and accessories sized to the build. Typical Best Buy house-brand prices; the exact SKU goes in at the register.
-  // Cables and power by build level, so the kit steps up with the speakers. Best Buy SKUs and prices (bestbuy.com, Nov 17, 2026).
+  // Cables and accessories sized to the build. Typical norrito house-brand prices; the exact SKU goes in at the register.
+  // Cables and power by build level, so the kit steps up with the speakers. norrito SKUs and prices (norrito, Nov 17, 2026).
   // Value keeps the house cables and a surge protector. Mid moves to AudioQuest HDMI and subwoofer RCA. Premium and reference add a power conditioner and a streamer; separate preamp and amp builds also get RCA interconnects.
   const AQ_HDMI = { brand: "AudioQuest", model: "Forest 48 in-wall HDMI cable, 4.9 ft", each: 129.95, sku: "6428720" };
   const AQ_SUB = { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 26.2 ft", each: 119.95, sku: "2877518" };
@@ -1476,8 +1480,10 @@
       streamer: { brand: "WiiM", model: "Ultra streamer", each: 349, sku: "6684567" },
       interconnect: { brand: "AudioQuest", model: "Big Sur RCA interconnect, 16.4 ft pair", each: 379.95, sku: "6460309" } }
   };
+  // Every Black Lab RCA subwoofer length norrito sells and ships, in length order, so the subwoofer cable can be picked up to 52.5 ft (16 m). The kit's own cable is first, as with HDMI.
+  const SUB_OPTS = [ACC_KIT.value.sub, { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 6.6 ft", each: 59.95, sku: "2877609" }, { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 9.8 ft", each: 69.95, sku: "2877581" }, { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 16.4 ft", each: 89.95, sku: "2877492" }, AQ_SUB, { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 39.4 ft", each: 159.95, sku: "2877645" }, { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 52.5 ft", each: 199.95, sku: "2877618" }];
   // The choices a customer can make on the cable and power lines: the kit's own item, then the AudioQuest HDMI and PowerQuest 2 tiers, in price order.
-  // Options over the budget stay listed and pickable, flagged with the amount over. SKUs are shown where the Best Buy page was checked.
+  // Options over the budget stay listed and pickable, flagged with the amount over. SKUs are shown where the norrito page was checked.
   const AQ_PEARL = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 4.9 ft", each: 59.95, sku: "6428744" };
   const AQ_CINNAMON = { brand: "AudioQuest", model: "Cinnamon 48 HDMI cable, 4.9 ft", each: 229.95, sku: "6428735" };
   const AQ_CARBON = { brand: "AudioQuest", model: "Carbon 48 HDMI cable, 4.9 ft", each: 399.95, sku: "6428747" };
@@ -1485,7 +1491,7 @@
   const AQ_THUNDERBIRD = { brand: "AudioQuest", model: "ThunderBird 48 in-wall HDMI cable, 9.8 ft", each: 1750, sku: "6428721" };
   const AQ_FIREBIRD = { brand: "AudioQuest", model: "FireBird 48 in-wall HDMI cable, 9.8 ft", each: 2950, sku: "6428730" };
   const AQ_DRAGON = { brand: "AudioQuest", model: "Dragon 48 in-wall HDMI cable, 9.8 ft", each: 4495, sku: "6428743" };
-  // Every other Best Buy length of each cable, with the SKU and new-item price on its Best Buy page. A length is listed only where Best Buy shows it as sold by Best Buy;
+  // Every other norrito length of each cable, with the SKU and new-item price on its norrito page. A length is listed only where norrito shows it as sold by norrito;
   // discontinued lengths (no longer available new) and lengths whose price or seller could not be confirmed are left out.
   const AQ_PEARL_2 = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 2.5 ft", each: 49.95, sku: "6428727" };
   const AQ_PEARL_7 = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 7.4 ft", each: 77.95, sku: "6428723" };
@@ -1521,7 +1527,7 @@
     const add = function (id, role, a, qty, note, defOn) {
       const saved = state.acc[id];
       out.push({ id: id, role: role, brand: a.brand, model: a.model, qty: qty, each: a.each, sku: a.sku || null, note: note || "", total: qty * a.each, on: saved === undefined ? defOn !== false : saved !== false,
-        pick: id === "hdmi" ? "hdmi" : id === "surge" || id === "conditioner" ? "power" : null, ref: a.brand + " " + a.model });
+        pick: id === "hdmi" ? "hdmi" : id === "subcable" ? "sub" : id === "surge" || id === "conditioner" ? "power" : null, ref: a.brand + " " + a.model });
     };
     if (s.bar) {
       add("hdmi", "HDMI", accPicked("hdmi", kit.hdmi, HDMI_OPTS), s.hdmi ? 2 : 1, s.hdmi ? "TV eARC to the bar, plus the main source into the bar" : "TV eARC to the bar; sources plug into the TV");
@@ -1547,7 +1553,7 @@
     const spools = Math.ceil(ft / 100);
     const wire = thick ? { m: "14 AWG CL2/CL3 in-wall speaker wire, 100 ft", each: 60 } : { m: "16 AWG speaker wire, 100 ft", each: 40 };
     add("wire", "Speaker wire", { brand: "Rocketfish", model: wire.m, each: wire.each }, spools, "about " + ft + " ft of runs, longest " + longest + " ft" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : thick ? (demand ? "; 14 gauge for a 4-ohm load" : "; 14 gauge for runs over 50 ft") : ""));
-    if (state.subs > 0) add("subcable", "Subwoofer cable", kit.sub, state.subs, state.subs === 2 ? "one per sub" : "");
+    if (state.subs > 0) add("subcable", "Subwoofer cable", accPicked("sub", kit.sub, SUB_OPTS), state.subs, state.subs === 2 ? "one per sub" : "");
     // A package's amp stands in for the receiver, so rc is null for it. A WiiM in a package takes one ARC cable, the same as a WiiM receiver line.
     const pkgAmp = rc ? null : ampInBundle(s); const wiimAmp = !!(rc && rc.wiim) || !!(pkgAmp && pkgAmp.brand === "WiiM");
     const hdmiQty = (rc && rc.sonos) || wiimAmp ? 1 : 2;
@@ -1624,7 +1630,7 @@
     $("kitNote").hidden = !s.kit && !page && !lcr;
     $("kitNote").innerHTML = lcr ? "<p class='eyebrow'>Why this build</p><p>" + esc(s.tech || "") + "</p>" + (page ? "<p class='small'><a href='brands.html#" + page + "'>" + esc(s.brand) + " on the Brands page</a></p>" : "") :
       (s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" : "<p class='eyebrow'>In-wall and in-ceiling</p>") +
-      (page ? "<p class='small'><a href='brands.html#" + page + "'>Every " + esc(s.brand) + (s.arch ? "" : " in-wall and in-ceiling") + " Best Buy sells, with prices</a></p>" : "");
+      (page ? "<p class='small'><a href='brands.html#" + page + "'>Every " + esc(s.brand) + (s.arch ? "" : " in-wall and in-ceiling") + " norrito sells, with prices</a></p>" : "");
     $("lines").innerHTML = r.lines.map(lineHtml).join("");
     $("total").textContent = money(r.total);
     $("totalNote").textContent = "List, " + r.lines.length + " line items. Mounts, wire and install not included.";
@@ -1680,7 +1686,7 @@
     const ik = installKind();
     $("sumInst").textContent = SALES.installText(ik);
     $("instKind").textContent = "· " + SALES.installBand(ik).label;
-    $("sumNote").textContent = (budgetCap() && grand > budgetCap() ? "Over your " + money(budgetCap()) + " budget by " + money(grand - budgetCap()) + " · " : "") + (r.lines.length + (rc ? 1 : 0) + acc.filter(function (a) { return a.on; }).length) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Install is your Settings range; Budget Builder sets the quote.";
+    $("sumNote").textContent = (budgetCap() && grand > budgetCap() ? "Over your " + money(budgetCap()) + " budget by " + money(grand - budgetCap()) + " · " : "") + (r.lines.length + (rc ? 1 : 0) + acc.filter(function (a) { return a.on; }).length) + " line items · " + configString() + " · list prices as of Nov 13, 2026. Install is your Settings range; norrito sets the quote.";
     $("bbyBtn").onclick = function () { window.open(bby(s.brand + " " + s.series), "_blank", "noopener"); };
     if (!$("sowCard").hidden) $("sowText").value = sowText();
     renderCmpBar();
@@ -1726,7 +1732,7 @@
     $("sumFin").innerHTML = SALES.monthlyHtml(grand) || "<p class='muted small'>No financing promo covers " + money(grand) + ". Check the promo table in Settings.</p>";
     $("sumInst").textContent = SALES.installText("bar");
     $("instKind").textContent = "· " + SALES.installBand("bar").label;
-    $("sumNote").textContent = (r.lines.length + acc.filter(function (a) { return a.on; }).length) + " line items · " + s.cfg + " · Best Buy prices as of Nov 15, 2026. Install is your Settings range; Budget Builder sets the quote.";
+    $("sumNote").textContent = (r.lines.length + acc.filter(function (a) { return a.on; }).length) + " line items · " + s.cfg + " · norrito prices as of Nov 15, 2026. Install is your Settings range; norrito sets the quote.";
     $("bbyBtn").onclick = function () { window.open(s.sku ? "https://www.bestbuy.com/site/" + s.sku + ".p" : bby(s.brand + " " + s.m), "_blank", "noopener"); };
     if (!$("sowCard").hidden) $("sowText").value = sowText();
     renderCmpBar();
@@ -1738,7 +1744,7 @@
   function renderBundles(s, r) {
     const list = bundlesFor(s); const card = $("bundleCard");
     card.hidden = false; card.classList.toggle("coach", !list.length);
-    $("bundleAsOf").textContent = BUNDLES_ASOF ? "bestbuy.com " + BUNDLES_ASOF : "";
+    $("bundleAsOf").textContent = BUNDLES_ASOF ? "norrito " + BUNDLES_ASOF : "";
     const raw = r.raw || rawBuild(s); const rawRc = rawReceiver();
     const act = activeBundle(s);
     $("bundleList").innerHTML = list.map(function (b) {
@@ -1747,12 +1753,12 @@
       const d = lineSum - b.price; const on = act && act.id === b.id;
       const groups = []; covered.forEach(function (l) { const g = roleGroup(l.role); if (groups.indexOf(g) < 0) groups.push(g); });
       return "<div class='bundle" + (on ? " on" : "") + "'>" + (IMG ? IMG.thumb(b.brand + " " + b.name, b.thumb || "bookshelf") : "") +
-        "<div class='bt'><span class='kind'>" + esc(b.custom ? "Store bundle" : b.kind === "system" ? b.brand + " system" : "bestbuy.com package") + (b.sku ? " · SKU " + esc(b.sku) : "") + "</span>" +
+        "<div class='bt'><span class='kind'>" + esc(b.custom ? "Store bundle" : b.kind === "system" ? b.brand + " system" : "norrito package") + (b.sku ? " · SKU " + esc(b.sku) : "") + "</span>" +
         "<div class='bh'><b>" + esc(b.name) + "</b><span class='bp'><b>" + money(b.price) + "</b>" + (b.comp ? "<small>comp. " + money(b.comp) + "</small>" : "") + "</span></div><span class='inc'>" + esc(b.includes) + "</span>" +
         (b.noCompare ? "" : "<span class='std'>Stands in for " + esc(groups.join(", ").toLowerCase() || "the speakers") + (b.amp ? " and the receiver" : "") + ": " + money(lineSum) + " line by line" + (d > 0 ? ", <em>" + money(d) + " less</em> as the package" : d < 0 ? ", " + money(-d) + " more as the package" : ", same price") + ".</span>") +
         (b.note ? "<span class='muted small'>" + esc(b.note) + "</span>" : "") +
         "<button type='button' class='btn " + (on ? "" : "primary") + "' data-bundle='" + esc(b.id) + "'>" + (on ? "Using the package · undo" : "Use the package price") + "</button></div></div>";
-    }).join("") || "<p class='muted small coach'>No bestbuy.com package fits this exact layout. " + (s.brand === "Sonance" ? "Mag 5.1 in-ceiling (MAG5.1R), Mag 5.1 in-wall (MAG5.1 PREMIUM) and the 2.0 TV packages are the ones that exist; set the build to 5.1 or 2.0 to see them. " : "") + "If norrito shows a bundle for these, key it in below.</p>";
+    }).join("") || "<p class='muted small coach'>No norrito package fits this exact layout. " + (s.brand === "Sonance" ? "Mag 5.1 in-ceiling (MAG5.1R), Mag 5.1 in-wall (MAG5.1 PREMIUM) and the 2.0 TV packages are the ones that exist; set the build to 5.1 or 2.0 to see them. " : "") + "If norrito shows a bundle for these, key it in below.</p>";
     // store bundle form
     const cb = customBundles()[bundleKey()];
     $("cbClear").hidden = !cb;
@@ -1823,7 +1829,7 @@
     h += "<div class='k'>" + (a.rc && a.rc.sonos || b.rc && b.rc.sonos ? "Amplifier" : "Receiver") + "</div><div class='c" + cls("a") + "'>" + cmpRcCell(a) + "</div><div class='c" + cls("b") + "'>" + cmpRcCell(b) + "</div>";
     h += "<div class='k'>Cables and accessories</div><div class='c" + cls("a") + "'><div class='v'><b>" + money(a.accSum) + "</b></div></div><div class='c" + cls("b") + "'><div class='v'><b>" + money(b.accSum) + "</b></div></div>";
     h += "<div class='k'>System total</div><div class='c total" + cls("a") + "'><b>" + money(a.grand) + "</b></div><div class='c total" + cls("b") + "'><b>" + money(b.grand) + "</b></div>";
-    const per = function (x) { return x.plan ? "<b>" + money(x.plan.per) + "<small>/mo</small></b><small>" + x.plan.months + " months, Best Buy card</small>" : "<small>No promo covers this total</small>"; };
+    const per = function (x) { return x.plan ? "<b>" + money(x.plan.per) + "<small>/mo</small></b><small>" + x.plan.months + " months, norrito card</small>" : "<small>No promo covers this total</small>"; };
     h += "<div class='k'>Per month</div><div class='c" + cls("a") + "'><div class='v'>" + per(a) + "</div></div><div class='c" + cls("b") + "'><div class='v'>" + per(b) + "</div></div>";
     h += "<div class='k'>Install, labor</div><div class='c" + cls("a") + "'><div class='v'><small>" + money(a.inst.low) + " to " + money(a.inst.high) + "</small></div></div><div class='c" + cls("b") + "'><div class='v'><small>" + money(b.inst.low) + " to " + money(b.inst.high) + "</small></div></div>";
     if (a.q && b.q) {
@@ -1849,12 +1855,12 @@
       x.lines.forEach(function (l) { out.push("  " + cmpGroup(l.role) + ": " + l.brand + " " + l.model + (l.qty > 1 ? " x" + l.qty : "") + " — " + (l.included ? "included" : money(l.total))); });
       out.push("  Receiver: " + (x.bar ? "built into the bar" : x.rc ? x.rc.brand + " " + x.rc.short + " — " + money(x.rc.total) : x.ampIn ? x.ampIn.brand + " " + x.ampIn.m + " — in the package" : "customer's own"));
       out.push("  Cables and accessories: " + money(x.accSum));
-      out.push("  SYSTEM TOTAL " + money(x.grand) + (x.plan ? " · about " + money(x.plan.per) + "/mo for " + x.plan.months + " months on the Best Buy card" : "") + " · install " + money(x.inst.low) + " to " + money(x.inst.high) + " labor");
+      out.push("  SYSTEM TOTAL " + money(x.grand) + (x.plan ? " · about " + money(x.plan.per) + "/mo for " + x.plan.months + " months on the norrito card" : "") + " · install " + money(x.inst.low) + " to " + money(x.inst.high) + " labor");
       return out.join("\n");
     };
     const R = rec === "a" ? a : b, O = rec === "a" ? b : a, d = R.grand - O.grand;
     const diff = d === 0 ? "Same price." : rec.toUpperCase() + " is " + money(Math.abs(d)) + (d > 0 ? " more" : " less") + " than " + (rec === "a" ? "B" : "A") + (R.plan && O.plan && R.plan.months === O.plan.months ? ", about " + money(Math.abs(R.plan.per - O.plan.per)) + (R.plan.per - O.plan.per > 0 ? " more" : " less") + " a month" : "") + ".";
-    return [one(a, "a"), "", one(b, "b"), "", "DIFFERENCE: " + diff, "", "Best Buy list prices; confirm today's price and stock. Install is an estimate until Budget Builder."].join("\n");
+    return [one(a, "a"), "", one(b, "b"), "", "DIFFERENCE: " + diff, "", "norrito list prices; confirm today's price and stock. Install is an estimate until norrito."].join("\n");
   }
   let cmpPair = null;
   function openCompare() {
@@ -1905,10 +1911,10 @@
     out.push("  Accessories subtotal: " + money(accSum));
     out.push("", "SYSTEM TOTAL: " + money(grand));
     const p = SALES.plan(grand);
-    if (p) out.push("Financing: about " + money(p.per) + "/mo for " + p.months + " months on the Best Buy card (equal payments; confirm current terms)");
+    if (p) out.push("Financing: about " + money(p.per) + "/mo for " + p.months + " months on the norrito card (equal payments; confirm current terms)");
     const ik = installKind();
-    out.push("Install, labor only: " + SALES.installText(ik) + " (" + SALES.installBand(ik).label + "; Budget Builder sets the quote)");
-    out.push("", "Best Buy list prices as of " + today + "; confirm today's price and stock in store. Mounting, in-wall work and calibration quoted separately.");
+    out.push("Install, labor only: " + SALES.installText(ik) + " (" + SALES.installBand(ik).label + "; norrito sets the quote)");
+    out.push("", "norrito list prices as of " + today + "; confirm today's price and stock in store. Mounting, in-wall work and calibration quoted separately.");
     return out.join("\n");
   }
   // SKUs only, for keying the order.
@@ -1923,7 +1929,7 @@
     return out.join("\n");
   }
   // Scope of work in the Custom SOW Fill Out format: Room Name, Equipment, Scope, Watch, Listen, Disclaimers. Room Control only when there is automation.
-  // Part SKUs for the amplifier boxes in a combo, only where on file (Best Buy, checked). Any other box prints "no SKU on file".
+  // Part SKUs for the amplifier boxes in a combo, only where on file (norrito, checked). Any other box prints "no SKU on file".
   const PART_SKU = { "Rotel RMB-1587 MKII": "6571770", "Rotel RMB-1585 MKII": "6571702", "Rotel RMB-1555": "5708426", "Rotel RB-1552 MKII": "5708743", "Marantz AMP 10": "6522067", "Arcam AVA15": "6679268" };
   // The SOW lines for a separates unit: the processor, then each amplifier box with its quantity, so every box in a combo is ordered.
   function unitLines(s, rc) {
@@ -1962,8 +1968,8 @@
       out.push(b((s.atmos ? "Dolby Atmos" : "Surround") + " from streaming apps and disc; " + s.cfg + " layout" + (barHasRears(s) ? " with rears" : "")));
       out.push(b("Music through the brand's app, AirPlay or Bluetooth as the bar supports"));
       out.push("", "DISCLAIMERS");
-      out.push(b("Equipment at Best Buy price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
-      out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText("bar") + " range for this kind of job)"));
+      out.push(b("Equipment at norrito price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
+      out.push(b("Labor quoted separately in norrito (" + SALES.installText("bar") + " range for this kind of job)"));
       out.push(b("Wireless sub and rears each need a power outlet; outlets by a licensed electrician if new"));
       out.push(b("TV-link features (" + (s.tv || "same-brand TV") + ") depend on the customer's TV model and firmware"));
       return out.join("\n");
@@ -1984,8 +1990,8 @@
       out.push("", "LISTEN");
       out.push(b("TV and streaming apps through the front three" + (state.subs ? " and the sub" : "") + "; stereo music from the amp's app or Bluetooth"));
       out.push("", "DISCLAIMERS");
-      out.push(b("Equipment at Best Buy list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
-      out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText(installKind()) + " range for this kind of job)"));
+      out.push(b("Equipment at norrito list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
+      out.push(b("Labor quoted separately in norrito (" + SALES.installText(installKind()) + " range for this kind of job)"));
       out.push(b("One multichannel amp drives all three fronts; no stacked 2- or 3-channel amps. " + (rc && rc.power ? powerSentence(rc.power) : "Customer to confirm the amp's rating for the speakers' load before quoting")));
       return out.join("\n");
     }
@@ -2014,8 +2020,8 @@
     out.push(b(rc && rc.wiim ? "TV and streaming apps in stereo over HDMI ARC; " + configString() + " layout, no surround processing" : (state.heights > 0 ? "Dolby Atmos and DTS:X" : "Dolby Digital and DTS surround") + " from streaming apps and disc; " + configString() + " layout"));
     out.push(b(rc && rc.sonos ? "Music through the Sonos app, AirPlay and Spotify Connect" : rc && rc.wiim ? "Music through the WiiM Home app (Spotify, Tidal, Amazon, Qobuz and more), AirPlay 2, Chromecast, Alexa and Bluetooth; TV sound over ARC in stereo" : "Music through the receiver's app (HEOS, MusicCast or Sonos-compatible), AirPlay, Bluetooth and Spotify Connect; stereo for two-channel music"));
     out.push("", "DISCLAIMERS");
-    out.push(b("Equipment at Best Buy list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
-    out.push(b("Labor quoted separately in Budget Builder (" + SALES.installText(installKind()) + " range for this kind of job)"));
+    out.push(b("Equipment at norrito list price as of " + new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + "; confirm price and stock at the register"));
+    out.push(b("Labor quoted separately in norrito (" + SALES.installText(installKind()) + " range for this kind of job)"));
     if (ceilHeights || st !== "series" || s.arch) out.push(b("In-wall and in-ceiling work assumes drywall with accessible attic or crawl space; plaster, brick, fire blocking or blown insulation add time and may change placement"));
     out.push(b("Customer to confirm wall type, stud and joist layout, and that any new outlets are installed by a licensed electrician"));
     out.push(b("Mounts, back boxes, wall plates and extra wire billed as used"));
