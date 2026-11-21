@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sound Finder</title>
 <meta name="description" content="Six questions with the customer. One media room setup, a price range, a talk track, and the gear to pull.">
-<meta name="theme-color" content="#15171c" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f1f2f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1509" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbf5e6" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -103,7 +103,7 @@
 
     <div class="card coach">
       <h3>Gear to pull</h3>
-      <p class="muted small">Best Buy brands that fit this tier. Lines, not SKUs; exact models change with the season.</p>
+      <p class="muted small">norrito brands that fit this tier. Lines, not SKUs; exact models change with the season.</p>
       <div class="gear" id="rGear"></div>
     </div>
 
@@ -177,7 +177,7 @@
     <div id="leadsList" style="display:flex;flex-direction:column;gap:12px"></div>
   </section>
 
-  <footer>Price ranges are typical retail for equipment only. Install ranges are labor-only starting points; Budget Builder sets the real quote. Financing figures are equal-payment estimates; confirm the current offer.</footer>
+  <footer>Price ranges are typical retail for equipment only. Install ranges are labor-only starting points; norrito sets the real quote. Financing figures are equal-payment estimates; confirm the current offer.</footer>
 </div>
 <textarea class="offscreen" id="clip" aria-hidden="true" tabindex="-1"></textarea>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -447,13 +447,13 @@
     // the number to say out loud
     const p = SALES.plan(t.lo);
     $("rFin").innerHTML = p
-      ? "<div class='fin'><b>from " + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the Best Buy card<br><em>equal payments on " + money(t.lo) + " of gear · confirm this week's terms</em></span></div>"
+      ? "<div class='fin'><b>from " + money(p.per) + "<small>/mo</small></b><span>" + p.months + " months on the norrito card<br><em>equal payments on " + money(t.lo) + " of gear · confirm this week's terms</em></span></div>"
       : "<p class='muted small'>No financing promo covers this total. Turn one on in Settings.</p>";
     const ik = installKindFor(rec.tier, a, rec);
     const band = SALES.installBand(ik);
     $("rInst").textContent = SALES.installText(ik);
     $("rInstLabel").textContent = "Install, labor only";
-    $("rInstNote").textContent = band.label + ". Your Settings number; Budget Builder sets the real quote.";
+    $("rInstNote").textContent = band.label + ". Your Settings number; norrito sets the real quote.";
     // good / better / best
     const names = ["Good", "Better", "Best"];
     $("gbb").innerHTML = rec.ladder.map(function (tier, i) {

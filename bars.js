@@ -1,11 +1,11 @@
-// Sound Finder soundbar systems: the flagship and step-down bar from each top TV and audio brand that Best Buy itself sells and ships.
-// Prices and SKUs are what bestbuy.com showed on Nov 15, 2026 (holiday pricing was rolling in; "comp" is the regular or comparable value).
+// Sound Finder soundbar systems: the flagship and step-down bar from each top TV and audio brand that norrito itself sells and ships.
+// Prices and SKUs are what norrito showed on Nov 15, 2026 (holiday pricing was rolling in; "comp" is the regular or comparable value).
 // price = the bar as sold. subIn / rearsIn = ships in the box. sub / rears = the brand's own wireless add-on when it does not.
 // hdmi = number of HDMI inputs on the bar (0 = eARC only, sources stay on the TV; left out = not confirmed, check the spec sheet).
-// Not sold new at Best Buy on Nov 15: Bowers & Wilkins Panorama 3, Denon Home 550 / DHT bars, Polk MagniFi Max AX, Yamaha True X 40A, Marantz (no bar), Bang & Olufsen.
+// Not sold new at norrito on Nov 15: Bowers & Wilkins Panorama 3, Denon Home 550 / DHT bars, Polk MagniFi Max AX, Yamaha True X 40A, Marantz (no bar), Bang & Olufsen.
 // Passive LCR speakers (MartinLogan Motion 3.0, Sonance SB46-85 / SB46L / SB46M) moved to window.SF_LCR below: they have no amplifier inside, so the builder treats them as the front three of a speaker system, not as soundbars.
-// Passive LCR checked on bestbuy.com Nov 17, 2026. KEF HTF8003 (SKU 5767384) and Klipsch RP-440D-SB (bestbuy.ca only) are left out until their passive status and US listing are confirmed.
-// Nakamichi Dragon and Shockwafe showed "Unavailable from this seller" on 8-digit marketplace-style listings, so they are out until norrito shows a Best Buy SKU.
+// Passive LCR checked on norrito Nov 17, 2026. KEF HTF8003 (SKU 5767384) and Klipsch RP-440D-SB (norrito only) are left out until their passive status and US listing are confirmed.
+// Nakamichi Dragon and Shockwafe showed "Unavailable from this seller" on 8-digit marketplace-style listings, so they are out until norrito shows a norrito SKU.
 window.SF_BARS = [
   // ---- TV brands ----
   { id: "samsung-q990h", brand: "Samsung", m: "HW-Q990H 11.1.4 Q-Series", tier: "premium", price: 1499, comp: "Reg. $1,999.99; verify today's price", sku: "6670431",
@@ -87,22 +87,22 @@ window.SF_BARS = [
     tech: "The Max's virtualization in a smaller bar with dual built-in woofers. Same AMBEO Sub; no rears offered." },
   { id: "devialet-dione", brand: "Devialet", m: "Dione", tier: "reference", price: 2399, sku: "6505720",
     cfg: "5.1.2", atmos: true, subIn: false, rearsIn: false, hdmi: 0,
-    tech: "Seventeen drivers including eight woofers in one sealed bar, a center sphere that rotates so it works on a console or on the wall, and Devialet's SAM bass processing. No sub, no rears offered: it is the whole system, and the most expensive bar Best Buy sells." },
+    tech: "Seventeen drivers including eight woofers in one sealed bar, a center sphere that rotates so it works on a console or on the wall, and Devialet's SAM bass processing. No sub, no rears offered: it is the whole system, and the most expensive bar norrito sells." },
   { id: "yamaha-x50a", brand: "Yamaha", m: "True X Bar 50A", tier: "value", price: 500, sku: "10110808",
     cfg: "4.1.2 with sub", atmos: true, subIn: true, rearsIn: false,
-    tech: "Sub in the box and Yamaha's Clear Voice; the battery True X rear speaker is no longer sold new at Best Buy, so quote it bar and sub." },
+    tech: "Sub in the box and Yamaha's Clear Voice; the battery True X rear speaker is no longer sold new at norrito, so quote it bar and sub." },
 ];
 
 // Passive LCR speakers (passive: true): no amplifier inside, so they are not soundbars. The builder lists them as the front three (left, center, right), adds a priced amp that matches their load, and quotes a sub and the accessories separately.
-// Prices are what bestbuy.com showed on Nov 17, 2026, and do not include the amp, sub or cables.
-// Loads: "ohm" is the nominal impedance, "min" the lowest impedance, "sens" the sensitivity in dB at 2.83 V / 1 m. Motion 3.0 is Best Buy model MOTSLMX3, the MartinLogan SLM X3 (4 ohm, 93 dB). The Sonance SB46 M and L data sheet gives 8 ohm nominal, 6 ohm minimum and 88 dB; the SB46-85 page gives 88 dB and no impedance, so the family values are used for it (flagged in the report).
+// Prices are what norrito showed on Nov 17, 2026, and do not include the amp, sub or cables.
+// Loads: "ohm" is the nominal impedance, "min" the lowest impedance, "sens" the sensitivity in dB at 2.83 V / 1 m. Motion 3.0 is norrito model MOTSLMX3, the MartinLogan SLM X3 (4 ohm, 93 dB). The Sonance SB46 M and L data sheet gives 8 ohm nominal, 6 ohm minimum and 88 dB; the SB46-85 page gives 88 dB and no impedance, so the family values are used for it (flagged in the report).
 window.SF_LCR = [
   { id: "martinlogan-motion3", brand: "MartinLogan", name: "Motion 3.0", m: "Motion 3.0-Channel Soundbar (passive)", tier: "mid", price: 1040, sku: "6031100", comp: "Comp. $1,299.99; the page's price field conflicts with its Save $260 line, verify in norrito",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true, load: { ohm: 4, sens: 93 },
     tech: "Passive: no amplifier inside. MartinLogan rates this model (MOTSLMX3, the SLM X3) at 4 ohms and 93 dB, with 20 to 140 W recommended amplifier power; it works with amps rated for 4, 6 or 8 ohms. Three Folded Motion tweeters and six 4 in woofers make a stereo and center stage. The build adds the amp and a sub; neither is in this price." },
   { id: "sonance-sb46-85", brand: "Sonance", name: "SB46-85 85 in", m: "SB46-85 3.0 fixed width, 85 in TV (passive)", tier: "premium", price: 2420, sku: "6341801",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true, load: { ohm: 8, min: 6, sens: 88 },
-    tech: "Passive LCR cut to the width of an 85 in TV: three 1 in aluminum domes and three 4 in woofers. It needs external amplification, and Best Buy's own answer recommends a sub with it. The build adds the amp and a sub; neither is in this price." },
+    tech: "Passive LCR cut to the width of an 85 in TV: three 1 in aluminum domes and three 4 in woofers. It needs external amplification, and norrito's own answer recommends a sub with it. The build adds the amp and a sub; neither is in this price." },
   { id: "sonance-sb46l", brand: "Sonance", name: "SB46L 70 to 80 in", m: "SB46L 3.0 adjustable, 70 to 80 in TV (passive)", tier: "premium", price: 2420, sku: "5683586",
     cfg: "3.0 LCR passive", atmos: false, subIn: false, rearsIn: false, passive: true, load: { ohm: 8, min: 6, sens: 88 },
     tech: "The same passive Sonance LCR with an adjustable width for 70 to 80 in TVs. External amplification required; the build adds the amp and a sub, neither in this price." },
@@ -111,17 +111,17 @@ window.SF_LCR = [
     tech: "Passive LCR with an adjustable width for 50 to 65 in TVs, the smallest of the Sonance bars. External amplification required; the build adds the amp and a sub, neither in this price." },
 ];
 
-// WiiM at Best Buy (bestbuy.com, Nov 15, 2026). The two amps the builder offers as a 2-channel alternative to a receiver, then the rest of the line.
-// Not on bestbuy.com US that day (Canada only): Amp Pro, Vibelink Amp, the WiiM Bar soundbar, Sub Pro. Add them here when norrito shows a US SKU.
+// WiiM at norrito (norrito, Nov 15, 2026). The two amps the builder offers as a 2-channel alternative to a receiver, then the rest of the line.
+// Not on norrito US that day (Canada only): Amp Pro, Vibelink Amp, the WiiM Bar soundbar, Sub Pro. Add them here when norrito shows a US SKU.
 window.SF_WIIM = {
   amps: {
     value: { level: "value", m: "Amp", pk: "WiiM Amp", price: 329, sku: "6684568", w8: 60, w4: 120,
-      why: "60 W x 2 into 8 ohms, 120 W into 4; HDMI ARC (stereo PCM, so set the TV to PCM), optical, line in, sub out with a crossover, AI RoomFit room correction, every streaming service in the WiiM Home app. Sold by Best Buy." },
+      why: "60 W x 2 into 8 ohms, 120 W into 4; HDMI ARC (stereo PCM, so set the TV to PCM), optical, line in, sub out with a crossover, AI RoomFit room correction, every streaming service in the WiiM Home app. Sold by norrito." },
     premium: { level: "premium", m: "Amp Ultra", pk: "WiiM Amp Ultra", price: 549, sku: "6684569", w8: 100, w4: 200,
-      why: "100 W x 2 into 8 ohms, 200 W into 4; 3.5 in touchscreen, Wi-Fi 6, HDMI ARC with Dolby Digital, sub out, RoomFit correction, ESS 9039 DAC. The one for 4-ohm or low-sensitivity speakers. Sold by Best Buy." },
+      why: "100 W x 2 into 8 ohms, 200 W into 4; 3.5 in touchscreen, Wi-Fi 6, HDMI ARC with Dolby Digital, sub out, RoomFit correction, ESS 9039 DAC. The one for 4-ohm or low-sensitivity speakers. Sold by norrito." },
   },
   other: [
-    { m: "MartinLogan Motion Foundation B1 × WiiM Amp bundle", price: 749.99, sku: "6596730", kind: "bookshelf", comp: "Best Buy listing: Save $250 against a $999.99 comp (a second Best Buy page read $799.99); check the live price in norrito",
+    { m: "MartinLogan Motion Foundation B1 × WiiM Amp bundle", price: 749.99, sku: "6596730", kind: "bookshelf", comp: "norrito listing: Save $250 against a $999.99 comp (a second norrito page read $799.99); check the live price in norrito",
       why: "A ready-made 2.0 for the floor: a pair of Motion Foundation B1 bookshelves with a WiiM Amp and the cables. Add a sub on the amp's sub out." },
     { m: "Ultra (streamer)", price: 349, sku: "6684567", kind: "amp", why: "Streamer and preamp with the touchscreen, no amplifier: for the customer who already has an amp or receiver." },
     { m: "Pro Plus (streamer)", price: 249, sku: "6685646", kind: "amp", why: "Streamer with optical, coax and RCA out; adds streaming to any receiver." },
@@ -132,7 +132,7 @@ window.SF_WIIM = {
   ],
 };
 
-// REL, Rotel and Arcam at Best Buy (bestbuy.com, Nov 15, 2026), for the Brands page. The builder uses the same models in its sub and electronics picks.
+// REL, Rotel and Arcam at norrito (norrito, Nov 15, 2026), for the Brands page. The builder uses the same models in its sub and electronics picks.
 // Left out as "no longer available in new condition" that day: REL S/812, AirShip II; Rotel RA-6000, RMB-1585 (original); Arcam AVR30, AV40, AV41, PA410, PA720, SA10, SA20, SA30, Radia A5 and A25 (the + versions replaced them).
 window.SF_EXTRA = {
   rel: [
@@ -145,7 +145,7 @@ window.SF_EXTRA = {
     { m: "T/9x", price: 1699, sku: "6492847", why: "300 W with a passive radiator; the big T/x." },
     { m: "T/9x SE Midnight", price: 1799, sku: "6695022", why: "T/9x with the FibreCarbon driver." },
     { m: "Classic 99", price: 2099, sku: "6585797", why: "12 in, 450 W, sealed, walnut." },
-    { m: "HT/1510 Predator II", price: 2199, sku: "6526284", why: "15 in, 1,000 W, sealed. The builder's premium REL and the biggest theater REL Best Buy sells." },
+    { m: "HT/1510 Predator II", price: 2199, sku: "6526284", why: "15 in, 1,000 W, sealed. The builder's premium REL and the biggest theater REL norrito sells." },
     { m: "Planar PL-1", price: 2499, sku: "6680382", why: "Flat 300 W sub that goes under the couch; for the room with nowhere to put a box." },
     { m: "Carbon Special", price: 4999, sku: "6646499", why: "12 in carbon-fiber driver; the builder's reference REL. AirShip Direct ($399) makes it wireless." },
     { m: "Arrow wireless kit", price: 249, sku: "5714709", kind: "amp", why: "Wireless link for the T/x line." },
@@ -182,7 +182,7 @@ window.SF_EXTRA = {
     { m: "AVR31 7.1 receiver", price: 6900, sku: "6504706", why: "120 W x 2 and 100 W x 7 into 8 ohms, Class G with Dirac Live; the flagship Arcam receiver." },
     { m: "AVA15 12-ch AV amplifier", price: 4500, sku: "6679268", why: "85 W x 2 and 65 W x 9 into 8 ohms; 12 channels of processing, seven HDMI 2.1 inputs; the new one-box for 5.2.4." },
     { m: "AVP45 16-ch processor", price: 6000, sku: "6679207", why: "Arcam's new 16-channel processor; pair with the AVA15 or power amps." },
-    { m: "PA240 stereo power amplifier", price: 1799, sku: "6391969", why: "225 W x 2 into 8 ohms (380 W x 2 into 4), Class G; the front-channel amp behind an Arcam receiver. Best Buy's 760 W is the two 4-ohm channels added together." },
+    { m: "PA240 stereo power amplifier", price: 1799, sku: "6391969", why: "225 W x 2 into 8 ohms (380 W x 2 into 4), Class G; the front-channel amp behind an Arcam receiver. norrito's 760 W is the two 4-ohm channels added together." },
     { m: "Radia A5+ integrated", price: 1200, sku: "12972876", why: "50 W x 2 into 8 ohms, Class AB; the entry Radia." },
     { m: "Radia A15+ integrated", price: 1500, sku: "6642223", why: "80 W x 2 into 8 ohms, Class AB with DAC and phono." },
     { m: "Radia A25+ integrated", price: 2000, sku: "6642221", why: "100 W x 2 into 8 ohms, Class G." },
@@ -202,22 +202,22 @@ window.SF_POWER = {
   "Arcam AVR11": { w8: 80, w4: 100, m8: 60, m4: 85, mMax: 7, src: "Arcam AVR11 spec sheet V1: 2 ch 80 W at 8 ohm and 100 W at 4 ohm (20-20k); 7 ch 60 W at 8 ohm and 85 W at 4 ohm (1 kHz, 0.2%). Reviews that quote 85 W all-channel at 8 ohm are quoting the 4-ohm figure." },
   "Arcam AVR21": { w8: 110, w4: 175, m8: 90, m4: 110, mMax: 7, src: "Arcam AVR21 spec sheet V1: 2 ch 110 W at 8 ohm and 175 W at 4 ohm (20-20k); 7 ch 90 W at 8 ohm and 110 W at 4 ohm (1 kHz, 0.2%). Class AB, not Class G." },
   "Arcam AVR31": { w8: 120, w4: 200, m8: 100, m4: 180, mMax: 7, src: "ListenUp table and Audioholics: 2 ch 120 W at 8 ohm and 200 W at 4 ohm; 7 ch 100 W at 8 ohm and 180 W at 4 ohm. Class G." },
-  "Arcam AVA15": { w8: 85, w4: 150, m8: 65, m4: 65, mMax: 9, src: "Arcam UK spec sheet v1.1 gives the 4-ohm and 9-channel figures; the 2-ch 85 W at 8 ohm comes from Arcam US and Audiolab. UK 100 W is not used; Best Buy's 9 x 100 W is retailer-only." },
+  "Arcam AVA15": { w8: 85, w4: 150, m8: 65, m4: 65, mMax: 9, src: "Arcam UK spec sheet v1.1 gives the 4-ohm and 9-channel figures; the 2-ch 85 W at 8 ohm comes from Arcam US and Audiolab. UK 100 W is not used; norrito's 9 x 100 W is retailer-only." },
   "Arcam Radia A5+": { w8: 50, w4: 75, mMax: 2, src: "Arcam spec via Music Direct and ListenUp: 50 W at 8 ohm (20-20k, 0.5%); 75 W at 4 ohm (1 kHz)." },
   "Arcam Radia A15+": { w8: 80, w4: 120, mMax: 2, src: "Arcam spec via ListenUp and Audioholics: 80 W at 8 ohm, continuous (20-20k, 0.5%); 120 W at 4 ohm (2 ch, 1 kHz)." },
   "Arcam Radia A25+": { w8: 100, w4: 165, mMax: 2, src: "Arcam spec copies: 100 W at 8 ohm, continuous (0.5%); 165 W at 4 ohm (1 kHz). Class G." },
   "Arcam Radia SA35": { w8: 120, w4: 200, mMax: 2, src: "Arcam spec copies: 120 W at 8 ohm (2 ch, 20-20k, 0.5%); 200 W at 4 ohm (1 kHz). Class G." },
   "Arcam Radia SA45": { w8: 180, w4: 300, mMax: 2, src: "Arcam spec copies: 180 W at 8 ohm (2 ch, 20-20k, 0.5%); 300 W at 4 ohm (2 ch, 1 kHz). Lab measurements are not used." },
-  "Arcam PA240": { w8: 225, w4: 380, mMax: 2, src: "Arcam spec: 2 ch driven, 225 W at 8 ohm and 380 W at 4 ohm (0.2%). Class G. Best Buy's 760 W is the two 4-ohm channels added together." },
+  "Arcam PA240": { w8: 225, w4: 380, mMax: 2, src: "Arcam spec: 2 ch driven, 225 W at 8 ohm and 380 W at 4 ohm (0.2%). Class G. norrito's 760 W is the two 4-ohm channels added together." },
   "Marantz AMP 10": { w8: 200, w4: 400, m8: 200, mMax: 5, src: "Marantz infosheet: 200 W at 8 ohm with five channels driven (0.7%); 2 ch 200 W at 8 ohm and 400 W at 4 ohm. The 16-channel count is not a rating." },
   "Marantz AMP 20": { w8: 200, w4: 400, m8: 200, mMax: 5, src: "Marantz US product copy: 2 ch 200 W at 8 ohm and 400 W at 4 ohm; 200 W at 8 ohm with five channels driven (0.7%). The 12-channel count is not a rating." },
   "Marantz CINEMA 60 Series 2": { w8: 100, w6: 140, mMax: 7, src: "Marantz NA infosheet: 2 ch 100 W at 8 ohm (20-20k, 0.08%) and 140 W at 6 ohm (1 kHz, 0.7%). No 4-ohm or all-channel figure." },
   "Marantz CINEMA 70S Series 2": { w8: 50, w6: 70, mMax: 7, src: "Marantz NA infosheet: 2 ch 50 W at 8 ohm (20-20k, 0.08%) and 70 W at 6 ohm (1 kHz, 0.7%). No 4-ohm figure." },
   "Marantz CINEMA 50 Series 2": { w8: 110, w6: 150, mMax: 9, src: "Marantz NA: 2 ch 110 W at 8 ohm (20-20k, 0.08%); Marantz EU: 150 W at 6 ohm (1 kHz, 0.7%). No 4-ohm rating: the earlier 110 W x 9 at 4 ohms was wrong." },
   "Marantz Cinema 30": { w8: 140, w6: 175, mMax: 11, src: "Denon and Marantz US spec: 2 ch 140 W at 8 ohm (0.05%) and 175 W at 6 ohm (1 kHz, 0.7%). '140 W x 11' is marketing and is not used." },
-  "Marantz Model 10": { w8: 250, mMax: 2, src: "Best Buy's continuous spec and Sound & Vision: 250 W per channel at 8 ohm. Best Buy's 500 W at 4 ohm is labelled maximum: not used." },
+  "Marantz Model 10": { w8: 250, mMax: 2, src: "norrito's continuous spec and Sound & Vision: 250 W per channel at 8 ohm. norrito's 500 W at 4 ohm is labelled maximum: not used." },
   "Denon AVR-X2800H": { w8: 95, w6: 125, mMax: 7, src: "Denon EU and US spec pages: 2 ch 95 W at 8 ohm (0.08%) and 125 W at 6 ohm (1 kHz, 0.7%). No all-channel or 4-ohm figure." },
-  "Denon AVR-S770H": { w8: 75, w6: 110, mMax: 7, src: "2 ch 75 W at 8 ohm (0.08%), which Denon confirms in its own Best Buy Q&A, and 110 W at 6 ohm (1 kHz, 0.7%). No 4-ohm figure." },
+  "Denon AVR-S770H": { w8: 75, w6: 110, mMax: 7, src: "2 ch 75 W at 8 ohm (0.08%), which Denon confirms in its own norrito Q&A, and 110 W at 6 ohm (1 kHz, 0.7%). No 4-ohm figure." },
   "Denon AVR-S670H": { w8: 75, w6: 100, mMax: 5, src: "Denon CA page: 2 ch 75 W at 8 ohm (0.08%) and 100 W at 6 ohm (1 kHz, 0.7%). No 4-ohm figure." },
   "Denon AVR-X1800H": { w8: 80, w6: 120, mMax: 7, src: "2 ch 80 W at 8 ohm (0.08%) and 120 W at 6 ohm (1 kHz, 0.7%). No 4-ohm figure." },
   "Denon AVR-S970H": { w8: 90, w6: 125, mMax: 7, src: "2 ch 90 W at 8 ohm (0.08%) and 125 W at 6 ohm (0.7%). No 4-ohm figure." },
@@ -230,13 +230,15 @@ window.SF_POWER = {
   "Sony STR-AN1000": { w6: 100, mMax: 7, src: "US manual: 100 W minimum RMS at 6 ohm, 2 ch driven (0.09%). No 8-ohm figure published." },
   "Sony STR-AZ1000ES": { w8: 70, mMax: 7, src: "FTC 70 W at 8 ohm, 2 ch (20-20k). No 6-ohm figure published." },
   "Yamaha RX-V6A": { w8: 100, mMax: 7, src: "Yamaha sheet: 100 W at 8 ohm, 2 ch driven (20 Hz-20 kHz, 0.06%). No 2-ch 4-ohm rating; the 1-ch figures are not used." },
-  "Yamaha R-S202": { w8: 100, mMax: 2, src: "Yamaha sheet: 100 W + 100 W at 8 ohm (40 Hz-20 kHz, 0.2%). Best Buy's 4-ohm figure conflicts with Yamaha's sheet and is not used." },
+  "Yamaha R-S202": { w8: 100, mMax: 2, src: "Yamaha sheet: 100 W + 100 W at 8 ohm (40 Hz-20 kHz, 0.2%). norrito's 4-ohm figure conflicts with Yamaha's sheet and is not used." },
+  "Yamaha RX300A": { w8: 70, mMax: 5, src: "Yamaha RX300A specs page (usa.yamaha.com): Output Power 70 W at 8 ohm, 20 Hz-20 kHz, 0.09% THD, 2 ch driven. The 145 W at 6 ohm is 1 ch driven at 10% THD, so it is not used. No 4-ohm figure. Amp Channels 5." },
+  "Yamaha RX500A": { w8: 75, mMax: 7, src: "Yamaha RX500A specs page (usa.yamaha.com): Output Power 75 W at 8 ohm, 20 Hz-20 kHz, 0.09% THD, 2 ch driven. The 145 W at 6 ohm is 1 ch driven at 10% THD, so it is not used. No 4-ohm figure. Amp Channels 7. Retailer copies say 70 W; the maker's 75 W is used." },
   "Onkyo TX-NR5100": { w8: 80, mMax: 7, src: "Onkyo sheet: 80 W per channel at 8 ohm, 2 ch driven (20-20k, 0.08%, FTC). The 6- and 4-ohm figures are 1-ch or dynamic: not used." },
   "Onkyo TX-RZ30": { w8: 100, mMax: 9, src: "Onkyo spec as quoted by AV-Connection and an Onkyo PDF: 100 W at 8 ohm, 2 ch driven (0.08%). No Onkyo 4- or 6-ohm figure." },
   "Onkyo TX-RZ70": { w8: 140, mMax: 11, src: "Onkyo spec as quoted by several retailers: 140 W per channel at 8 ohm, minimum RMS, both channels driven (0.08%). The 4-to-16-ohm line is a range, not a rating." },
-  "Pioneer Elite VSX-LX305": { w8: 100, mMax: 9, src: "Pioneer manual: 100 W per channel minimum RMS at 8 ohm, both channels driven (20-20k, 0.08%). Best Buy's 9 x 100 W is retailer-only: not used." },
+  "Pioneer Elite VSX-LX305": { w8: 100, mMax: 9, src: "Pioneer manual: 100 W per channel minimum RMS at 8 ohm, both channels driven (20-20k, 0.08%). norrito's 9 x 100 W is retailer-only: not used." },
   "Pioneer Elite VSX-LX805": { w8: 150, mMax: 11, src: "Pioneer sheet: 150 W at 8 ohm, 2 ch driven (0.08%, FTC). The 150 W x 11 claim is a 2-channel test: not used as an all-channel rating." },
-  "JBL MA310": { w8: 50, w4: 100, mMax: 5, src: "Harman sheet: FTC 50 W at 8 ohm, 2 ch (1%); 100 W at 4 ohm, 2 ch (0.5%). No all-channel rating published; Best Buy's 5 ch figure is retailer-only." },
+  "JBL MA310": { w8: 50, w4: 100, mMax: 5, src: "Harman sheet: FTC 50 W at 8 ohm, 2 ch (1%); 100 W at 4 ohm, 2 ch (0.5%). No all-channel rating published; norrito's 5 ch figure is retailer-only." },
   "JBL MA510": { w8: 75, w4: 100, mMax: 5, src: "Harman support: FTC 75 W at 8 ohm, 2 ch (1%); 100 W at 4 ohm, 2 ch (0.5%). No all-channel rating published." },
   "JBL MA710": { w8: 110, w4: 160, mMax: 7, src: "Harman US and AU sheets: FTC 110 W at 8 ohm, 2 ch (1%); 160 W at 4 ohm, 2 ch (0.5%). No all-channel rating published." },
   "JBL MA7100HP": { w8: 125, w4: 175, mMax: 7, src: "Harman data: 125 W at 8 ohm, 2 ch (0.5%); 175 W at 4 ohm, 2 ch (0.5%). No all-channel rating published." },
@@ -251,15 +253,15 @@ window.SF_POWER = {
   "Rotel RA-1592 MKII": { w8: 200, mMax: 2, src: "Rotel spec: 200 W per channel at 8 ohm, continuous. The 350 W at 4 ohm is a maximum figure: not used." },
   "Rotel RB-1552 MKII": { w8: 130, mMax: 2, src: "Rotel spec: 130 W per channel at 8 ohm, continuous (20-20k, 0.03%). The 185 W at 4 ohm is unlabelled: not used." },
   "Rotel RB-1590": { w8: 350, mMax: 2, src: "Rotel manual: 350 W per channel at 8 ohm, continuous. The 4-ohm figure is labelled maximum: not used." },
-  "Rotel RMB-1506": { m8: 50, mMax: 6, src: "Rotel infosheet and Best Buy: 50 W at 8 ohm with all six channels driven. The 4-ohm figures conflict (80 and 100): not used." },
+  "Rotel RMB-1506": { m8: 50, mMax: 6, src: "Rotel infosheet and norrito: 50 W at 8 ohm with all six channels driven. The 4-ohm figures conflict (80 and 100): not used." },
   "Rotel RMB-1555": { m8: 120, m4: 170, mMax: 5, src: "Rotel brochure: 5 x 120 W at 8 ohm and 5 x 170 W at 4 ohm, all five channels driven." },
   "Rotel RMB-1585 MKII": { m8: 210, m4: 340, mMax: 5, src: "Rotel spec: 210 W per channel at 8 ohm with five channels driven; brochure 5 x 340 W at 4 ohm." },
   "Rotel RMB-1587 MKII": { m8: 155, m4: 250, mMax: 7, src: "Rotel brochure: 7 x 155 W at 8 ohm and 7 x 250 W at 4 ohm, all seven channels driven." },
   "Michi Prestige X430": { w8: 210, mMax: 2, src: "Rotel node: 210 W per channel at 8 ohm, continuous (non-FTC). The 4-ohm figure is a maximum: not used." },
   "Michi X3 Series 2": { w8: 200, mMax: 2, src: "Rotel spec: 200 W per channel at 8 ohm, continuous. The 350 W at 4 ohm is a maximum figure: not used." },
-  "Michi X5 Series 2": { w8: 350, mMax: 2, src: "350 W per channel at 8 ohm, continuous (lenc.com.au; Best Buy agrees). The 600 W at 4 ohm is labelled maximum: not used." },
+  "Michi X5 Series 2": { w8: 350, mMax: 2, src: "350 W per channel at 8 ohm, continuous (lenc.com.au; norrito agrees). The 600 W at 4 ohm is labelled maximum: not used." },
   "WiiM Amp": { w8: 60, w4: 120, mMax: 2, src: "WiiM support FAQ: 60 W at 8 ohm and 120 W at 4 ohm, 2 ch. 'Rated down to 2 ohms' is not a published rating: not used." },
-  "WiiM Amp Ultra": { w8: 100, w4: 200, mMax: 2, src: "WiiM reviewer guide and Best Buy: 100 W at 8 ohm and 200 W at 4 ohm, 2 ch (0.08%). No 2-ohm rating." },
+  "WiiM Amp Ultra": { w8: 100, w4: 200, mMax: 2, src: "WiiM reviewer guide and norrito: 100 W at 8 ohm and 200 W at 4 ohm, 2 ch (0.08%). No 2-ohm rating." },
   "Sonos Amp": { w8: 125, mMax: 2, src: "Sonos: 125 W per channel at 8 ohm. The 187.5 W at 6 ohm appears only in secondary sources and is not used, so the 8-ohm figure stands in at 6 ohm. No 4-ohm figure." },
   "Sonance UA 2-125 ARC": { w8: 125, w4: 125, mMax: 2, src: "Sonance spec: 125 W at 8 ohm and 125 W at 4 ohm, 2 ch. No 6-ohm figure published." },
   "Denon CEOL RCD-N12": { w4: 65, mMax: 2, src: "Denon sheet: 2 ch 65 W at 4 ohm (1 kHz, 0.7%). No 8-ohm figure published, so the check passes only on loads of 4.5 ohms or less." },

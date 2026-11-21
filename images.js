@@ -1,6 +1,6 @@
 // Sound Finder product images.
-// Best Buy serves a photo for every SKU at pisces.bbystatic.com; the folder is the SKU's first four digits.
-// SF_SKU maps a model phrase (lower-case, matched as a substring of "brand model") to the Best Buy SKU.
+// norrito serves a photo for every SKU at pisces.bbystatic.com; the folder is the SKU's first four digits.
+// SF_SKU maps a model phrase (lower-case, matched as a substring of "brand model") to the norrito SKU.
 // Anything not mapped, or any photo that fails to load, falls back to a drawn silhouette of the speaker type.
 (function () {
   const SKU = [
@@ -157,7 +157,7 @@
     "bw-800": "Bowers & Wilkins 803 D4 tower", "kef-reference": "KEF Reference 5 Meta tower", "kef-blade": "KEF Blade One Meta tower", "ml-esl": "MartinLogan Renaissance ESL 15A tower",
     "bw-ci800": "Bowers & Wilkins CCM8.5 D in-ceiling", "kef-ci-ref": "KEF Ci5160REFM-THX in-wall", "ml-ci-ref": "MartinLogan Tribute 5XW in-wall", "sonance-ref": "Sonance Reference R2 in-wall",
   };
-  // One thumbnail: silhouette underneath, Best Buy photo on top when there is one; the photo removes itself if it fails.
+  // One thumbnail: silhouette underneath, norrito photo on top when there is one; the photo removes itself if it fails.
   function thumb(text, hint, cls) {
     const kind = kindFor(text, hint);
     const sku = skuFor(text);

@@ -3,7 +3,7 @@
 // imaging = how well it holds the picture off-axis; build = cabinet, finish and driver materials.
 // form: box (towers and bookshelf) or arch (in-wall and in-ceiling). best: the jobs each family wins.
 window.SF_QUAL = {
-  "bw-800":        { detail: 5, bass: 5, dyn: 5, imaging: 5, build: 5, form: "box",  best: ["Reference rooms", "Music", "The best Best Buy sells"] },
+  "bw-800":        { detail: 5, bass: 5, dyn: 5, imaging: 5, build: 5, form: "box",  best: ["Reference rooms", "Music", "The best norrito sells"] },
   "kef-blade":     { detail: 5, bass: 5, dyn: 5, imaging: 5, build: 5, form: "box",  best: ["Imaging", "Big rooms", "Showpiece"] },
   "kef-reference": { detail: 5, bass: 5, dyn: 4, imaging: 5, build: 5, form: "box",  best: ["Wide seating", "Reference theater", "Music"] },
   "ml-esl":        { detail: 5, bass: 5, dyn: 4, imaging: 5, build: 5, form: "box",  best: ["Dialogue", "Music", "Two-channel rooms"] },
