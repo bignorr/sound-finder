@@ -700,7 +700,8 @@
   const SALES = window.SF_SALES;
   const state = { tier: "all", form: "box", series: "klipsch-rp2", fronts: "tower", around: 5, surroundType: "series", heights: 2, heightType: "series", subs: 1, avr: "auto",
     acc: { wire: true, subcable: true, hdmi: true, banana: true, surge: true }, room: "", budget: "all", max: 0, brand: "all",
-    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrPick: "", avrBrand: "all", accPick: {}, bundle: "" };
+    kind: "speakers", bar: "", barSub: 1, barRears: 1, barMount: "console", wiim: "auto", subBrand: "series", avrPick: "", avrBrand: "all", accPick: {}, bundle: "", swaps: {} };
+  const ui = { swapOpen: "", swapDraft: null, swapErr: "" }; // the speaker-swap form open on screen, and why its last save was refused; not saved
   // WiiM streaming amps (bars.js): a 2-channel alternative to a receiver for stereo and 2.1 music rooms.
   const WIIM = (window.SF_WIIM && window.SF_WIIM.amps) || null;
   // Package deals (bundles.js): a complete system or a receiver-plus-speakers package that prices lower than the lines add up to.
@@ -764,6 +765,7 @@
     if (typeof state.avrPick !== "string") state.avrPick = "";
     if (typeof state.avrBrand !== "string") state.avrBrand = "all";
     if (!state.accPick || typeof state.accPick !== "object") state.accPick = {};
+    if (!state.swaps || typeof state.swaps !== "object" || Array.isArray(state.swaps)) state.swaps = {};
     if (state.accPick.hdmi === "AudioQuest Forest 48 HDMI cable") state.accPick.hdmi = "AudioQuest Forest 48 in-wall HDMI cable, 4.9 ft"; // the name changed when the other lengths were added
     if (state.form !== "arch") state.form = "box"; // physical is the default; an old "all" setting is read as physical
     const q = new URLSearchParams(location.search);
@@ -879,7 +881,8 @@
     return SERIES.find(function (x) { return x.id === state.series; });
   }
   // The whole-system price for any family at the current build size: speakers, the matched receiver, and the cables that are switched on.
-  function systemTotal(s) { const r = build(s); const rc = receiver(s); return r.total + (rc ? rc.total : 0) + accTotal(accessories(r, rc)); }
+  // now: the set as it reads on screen, speaker swaps included. Left off, it reads the build as picked (the family ranking and the reseat rule).
+  function systemTotal(s, now) { const b = build(s); const r = now ? asShown(b) : b; const rc = receiver(s); return r.total + (rc ? rc.total : 0) + accTotal(accessories(b, rc)); }
   const avrBtns = $("avrChips").querySelectorAll("button");
   // The picker: a tap takes that unit; a tap on the unit already picked goes back to Auto.
   $("avrTiers").addEventListener("click", function (e) {
@@ -1070,7 +1073,7 @@
     const a = pk ? pk.c.a : lead;
     const p = powerCheck(s, a, 3);
     return { role: "Receiver · " + s.tier, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: "avr", need: "one multichannel unit for all three fronts, rated for this load", tier: s.tier,
-      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: p.R <= 4.5, alts: opts.filter(function (x) { return x !== lead; }), base: base, isAlt: false, picked: !!pk, over: cap > 0 && totalWithRc(s, null, { a: a }) > cap, sku: a.sku, cur: "strong", key: null, floor: true, separates: false, power: p };
+      short: a.m.replace(/ \d+\.\d-ch.*$/, ""), q: a.brand + " " + a.m.replace(/ \d+\.\d-ch.*$/, ""), ohm4: p.R <= 4.5, alts: opts.filter(function (x) { return x !== lead; }), base: base, isAlt: false, picked: !!pk, over: cap > 0 && totalWithRc(s, null, { a: a }) > cap, sku: a.sku, cur: "strong", key: null, floor: true, separates: false, unit: a, power: p };
     // The one-unit rule: a passive front three is never powered by stacked 2- or 3-channel amps; the pick is always a multichannel unit.
   }
 
@@ -1189,7 +1192,7 @@
   }
   // The WiiM streaming amp as the receiver line: stereo builds only.
   function wiimLine(s, w) {
-    return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8, cur: w.level === "premium" ? "strong" : "ok", power: powerCheck(s, w, 2) };
+    return { role: "Streaming amp · WiiM", brand: "WiiM", model: w.m, qty: 1, each: w.price, total: w.price, note: w.why, kind: "amp", need: "2 amplified channels", tier: w.level, short: w.m, q: "WiiM " + w.m, ohm4: true, wiim: true, sku: w.sku, watts: w.w8, cur: w.level === "premium" ? "strong" : "ok", unit: w, power: powerCheck(s, w, 2) };
   }
   // Does this family have a way to be powered that clears the check? A bar needs no amp check. A passive LCR needs a passing amp.
   // A Sonos Architectural family needs its Sonos Amp to clear each pair. Any other family needs a receiver at or above its floor, a WiiM stereo amp, or a package amp.
@@ -1225,7 +1228,7 @@
   // One receiver line. meta.base is the unit the rule gave (Auto, or the floor); meta.picked means the user picked it from the tier list.
   function receiverLine(s, c, key, meta) {
     const a = c.a, lvl = c.lvl; const short = a.short || a.m.replace(/ \d+\.\d-ch.*$/, "");
-    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: c.key != null ? c.key : key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, picked: !!meta.picked, wiim: !!a.wiim, power: powerCheck(s, a, chanCount(s)) };
+    return { role: (a.role || "Receiver") + " · " + lvl, brand: a.brand, model: a.m, qty: 1, each: a.price, total: a.price, note: a.why, kind: a.kind || "avr", need: AVRS[key].need, tier: lvl, short: short, q: a.brand + " " + short, ohm4: a.ohm4 !== false, alts: meta.alts, base: meta.base, isAlt: !!meta.isAlt, sku: a.sku, cur: a.cur || "ok", key: c.key != null ? c.key : key, floor: lvl === floorLevel(s), separates: a.role === "Separates", budget: !!meta.budget, over: !!meta.over, picked: !!meta.picked, wiim: !!a.wiim, unit: a, power: powerCheck(s, a, chanCount(s)) };
   }
   // WiiM amps as budget candidates on a stereo build, at the level the WiiM data gives them (Amp value, Amp Ultra premium), so the cable kit matches the manual WiiM pick. wiimLevels keeps the Ultra alone for demanding speakers. Same floor rule as the receivers.
   function wiimCandidates(s) {
@@ -1294,7 +1297,7 @@
   // Every pool unit with its whole-system total, its power figures, its verdict for these speakers, the channels it leaves spare, and whether it
   // fits the budget (always, with no budget).
   function avrChoices(s) {
-    const cap = budgetCap(); const r = build(s); const n = chanCount(s); const floor = floorLevel(s); const have = channels(s);
+    const cap = budgetCap(); const r = asShown(build(s)); const n = chanCount(s); const floor = floorLevel(s); const have = channels(s);
     return pickerPool(s).map(function (c) {
       const key = c.key != null ? c.key : (s.lcr ? null : avrNeedKey(channels(s)));
       const total = totalWithRc(s, key, c, r); const p = powerCheck(s, c.a, n); const ch = ampChannels(c.a);
@@ -1310,7 +1313,7 @@
     const list = id === "hdmi" ? HDMI_OPTS : id === "sub" ? SUB_OPTS : s.bar ? POWER_BAR_OPTS : POWER_RECEIVER_OPTS;
     const cap = budgetCap(); const saved = state.accPick[id]; const out = [];
     try {
-      list.forEach(function (o) { state.accPick[id] = accKey(o); const total = systemTotal(s); out.push({ o: o, total: total, over: cap > 0 ? total - cap : 0, fits: !(cap > 0) || total <= cap }); });
+      list.forEach(function (o) { state.accPick[id] = accKey(o); const total = systemTotal(s, true); out.push({ o: o, total: total, over: cap > 0 ? total - cap : 0, fits: !(cap > 0) || total <= cap }); });
     } finally { if (saved === undefined) delete state.accPick[id]; else state.accPick[id] = saved; }
     return out;
   }
@@ -1383,7 +1386,7 @@
       if (tier === "none") return null;
       if (!powerOk(s, SONOS_AMP, 2)) return null;
       const amps = Math.ceil(n / 2);
-      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp", ohm4: true, cur: "ok", power: powerCheck(s, SONOS_AMP, 2) };
+      return { role: "Amplifier", brand: SONOS_AMP.brand, model: SONOS_AMP.m, qty: amps, each: SONOS_AMP.price, total: SONOS_AMP.price * amps, note: SONOS_AMP.why, kind: "amp", sonos: true, tier: tier, short: "Amp", q: "Sonos Amp", ohm4: true, cur: "ok", unit: SONOS_AMP, perUnit: 2, power: powerCheck(s, SONOS_AMP, 2) };
     }
     if (tier === "none") return null;
     const key = avrNeedKey(n); const cap = budgetCap();
@@ -1436,9 +1439,9 @@
   }
 
   // A package line carries its own SKU: the name lookup would match the amp inside its name (the WiiM Amp) and send the link to the amp.
-  function lineSku(l) { if (l.nosku) return null; if (l.bundle) return l.sku || null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
+  function lineSku(l) { if (l.keyed) return l.sku || null; if (l.nosku) return null; if (l.bundle) return l.sku || null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
   function skuHtml(l) {
-    if (l.nosku) return "";
+    if (l.nosku || l.keyed) return "";
     const key = l.brand + " " + l.model;
     const k = lineSku(l);
     return "<span class='sku coach'>" + (k ? "SKU " + esc(k) : "no SKU on file") + " <button type='button' data-skukey='" + esc(key) + "'>" + (k ? "edit" : "add") + "</button></span>";
@@ -1464,6 +1467,125 @@
     const v = SALES.setSku(b.dataset.skusave, b.parentNode.querySelector("input").value);
     toast(v ? "SKU saved on this phone" : "SKU cleared"); render();
   });
+
+  // ---------- Speaker swap by SKU ----------
+  // Once a set is picked, any speaker line can take a SKU keyed in on this phone. The swap replaces that one line's name, price and SKU and moves the
+  // set total by the price difference. It never re-picks the receiver, moves the family, or resizes the cables. Over budget is allowed; the total shows by how much.
+  // Power: a series swap needs its sensitivity and impedance, and is saved only when the build's amp clears it. A saved swap is checked against the receiver chosen then;
+  // a later receiver change that cannot drive it shows as a warning. Soundbar and subwoofer swaps are not power-checked: each has its own amplifier.
+  // Swaps are keyed by slot, the role and model as picked, so a swap waits for its slot and comes back when that slot is built again.
+  function swappable(l) {
+    const kinds = ["bar", "bookshelf", "tower", "center", "arch", "module", "sub"];
+    return !!l && !l.included && !l.bundle && !/^package/i.test(l.role) && !/mount/i.test(l.role) && kinds.indexOf(l.kind) >= 0;
+  }
+  function swapKeys(lines) { const seen = {}; return lines.map(function (l) { const base = l.role + "|" + l.brand + " " + l.model; seen[base] = (seen[base] || 0) + 1; return seen[base] > 1 ? base + "#" + seen[base] : base; }); }
+  // A typed name splits at its first space: "Klipsch RP-600M" is brand Klipsch, model RP-600M, and the two read back as the same name.
+  function splitName(name) { const sp = name.indexOf(" "); return sp > 0 ? { brand: name.slice(0, sp), model: name.slice(sp + 1) } : { brand: "", model: name }; }
+  // The set as it reads on screen: a swapped line carries the keyed speaker, and the total moves by the price difference.
+  function asShown(r) {
+    const keys = swapKeys(r.lines); let total = r.total; let swapped = false;
+    const lines = r.lines.map(function (l, i) {
+      if (!swappable(l)) return l;
+      const sw = state.swaps && state.swaps[keys[i]];
+      if (!sw) return Object.assign({}, l, { swapKey: keys[i] });
+      const nm = splitName(sw.name); const each = sw.basis === "pair" ? sw.price / 2 : sw.price;
+      const out = Object.assign({}, l, { swapKey: keys[i], keyed: true, brand: nm.brand, model: nm.model, q: sw.name, each: each, total: each * l.qty,
+        note: "Swapped in by SKU", sku: sw.sku, was: (l.brand + " " + l.model).trim(), sens: sw.sens, ohm: sw.ohm });
+      total += out.total - l.total; swapped = true;
+      return out;
+    });
+    return Object.assign({}, r, { lines: lines, total: total, swapped: swapped });
+  }
+  function swapDraftFor(key) {
+    const sw = state.swaps && state.swaps[key];
+    return sw ? { sku: sw.sku, name: sw.name, price: String(sw.price), basis: sw.basis, sens: sw.sens ? String(sw.sens) : "", ohm: sw.ohm ? String(sw.ohm) : "" }
+      : { sku: "", name: "", price: "", basis: "each", sens: "", ohm: "" };
+  }
+  // Under each speaker line: a link to swap it, or the swapped speaker with Change SKU and Put back, or the form itself while it is open.
+  function swapHtml(l) {
+    if (!l.swapKey) return "";
+    const k = esc(l.swapKey);
+    if (ui.swapOpen !== l.swapKey) {
+      return "<div class='swapbox'><div class='swapnote'>" + (l.keyed
+        ? "<span>Swapped in for " + esc(l.was) + ".</span> <button type='button' class='btn link' data-swapopen='" + k + "'>Change SKU</button> <button type='button' class='btn link' data-swapclear='" + k + "'>Put back</button>"
+        : "<button type='button' class='btn link' data-swapopen='" + k + "'>Swap by SKU</button>") + "</div></div>";
+    }
+    const d = ui.swapDraft || swapDraftFor(l.swapKey);
+    const basis = function (v, t) { return "<option value='" + v + "'" + (d.basis === v ? " selected" : "") + ">" + t + "</option>"; };
+    const bar = isBar(); const amp = !bar && l.kind !== "sub";
+    return "<div class='swapbox'><div class='swapf'>" +
+      "<label>SKU<input type='text' inputmode='numeric' data-swapf='sku' value='" + esc(d.sku) + "' placeholder='6xxxxxx'></label>" +
+      "<label>Price<input type='number' inputmode='decimal' min='0' step='0.01' data-swapf='price' value='" + esc(d.price) + "' placeholder='0.00'></label>" +
+      "<label>Price is<select data-swapf='basis'>" + basis("each", "per speaker") + basis("pair", "per pair") + "</select></label>" +
+      (!amp ? "" : "<label>Sensitivity, dB<input type='number' inputmode='decimal' step='0.1' data-swapf='sens' value='" + esc(d.sens) + "' placeholder='from the spec sheet'></label>") +
+      "<label class='wide'>Name<input type='text' data-swapf='name' value='" + esc(d.name) + "' placeholder='Brand and model'></label>" +
+      (!amp ? "" : "<label class='wide'>Impedance, ohms<input type='number' inputmode='decimal' step='0.1' data-swapf='ohm' value='" + esc(d.ohm) + "' placeholder='from the spec sheet'></label>") +
+      "<p class='muted small wide'>" + (bar ? "Over budget is allowed; the total shows by how much. Soundbars are not power-checked, as on any soundbar build." : !amp ? "Over budget is allowed; the total shows by how much. A subwoofer is powered, so it is not power-checked." : "Over budget is allowed; the total shows by how much. Sensitivity and impedance are required, and the swap is saved only if the amp clears this speaker.") + "</p>" +
+      (ui.swapErr ? "<div class='warn bad wide'>" + ui.swapErr + "</div>" : "") +
+      "<div class='row wide'><button class='btn primary' type='button' data-swapsave='" + k + "'" + (amp ? "" : " data-swapsub='1'") + ">Swap in</button><button class='btn' type='button' data-swapcancel='1'>Cancel</button></div>" +
+      "</div></div>";
+  }
+  // A swap form whose slot has left the screen closes, so it does not reopen unasked on a later build of that slot.
+  function swapLinesHtml(r) {
+    if (ui.swapOpen && !r.lines.some(function (l) { return l.swapKey === ui.swapOpen; })) { ui.swapOpen = ""; ui.swapDraft = null; ui.swapErr = ""; }
+    return r.lines.map(function (l) { return lineHtml(l) + swapHtml(l); }).join("");
+  }
+  function saveSwap(key, sub) {
+    const d = ui.swapDraft || {};
+    const sku = String(d.sku || "").replace(/\D/g, "");
+    const name = String(d.name || "").replace(/\s+/g, " ").trim();
+    const price = parseFloat(d.price), sens = parseFloat(d.sens), ohm = parseFloat(d.ohm);
+    if (sku.length < 5 || sku.length > 9) { toast("Type the SKU: 5 to 9 digits"); return; }
+    if (!name) { toast("Name the speaker"); return; }
+    if (!(price > 0)) { toast("Type its price"); return; }
+    const s = currentSeries(); const bar = !!s.bar;
+    // A series swap is saved only when the build's amp clears it, checked the way the build's own power note is: the same unit and channel count.
+    const amp = !bar && !sub;
+    if (amp) {
+      if (!(sens > 0) || !(ohm > 0)) { ui.swapErr = "<b>Not swapped in.</b> Type the speaker's sensitivity and impedance from its spec sheet, so the amp can be checked."; render(); return; }
+      const rc = receiver(s); const unit = (rc && rc.unit) || ampInBundle(s) || null;
+      if (unit) {
+        const p = powerCheck({ load: { sens: sens, ohm: ohm } }, unit, (rc && rc.perUnit) || chanCount(s));
+        if (!p.ok) { ui.swapErr = "<b>Not swapped in.</b> <b>" + esc(name) + "</b> (SKU " + esc(sku) + "). " + esc(powerSentence(p)) + " Pick a receiver that can drive it, then swap again."; render(); return; }
+      }
+    }
+    state.swaps[key] = { sku: sku, name: name, price: price, basis: d.basis === "pair" ? "pair" : "each", sens: amp && sens > 0 ? sens : null, ohm: amp && ohm > 0 ? ohm : null };
+    ui.swapOpen = ""; ui.swapDraft = null; ui.swapErr = ""; render(); toast("Swapped in: SKU " + sku);
+  }
+  $("lines").addEventListener("click", function (e) {
+    const open = e.target.closest("[data-swapopen]"), clr = e.target.closest("[data-swapclear]"), sv = e.target.closest("[data-swapsave]");
+    if (open) { ui.swapOpen = open.dataset.swapopen; ui.swapDraft = swapDraftFor(ui.swapOpen); ui.swapErr = ""; render(); const f = $("lines").querySelector("[data-swapf='sku']"); if (f) f.focus(); return; }
+    if (e.target.closest("[data-swapcancel]")) { ui.swapOpen = ""; ui.swapDraft = null; ui.swapErr = ""; render(); return; }
+    if (clr) { delete state.swaps[clr.dataset.swapclear]; if (ui.swapOpen === clr.dataset.swapclear) { ui.swapOpen = ""; ui.swapDraft = null; ui.swapErr = ""; } render(); toast("Put back to the speaker on the build"); return; }
+    if (sv) saveSwap(sv.dataset.swapsave, sv.dataset.swapsub === "1");
+  });
+  ["input", "change"].forEach(function (ev) {
+    $("lines").addEventListener(ev, function (e) { const f = e.target.dataset && e.target.dataset.swapf; if (f && ui.swapDraft) ui.swapDraft[f] = e.target.value; });
+  });
+  // Power notes for the build: the series check while any speaker is still as picked, then one note per swapped speaker.
+  function powerNotes(s, rc, lines, ampIn) {
+    if (s.bar) { const w = loadCheck(s, rc); return w ? [w] : []; }
+    const keyed = lines.filter(function (l) { return l.keyed && l.kind !== "sub"; });
+    const kept = lines.some(function (l) { return !l.keyed && !l.included && l.kind !== "sub" && l.kind !== "stand" && l.kind !== "amp" && l.kind !== "avr" && !/mount/i.test(l.role); });
+    const out = [];
+    if (!ampIn && (!keyed.length || kept)) { const w = loadCheck(s, rc); if (w) out.push(w); }
+    if (keyed.length) out.push.apply(out, swapPowerNotes(s, (rc && rc.unit) || ampIn || null, keyed, (rc && rc.perUnit) || chanCount(s)));
+    return out;
+  }
+  function swapPowerNotes(s, unit, keyed, perUnit) {
+    const f1 = function (v) { return String(Math.round(v * 10) / 10); };
+    return keyed.map(function (l) {
+      const who = "<b>" + esc((l.brand + " " + l.model).trim()) + "</b> (SKU " + esc(l.sku) + ")";
+      if (!(l.sens > 0) || !(l.ohm > 0)) return { kind: "soft", html: "<b>Swapped in, not power-checked.</b> " + who + " has no sensitivity or impedance on file, so the amp is not checked against it. Enter both on the swap form to check it." };
+      const L = { sens: l.sens, ohm: l.ohm };
+      if (!unit) return { kind: "soft", html: "<b>Swapped in: " + who + ".</b> It needs " + Math.round(powerNeed({ load: L })) + " W per channel into " + f1(loadR(L)) + " ohms. The app cannot check the customer's receiver, so confirm its rating for that load." };
+      const p = powerCheck({ load: L }, unit, perUnit);
+      if (!p.ok) return { kind: "bad", html: "<b>Not enough power for the swapped speaker.</b> " + who + ". " + esc(powerSentence(p)) };
+      const soft = !!(p.est || p.tight || p.low);
+      const caveat = (p.est ? " The all-channel figure is estimated, as none is on file." : "") + (p.low ? " The speakers dip under 4 ohms, and the maker publishes no lower rating." : "") + (p.tight ? " It clears the need with under 25% to spare, so it has little headroom at loud levels." : "");
+      return { kind: soft ? "soft" : "good", html: (soft ? "<b>Works, with a caveat.</b> " : "<b>Good match.</b> ") + who + ". " + esc(powerSentence(p) + caveat) };
+    });
+  }
 
   // Cables and accessories sized to the build. Typical norrito house-brand prices; the exact SKU goes in at the register.
   // Cables and power by build level, so the kit steps up with the speakers. norrito SKUs and prices (norrito, Nov 17, 2026).
@@ -1622,8 +1744,8 @@
     else if (icChip.hidden && state.heightType === "inceiling" && s.height) state.heightType = "series";
     syncHeightType();
     if (state.bundle && !bundlesFor(s).some(function (b) { return b.id === state.bundle; })) state.bundle = "";
-    const r = build();
-    if (lcr) $("bundleCard").hidden = true; else renderBundles(s, r);
+    const base = build(); const r = asShown(base);
+    if (lcr) $("bundleCard").hidden = true; else renderBundles(s, base);
     $("buildLabel").textContent = lcr ? "Passive front three · " + s.cfg : "The " + configString() + " family" + (s.arch ? " · architectural" : "");
     $("buildHead").textContent = s.brand + " " + s.series;
     const page = BRAND_PAGES[s.brand];
@@ -1631,7 +1753,7 @@
     $("kitNote").innerHTML = lcr ? "<p class='eyebrow'>Why this build</p><p>" + esc(s.tech || "") + "</p>" + (page ? "<p class='small'><a href='brands.html#" + page + "'>" + esc(s.brand) + " on the Brands page</a></p>" : "") :
       (s.kit ? "<p class='eyebrow'>Packages and notes</p><p>" + esc(s.kit) + "</p>" : "<p class='eyebrow'>In-wall and in-ceiling</p>") +
       (page ? "<p class='small'><a href='brands.html#" + page + "'>Every " + esc(s.brand) + (s.arch ? "" : " in-wall and in-ceiling") + " norrito sells, with prices</a></p>" : "");
-    $("lines").innerHTML = r.lines.map(lineHtml).join("");
+    $("lines").innerHTML = swapLinesHtml(r);
     $("total").textContent = money(r.total);
     $("totalNote").textContent = "List, " + r.lines.length + " line items. Mounts, wire and install not included.";
     // receiver
@@ -1644,7 +1766,7 @@
     const floor = floorLevel(s);
     Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = b.dataset.v === "auto" && s.id === "sonos-arch"; });
     if (rc && rc.wiim) $("avrNeed").textContent = n + " speakers" + (state.subs ? " + " + state.subs + " sub on the amp's sub out" : "") + " · 2 channels";
-    const d = demanding(s); const cap = budgetCap();
+    const d = demanding(s); const cap = budgetCap(); const nowTotal = cap > 0 ? systemTotal(s, true) : 0;
     const wiimText = wiimOK() ? (d ? " For a music-first stereo room, the WiiM " + esc(WIIM.premium.m) + " (" + money(WIIM.premium.price) + ") is in the list if it clears the load and the budget." : " For a music-first 2.1, the WiiM amps are in the list if they fit.") : "";
     const stale = pickable && state.avr === "auto" && !!state.avrPick && !(rc && rc.picked);
     const reset = " <button type='button' class='btn link' id='avrReset'>Back to Auto</button>";
@@ -1653,9 +1775,10 @@
       ? (state.avr === "none" ? "No amp quoted. Sonos Architectural is passive, so the customer needs a Sonos Amp per pair." : "Sonos speakers are tuned by Sonos Amp, so there is nothing to pick here.")
       : state.avr === "none" ? "No receiver on the list; the customer keeps their own." + reset
       : stale ? "<b>Your pick is not in the list now:</b> it is not offered for this family or build, so Auto is showing." + reset
-      : rc && rc.picked ? "You picked <b>" + esc(rc.brand + " " + rc.short) + "</b>. " + verdictHtml(fitVerdict(rc.power, rc.tier, floor), rc.power) + (cap > 0 ? (systemTotal(s) > cap ? " The whole system is " + money(systemTotal(s)) + ", over the " + money(cap) + " budget by " + money(systemTotal(s) - cap) + "." : " The whole system is " + money(systemTotal(s)) + " against a " + money(cap) + " budget.") : "") + reset
+      : rc && rc.picked ? "You picked <b>" + esc(rc.brand + " " + rc.short) + "</b>. " + verdictHtml(fitVerdict(rc.power, rc.tier, floor), rc.power) + (cap > 0 ? (nowTotal > cap ? " The whole system is " + money(nowTotal) + ", over the " + money(cap) + " budget by " + money(nowTotal - cap) + "." : " The whole system is " + money(nowTotal) + " against a " + money(cap) + " budget.") : "") + reset
       : "<b>Floor for these speakers: " + esc(floor) + ".</b> Auto picks from " + esc(floor) + " up. The list also has units rated lower that clear the power, each with a caveat" + (d ? ". These speakers are hard to drive, so only amps with enough current are listed" : "") + "." + wiimText;
-    if (rc && !rc.picked && !ampIn && cap > 0 && (rc.budget || rc.over)) $("avrAuto").innerHTML += "<br><span class='muted small'>" + (rc.over ? "Over this budget by " + money(systemTotal(s) - cap) + " even at the floor: this is the least that works." : "Auto picks the strongest receiver that fits " + money(cap) + " with the speakers and cables.") + "</span>";
+    if (rc && !rc.picked && !ampIn && cap > 0 && (rc.budget || rc.over)) $("avrAuto").innerHTML += "<br><span class='muted small'>" + (rc.over ? "Over this budget by " + money(nowTotal - cap) + " even at the floor: this is the least that works." : "Auto picks the strongest receiver that fits " + money(cap) + " with the speakers and cables.") + "</span>";
+    if (rc && !rc.picked && !ampIn && cap > 0 && nowTotal > cap && systemTotal(s) <= cap) $("avrAuto").innerHTML += "<br><span class='muted small'>With the swapped speaker the system is " + money(nowTotal) + ", over the " + money(cap) + " budget by " + money(nowTotal - cap) + ". Auto keeps the receiver it picked for the speakers as built.</span>";
     if (ampIn) {
       Array.prototype.forEach.call(avrBtns, function (b) { b.hidden = true; });
       $("avrAuto").innerHTML = "The package brings its own amplifier, so no separate receiver is quoted. <button type='button' class='btn link' id='bundleOff'>Drop the package</button> to price a receiver on its own.";
@@ -1666,9 +1789,9 @@
     $("avrTiers").hidden = !choices.length;
     $("avrTiers").innerHTML = choices.length ? tierListHtml(choices, rc, cap) : "";
     // speaker load vs. receiver
-    const warn = ampIn ? null : loadCheck(s, rc);
-    $("loadWarn").hidden = !warn;
-    $("loadWarn").innerHTML = warn ? "<div class='warn " + (warn.kind || "") + "'>" + warn.html + "</div>" : "";
+    const warns = powerNotes(s, rc, r.lines, ampIn);
+    $("loadWarn").hidden = !warns.length;
+    $("loadWarn").innerHTML = warns.map(function (w) { return "<div class='warn " + (w.kind || "") + "'>" + w.html + "</div>"; }).join("");
     // cables and accessories
     const acc = accessories(r, rc);
     const accSel = accSelects(s, acc);
@@ -1697,7 +1820,7 @@
   function renderBar() {
     const s = currentSeries();
     $("bundleCard").hidden = true;
-    const r = build(s);
+    const base = build(s); const r = asShown(base);
     // chips reflect what this bar ships with: no "bar only" when the sub is in the box, no rears choice when the brand offers none
     const sc = $("barSubChips"), rcps = $("barRearsChips");
     sc.querySelector("[data-v='1']").textContent = s.subIn ? "Sub in the box" : s.sub ? "With " + s.sub.m.replace(/ \(.*$/, "") : "No sub offered";
@@ -1713,7 +1836,7 @@
     $("kitNote").innerHTML = "<p class='eyebrow'>Why this bar</p><p>" + esc(s.tech || "") + (s.kit ? " " + esc(s.kit) : "") + "</p>" +
       (s.tv ? "<p class='small'>Pairs best with " + esc(s.tv) + ". On another TV it still works over eARC; the TV-link features are what you give up.</p>" : "") +
       (page ? "<p class='small'><a href='brands.html#" + page + "'>" + esc(s.brand) + " on the Brands page</a></p>" : "");
-    $("lines").innerHTML = r.lines.map(lineHtml).join("");
+    $("lines").innerHTML = swapLinesHtml(r);
     $("total").textContent = money(r.total);
     $("totalNote").textContent = "List, " + r.lines.length + " line items. No receiver: the bar is the amplifier.";
     const warn = loadCheck(s, null);
@@ -1789,7 +1912,7 @@
   function applyState(snap) { Object.assign(state, JSON.parse(JSON.stringify(snap))); }
   function withState(snap, fn) { const keep = snapshot(); applyState(snap); try { return fn(); } finally { applyState(keep); } }
   function summarize() {
-    const s = currentSeries(); const r = build(s); const rc = receiver(); const acc = accessories(r, rc); const accSum = accTotal(acc);
+    const s = currentSeries(); const base = build(s); const r = asShown(base); const rc = receiver(); const acc = accessories(base, rc); const accSum = accTotal(acc);
     const grand = r.total + (rc ? rc.total : 0) + accSum;
     return { id: s.id, bar: !!s.bar, name: s.bar ? s.brand + " " + s.m : s.brand + " " + s.series, cfg: configString(), lines: r.lines, spk: r.total, rc: rc, accSum: accSum, grand: grand, plan: SALES.plan(grand), inst: SALES.installBand(installKind()), q: (window.SF_QUAL || {})[s.id] || null, ampIn: s.bar ? null : ampInBundle(s) };
   }
@@ -1882,7 +2005,7 @@
 
   // Finalized list for the clipboard: speakers, receiver, system total, with the date and a verify line.
   function listText() {
-    const r = build();
+    const r = asShown(build());
     const s = r.series;
     const rc = receiver();
     const fronts = s.bar ? (barHasRears(s) ? "with rears" : "no rears") : s.frontLabels ? s.frontLabels[state.fronts === "tower" ? 0 : 1] + " fronts" : s.arch ? (state.fronts === "tower" ? "in-wall fronts" : "in-ceiling fronts") : (state.fronts === "tower" ? "towers" : "bookshelf fronts");
@@ -1904,8 +2027,7 @@
       if (!rc.sonos && !rc.wiim) unitLines(s, rc).slice(1).forEach(function (l) { out.push("    " + l); });
       if (rc.note) out.push("  " + rc.note);
     } else { const ai = s.bar ? null : ampInBundle(s); out.push(s.bar ? "RECEIVER: none needed; the bar is the amplifier (TV connects over HDMI eARC)" : ai ? "RECEIVER: " + ai.brand + " " + ai.m + " — included in the package above" : "RECEIVER: customer's own"); }
-    const warn = !rc && !s.bar && ampInBundle(s) ? null : loadCheck(s, rc);
-    if (warn) out.push("  NOTE: " + plainNote(warn.html));
+    powerNotes(s, rc, r.lines, ampInBundle(s)).forEach(function (w) { out.push("  NOTE: " + plainNote(w.html)); });
     out.push("", "CABLES AND ACCESSORIES");
     acc.forEach(function (a) { out.push("  " + a.role + ": " + a.model + " — " + a.qty + " × " + money(a.each) + " = " + money(a.total)); });
     out.push("  Accessories subtotal: " + money(accSum));
@@ -1919,7 +2041,7 @@
   }
   // SKUs only, for keying the order.
   function skuText() {
-    const r = build(); const rc = receiver();
+    const r = asShown(build()); const rc = receiver();
     const all = r.lines.concat(rc ? [rc] : []);
     const out = ["SKUs · " + r.series.brand + " " + r.series.series + " · " + configString()];
     const missing = [];
@@ -1944,7 +2066,7 @@
     return lines;
   }
   function sowText() {
-    const r = build(); const s = r.series; const rc = receiver();
+    const r = asShown(build()); const s = r.series; const rc = receiver();
     const acc = accessories(r, rc).filter(function (a) { return a.on; });
     const room = (state.room || "").trim() || "Media Room";
     const st = surroundType();
@@ -2025,8 +2147,7 @@
     if (ceilHeights || st !== "series" || s.arch) out.push(b("In-wall and in-ceiling work assumes drywall with accessible attic or crawl space; plaster, brick, fire blocking or blown insulation add time and may change placement"));
     out.push(b("Customer to confirm wall type, stud and joist layout, and that any new outlets are installed by a licensed electrician"));
     out.push(b("Mounts, back boxes, wall plates and extra wire billed as used"));
-    const warn = !rc && !s.bar && ampInBundle(s) ? null : loadCheck(s, rc);
-    if (warn) out.push(b(plainNote(warn.html)));
+    powerNotes(s, rc, r.lines, ampInBundle(s)).forEach(function (w) { out.push(b(plainNote(w.html))); });
     return out.join("\n");
   }
   function copyText(text, msg) {
