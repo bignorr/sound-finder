@@ -716,10 +716,11 @@
   }
   function saveCustomBundle(obj) { const all = customBundles(); if (obj) all[bundleKey()] = obj; else delete all[bundleKey()]; try { localStorage.setItem("sf-bundle-custom", JSON.stringify(all)); } catch (e) {} }
   // Packages that fit the build on screen: series, speaker count, heights, subs, fronts, surround and height type all have to agree.
+  // A package's amp is power-checked on the speakers it ships with (b.load when it has one, otherwise the series' own load).
   function bundlesFor(s) {
     if (!s || s.bar) return [];
     const ctx = { series: s.id, around: state.around, heights: state.heights, subs: state.subs, fronts: state.fronts, surroundType: surroundType(), heightType: s.height ? state.heightType : "inceiling" };
-    const out = BUNDLES.filter(function (b) { return b.covers && Object.keys(b.covers).every(function (k) { return b.covers[k].indexOf(ctx[k]) >= 0; }) && (!b.amp || powerOk(s, b.amp, chanCount(s))); });
+    const out = BUNDLES.filter(function (b) { return b.covers && Object.keys(b.covers).every(function (k) { return b.covers[k].indexOf(ctx[k]) >= 0; }) && (!b.amp || powerOk(b.load ? Object.assign({}, s, { load: b.load }) : s, b.amp, chanCount(s))); });
     const c = customBundle(); if (c && (!c.amp || powerOk(s, c.amp, chanCount(s)))) out.unshift(c);
     return out;
   }
@@ -1257,13 +1258,14 @@
     cands.forEach(function (c) { if (out.some(function (o) { return o.a.brand === c.a.brand && o.a.m === c.a.m; })) return; out.push({ a: c.a, lvl: c.lvl, key: c.key }); });
     return out;
   }
-  // WiiM amps for a stereo build, at each level they clear the speakers' load at. The product rule of wiimLevels still holds: none for a premium or
-  // reference floor, and a speaker that needs current takes the Amp Ultra alone.
+  // WiiM amps for a stereo build, at each level they clear the speakers' load at. Speakers that do not need current get no streamer when their floor is premium or reference.
+  // The Amp Ultra is the streamer for speakers that need current, at any tier. The Amp (60 W at 8 ohms, 120 W at 4) is listed for value and mid speakers that clear
+  // its check, 4-ohm and low-sensitivity ones included. A speaker that needs current has a premium receiver floor, so its series tier decides for the Amp.
   function wiimPicker(s) {
     if (!WIIM || channels(s) > 2 || s.bar || s.lcr || s.id === "sonos-arch") return [];
-    const need = !!demanding(s);
-    if (!need && TIER_ORDER.indexOf(floorLevel(s)) > TIER_ORDER.indexOf("mid")) return [];
-    return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && (!need || WIIM[k].level === "premium") && powerOk(s, WIIM[k], 2); })
+    const need = !!demanding(s); const fl = TIER_ORDER.indexOf(floorLevel(s)); const mid = TIER_ORDER.indexOf("mid");
+    if (!need && fl > mid) return [];
+    return ["value", "mid", "premium"].filter(function (k) { return WIIM[k] && powerOk(s, WIIM[k], 2) && (WIIM[k].level === "premium" || !need || TIER_ORDER.indexOf(s.tier) <= mid); })
       .map(function (k) { const w = WIIM[k]; return { lvl: w.level, key: 2, a: { brand: "WiiM", m: w.m, short: w.m, price: w.price, role: "Streaming amp", kind: "amp", why: w.why, sku: w.sku, ohm4: true, cur: k === "premium" ? "strong" : "ok", wiim: true } }; });
   }
   // The picker's pool, strongest first. An LCR keeps its passive amps; a soundbar and Sonos have none. Auto still draws on avrPool (its floor rule).
@@ -1429,7 +1431,8 @@
     return { kind: soft ? "soft" : "good", html: (soft ? "<b>Works, with a caveat.</b> " : "<b>Good match.</b> ") + name + " (" + esc(loadWhat(s)) + "). " + esc(powerSentence(p)) + caveat(p) + (soft ? recBtn(recommendAmp(s, rc)) : "") + extra };
   }
 
-  function lineSku(l) { if (l.nosku) return null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
+  // A package line carries its own SKU: the name lookup would match the amp inside its name (the WiiM Amp) and send the link to the amp.
+  function lineSku(l) { if (l.nosku) return null; if (l.bundle) return l.sku || null; return SALES.sku(l.brand + " " + l.model) || l.sku || null; }
   function skuHtml(l) {
     if (l.nosku) return "";
     const key = l.brand + " " + l.model;
@@ -1545,8 +1548,10 @@
     const wire = thick ? { m: "14 AWG CL2/CL3 in-wall speaker wire, 100 ft", each: 60 } : { m: "16 AWG speaker wire, 100 ft", each: 40 };
     add("wire", "Speaker wire", { brand: "Rocketfish", model: wire.m, each: wire.each }, spools, "about " + ft + " ft of runs, longest " + longest + " ft" + (arch ? "; in-wall rated where it goes inside a wall or ceiling" : thick ? (demand ? "; 14 gauge for a 4-ohm load" : "; 14 gauge for runs over 50 ft") : ""));
     if (state.subs > 0) add("subcable", "Subwoofer cable", kit.sub, state.subs, state.subs === 2 ? "one per sub" : "");
-    const hdmiQty = rc && (rc.sonos || rc.wiim) ? 1 : 2;
-    add("hdmi", "HDMI", accPicked("hdmi", kit.hdmi, HDMI_OPTS), hdmiQty, rc && rc.sonos ?"TV eARC to the Amp" : rc && rc.wiim ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source; 48 Gbps for 4K120 and 8K");
+    // A package's amp stands in for the receiver, so rc is null for it. A WiiM in a package takes one ARC cable, the same as a WiiM receiver line.
+    const pkgAmp = rc ? null : ampInBundle(s); const wiimAmp = !!(rc && rc.wiim) || !!(pkgAmp && pkgAmp.brand === "WiiM");
+    const hdmiQty = (rc && rc.sonos) || wiimAmp ? 1 : 2;
+    add("hdmi", "HDMI", accPicked("hdmi", kit.hdmi, HDMI_OPTS), hdmiQty, rc && rc.sonos ? "TV eARC to the Amp" : wiimAmp ? "TV HDMI ARC to the WiiM; sources stay on the TV" : "TV eARC to receiver, plus the main source; 48 Gbps for 4K120 and 8K");
     const ch = channels(s);
     add("banana", "Connectors", { brand: "Rocketfish", model: "Banana plugs, 12-pack", each: 25 }, Math.ceil(ch / 3), "4 per channel, " + ch + " channels");
     // Power follows the receiver's draw: a separates or 11-channel-plus receiver is heavy and steps up one conditioner.
@@ -1744,7 +1749,7 @@
       return "<div class='bundle" + (on ? " on" : "") + "'>" + (IMG ? IMG.thumb(b.brand + " " + b.name, b.thumb || "bookshelf") : "") +
         "<div class='bt'><span class='kind'>" + esc(b.custom ? "Store bundle" : b.kind === "system" ? b.brand + " system" : "bestbuy.com package") + (b.sku ? " · SKU " + esc(b.sku) : "") + "</span>" +
         "<div class='bh'><b>" + esc(b.name) + "</b><span class='bp'><b>" + money(b.price) + "</b>" + (b.comp ? "<small>comp. " + money(b.comp) + "</small>" : "") + "</span></div><span class='inc'>" + esc(b.includes) + "</span>" +
-        "<span class='std'>Stands in for " + esc(groups.join(", ").toLowerCase() || "the speakers") + (b.amp ? " and the receiver" : "") + ": " + money(lineSum) + " line by line" + (d > 0 ? ", <em>" + money(d) + " less</em> as the package" : d < 0 ? ", " + money(-d) + " more as the package" : ", same price") + ".</span>" +
+        (b.noCompare ? "" : "<span class='std'>Stands in for " + esc(groups.join(", ").toLowerCase() || "the speakers") + (b.amp ? " and the receiver" : "") + ": " + money(lineSum) + " line by line" + (d > 0 ? ", <em>" + money(d) + " less</em> as the package" : d < 0 ? ", " + money(-d) + " more as the package" : ", same price") + ".</span>") +
         (b.note ? "<span class='muted small'>" + esc(b.note) + "</span>" : "") +
         "<button type='button' class='btn " + (on ? "" : "primary") + "' data-bundle='" + esc(b.id) + "'>" + (on ? "Using the package · undo" : "Use the package price") + "</button></div></div>";
     }).join("") || "<p class='muted small coach'>No bestbuy.com package fits this exact layout. " + (s.brand === "Sonance" ? "Mag 5.1 in-ceiling (MAG5.1R), Mag 5.1 in-wall (MAG5.1 PREMIUM) and the 2.0 TV packages are the ones that exist; set the build to 5.1 or 2.0 to see them. " : "") + "If norrito shows a bundle for these, key it in below.</p>";
