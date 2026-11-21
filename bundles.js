@@ -6,6 +6,8 @@
 //           A key that is left out matches anything. Packages with no "covers" are listed for the brand but never applied to a build.
 // replaces: the speaker groups the package stands in for (Fronts, Center, Side surrounds, Rears, Heights, Subwoofer). Lines outside
 //           those groups stay on the list at their own price. amp: the amplifier that comes in the box, if any; it takes the receiver's place.
+// load:     the speakers' own load (ohm, sens) when the package ships a different pair from the builder's line; its amp is power-checked on it.
+// noCompare: set when the package's pair is not the builder's line, so the card shows the price and comp, not a line-by-line figure.
 (function () {
   const UA = { brand: "Sonance", m: "UA 2-125 ARC 2.1-ch TV amplifier", pk: "Sonance UA 2-125 ARC", sku: "6635174", why: "125 W x 2 into 8 ohms, HDMI eARC with CEC so the TV remote runs the volume, sub out; $999.99 on its own" };
   window.SF_BUNDLES = {
@@ -50,6 +52,12 @@
         amp: { brand: "Yamaha", m: "R-S202 2-ch stereo receiver", sku: "5037100", why: "100 W x 2 into 8 ohms, Bluetooth, A/B speaker outputs; music only, no HDMI" },
         includes: "Yamaha R-S202BL stereo receiver and one Klipsch R-50M bookshelf pair",
         note: "bestbuy.com package price, save $144.96. The starter stereo for a bedroom, office or garage." },
+      // ---- bestbuy.com package: MartinLogan Motion Foundation B1 bookshelves with the WiiM Amp (sold and shipped by Best Buy, SKU 6596730) ----
+      { id: "ml-b1-wiim", kind: "package", brand: "MartinLogan", name: "Motion Foundation B1 x WiiM Amp bundle", price: 749.99, comp: 999.99, sku: "6596730", thumb: "amp",
+        covers: { series: ["ml-foundation"], around: [2], heights: [0], subs: [0, 1], fronts: ["bookshelf"] }, replaces: ["Fronts"], load: { ohm: 5, sens: 89 },
+        amp: { brand: "WiiM", m: "Amp", pk: "WiiM Amp", why: "60 W x 2 into 8 ohms, 120 W into 4; HDMI ARC, optical, line in, sub out with a crossover, RoomFit correction; it takes the receiver's place in the package" },
+        includes: "Motion Foundation B1 bookshelf pair (5 ohm, 89 dB) and the WiiM Amp. In the box: HDMI, optical, RCA and AC cables, and 12 ft of speaker wire with banana plugs", noCompare: true,
+        note: "Best Buy's comp is $999.99, and one Best Buy page reads $799.99, so confirm the price in norrito. The pair is the B1, not the B2 on the line-by-line list, so no line-by-line figure is shown. A sub goes on the amp's sub out." },
       // ---- Sonance outdoor systems: listed for the brand, nothing in the builder to stand in for ----
       { id: "mago6", kind: "system", brand: "Sonance", name: "MAGO6SYSV3 2.0 outdoor system powered by Sonos", price: 999, comp: 1499, sku: "6438662",
         includes: "Sonos Amp and two MAGO6V3 all-weather speakers with brackets", note: "A patio music zone in one SKU; the Amp goes inside, wire runs out." },
