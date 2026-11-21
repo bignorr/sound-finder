@@ -578,7 +578,7 @@
   // Nov 18, 2026: added as alternates the receivers with a Best Buy seller line and price (Denon AVR-X1800H, AVR-S970H; Sony STR-AN1000, STR-AZ1000ES; Yamaha RX-V6A; Pioneer VSX-LX305; Onkyo TX-RZ70). Not added: Yamaha RX-A2A and RX-A4A (the new-unit seller is not Best Buy on the listings checked), Onkyo TX-RZ50 (seller line not shown), Denon AVR-S770H/S670H already present. Sony and Yamaha 4-ohm rating left off until checked in the manuals.
   // Marantz CINEMA Series 2 (Best Buy SKUs 6687403 / 6687404 / 6687405, sold by Best Buy) replaces the first-generation Cinema 50, 60 and 70s. Their prices are the Marantz list prices ($1,500 / $2,000 / $3,000); confirm the Best Buy price in norrito. Cinema 30 and Cinema 40 stay first generation.
   // Nov 18, 2026: the Denon and Marantz AVRs from the Best Buy app screenshots are alternates marked pickOnly. They are picker options only. Auto, the floor, the budget pick, the power-note switch and the not-offered reason never see them, so Auto keeps the units it had.
-  // Denon and Marantz publish no all-channel rating. On a build of five channels or more their 8-ohm two-channel figure stands in, flagged est, so those units show in the picker only, with the caveat.
+  // A receiver with no all-channel rating on file stands in on a build of five channels or more: its two-channel figure is used and flagged est, so it shows in the picker only, with the caveat.
   // ohm4: informational only. Whether a unit can drive a load is decided by powerCheck, from the SF_POWER ratings in bars.js.
   const AVRS = {
     2: { need: "2 amplified channels",
@@ -759,6 +759,7 @@
     if (typeof state.avrPick !== "string") state.avrPick = "";
     if (typeof state.avrBrand !== "string") state.avrBrand = "all";
     if (!state.accPick || typeof state.accPick !== "object") state.accPick = {};
+    if (state.accPick.hdmi === "AudioQuest Forest 48 HDMI cable") state.accPick.hdmi = "AudioQuest Forest 48 in-wall HDMI cable, 4.9 ft"; // the name changed when the other lengths were added
     if (state.form !== "arch") state.form = "box"; // physical is the default; an old "all" setting is read as physical
     const q = new URLSearchParams(location.search);
     const cfg = (q.get("cfg") || "").split(".");
@@ -802,12 +803,15 @@
   const syncBarMount = chips("barMountChips", "barMount", false);
   function isBar() { return state.kind === "bar" && BARS.length > 0; }
   function pickTop() { state.series = ""; state.bar = ""; }
-  $("budgetChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.max = 0; $("budgetMax").value = ""; state.brand = "all"; pickTop(); persist(); render(); } });
+  // A new ceiling keeps the family on screen while it still fits; only a family over the new ceiling moves to the best fit.
+  function reseatFamily() { const s = currentSeries(); const cap = budgetCap(); if (s && cap && systemTotal(s) > cap) pickTop(); }
+  $("budgetChips").addEventListener("click", function (e) { if (e.target.closest("button")) { state.max = 0; $("budgetMax").value = ""; state.brand = "all"; reseatFamily(); persist(); render(); } });
   // Typed ceiling: apply as they type (debounced) so a tap elsewhere right after does not land on a re-rendered page.
-  function applyMax() { const v = Math.max(0, parseInt($("budgetMax").value, 10) || 0); if (v === state.max) return; state.max = v; if (v) state.budget = "all"; state.brand = "all"; pickTop(); persist(); render(); }
+  function applyMax() { const v = Math.max(0, parseInt($("budgetMax").value, 10) || 0); if (v === state.max) return; state.max = v; if (v) state.budget = "all"; state.brand = "all"; reseatFamily(); persist(); render(); }
   $("budgetMax").addEventListener("input", function () { clearTimeout(applyMax.t); applyMax.t = setTimeout(applyMax, 350); });
   $("budgetMax").addEventListener("change", function () { clearTimeout(applyMax.t); applyMax(); });
-  $("brandChips").addEventListener("click", function (e) { const b = e.target.closest("button"); if (!b) return; state.brand = b.dataset.v; pickTop(); persist(); render(); });
+  // A brand filter moves the family only when the family is from another brand; the same brand keeps it.
+  $("brandChips").addEventListener("click", function (e) { const b = e.target.closest("button"); if (!b) return; state.brand = b.dataset.v; const cur = currentSeries(); if (state.brand !== "all" && cur && cur.brand !== state.brand) pickTop(); persist(); render(); });
   function budgetCap() { return state.max > 0 ? state.max : (BUDGETS[state.budget] || 0); }
   const syncForm = chips("formChips", "form", false);
   const syncFronts = chips("frontsChips", "fronts", false);
@@ -1089,27 +1093,27 @@
   }
   // The rating one box gives for the channels it drives at this load, and what that figure is.
   // Two channels: the 4-ohm figure at 4 ohms or under; otherwise the 6-ohm figure, or the 8-ohm figure when no 6-ohm figure is published (the safer of the two at 6 ohms).
-  // Three or more channels: the maker's all-channel figure. Where none is published the box has no rating, so the unit fails the check. The one exception is a Denon or
-  // Marantz receiver with no all-channel figure at all: its two-channel figure (8 ohms, or 4 ohms at 4 ohms or under) stands in, flagged est. Those units are for the picker only.
-  function boxRating(row, k, R, name) {
+  // Three or more channels: the maker's all-channel figure. Where the row has no all-channel figure at all, its two-channel figure stands in (8 ohms, or 4 ohms at 4 ohms or under), flagged est:
+  // the picker shows it with a caveat, and Auto, the floor and the fix suggestions never use it. A unit with neither figure fails the check.
+  function boxRating(row, k, R) {
     if (!row) return null;
     if (k <= 2) {
       if (R <= 4.5) return row.w4 != null ? { v: row.w4, est: false, basis: "4-ohm stereo rating" } : null;
       if (row.w6 != null) return { v: row.w6, est: false, basis: "6-ohm stereo rating" };
       return row.w8 != null ? { v: row.w8, est: false, basis: "8-ohm stereo rating, the safer figure at 6 ohms" } : null;
     }
-    const standIn = row.m4 == null && row.m8 == null && /^(Denon|Marantz) /.test(String(name || ""));
+    const standIn = row.m4 == null && row.m8 == null;
     if (R <= 4.5) {
       if (row.m4 != null) return { v: row.m4, est: false, basis: "maker's all-channel rating at 4 ohms" };
-      if (standIn && row.w4 != null) return { v: row.w4, est: true, basis: "two-channel 4-ohm rating, standing in for an all-channel figure the maker does not publish" };
+      if (standIn && row.w4 != null) return { v: row.w4, est: true, basis: "two-channel 4-ohm rating, standing in for an all-channel figure not on file" };
       return null;
     }
     if (row.m8 != null) return { v: row.m8, est: false, basis: "maker's all-channel rating at 8 ohms, the safer figure at 6 ohms" };
-    if (standIn && row.w8 != null) return { v: row.w8, est: true, basis: "two-channel 8-ohm rating, standing in for an all-channel figure the maker does not publish" };
+    if (standIn && row.w8 != null) return { v: row.w8, est: true, basis: "two-channel 8-ohm rating, standing in for an all-channel figure not on file" };
     return null;
   }
   // The power check for one unit on one speaker set with n channels driven. Boxes take channels in order, up to their mMax (2 where the sheet gives none).
-  // ok: every channel is covered by a published rating and the weakest box clears the need. tight: it clears by under 25%. est: a Denon or Marantz stand-in figure (see boxRating).
+  // ok: every channel is covered by a published rating and the weakest box clears the need. tight: it clears by under 25%. est: a two-channel stand-in figure, used where no all-channel rating is on file (see boxRating).
   // low: the speakers dip under 4 ohms, below the lowest rating on file, so the margin is not a published one.
   function powerCheck(s, x, n) {
     const L = s && s.load;
@@ -1124,7 +1128,7 @@
     if (left > 0) return { ok: false, reason: "channels", R: R, need: need };
     let cap = Infinity, est = false, basis = "", missing = null;
     used.forEach(function (u) {
-      const r = boxRating(u.row, u.k, R, u.name);
+      const r = boxRating(u.row, u.k, R);
       if (!r) { if (!missing) missing = u.name; return; }
       if (r.est) est = true;
       if (r.v < cap) { cap = r.v; basis = r.basis; }
@@ -1273,7 +1277,7 @@
   function fitVerdict(p, lvl, floor) {
     if (!p || !p.ok) return { kind: "bad", label: "Not good", notes: [] };
     const notes = [];
-    if (p.est) notes.push("the all-channel figure is estimated, because the maker does not publish one");
+    if (p.est) notes.push("the all-channel figure is estimated, as none is on file");
     if (p.low) notes.push("the speakers dip under 4 ohms, and the maker publishes no lower rating");
     if (p.tight) notes.push("it clears the need with under 25% to spare, so it has little headroom at loud levels");
     if (lvl && floor && TIER_ORDER.indexOf(lvl) < TIER_ORDER.indexOf(floor)) notes.push("it is rated below this family's " + floor + " level");
@@ -1403,7 +1407,7 @@
     const f1 = function (r) { return String(Math.round(r * 10) / 10); };
     const recBtn = function (r) { return r ? " <button type='button' class='btn link' data-rec-pick='" + esc(r.key) + "'>Switch to the " + esc(r.brand + " " + r.short) + " (" + money(r.price) + ")</button>" : ""; };
     const caveat = function (p) {
-      return (p.est ? " The all-channel figure is estimated from the stereo rating, because the maker does not publish one." : "") +
+      return (p.est ? " The all-channel figure is estimated from the stereo rating, as none is on file." : "") +
         (p.low ? " The speakers dip to " + f1(p.R) + " ohms, under the 4-ohm rating; the maker publishes no lower figure, so this margin is not a published one." : "") +
         (p.tight ? " It clears the need with under 25% to spare, so it has little headroom at loud levels." : "");
     };
@@ -1457,7 +1461,7 @@
   // Cables and accessories sized to the build. Typical Best Buy house-brand prices; the exact SKU goes in at the register.
   // Cables and power by build level, so the kit steps up with the speakers. Best Buy SKUs and prices (bestbuy.com, Nov 17, 2026).
   // Value keeps the house cables and a surge protector. Mid moves to AudioQuest HDMI and subwoofer RCA. Premium and reference add a power conditioner and a streamer; separate preamp and amp builds also get RCA interconnects.
-  const AQ_HDMI = { brand: "AudioQuest", model: "Forest 48 HDMI cable", each: 129.95, sku: "6428720" };
+  const AQ_HDMI = { brand: "AudioQuest", model: "Forest 48 in-wall HDMI cable, 4.9 ft", each: 129.95, sku: "6428720" };
   const AQ_SUB = { brand: "AudioQuest", model: "Black Lab RCA subwoofer cable, 26.2 ft", each: 119.95, sku: "2877518" };
   const ACC_KIT = {
     value: { hdmi: { brand: "Rocketfish", model: "Ultra High Speed HDMI 2.1 cable, 6 ft", each: 25 }, sub: { brand: "Rocketfish", model: "Subwoofer RCA cable, 25 ft", each: 25 }, surge: true },
@@ -1478,7 +1482,30 @@
   const AQ_THUNDERBIRD = { brand: "AudioQuest", model: "ThunderBird 48 in-wall HDMI cable, 9.8 ft", each: 1750, sku: "6428721" };
   const AQ_FIREBIRD = { brand: "AudioQuest", model: "FireBird 48 in-wall HDMI cable, 9.8 ft", each: 2950, sku: "6428730" };
   const AQ_DRAGON = { brand: "AudioQuest", model: "Dragon 48 in-wall HDMI cable, 9.8 ft", each: 4495, sku: "6428743" };
-  const HDMI_OPTS = [ACC_KIT.value.hdmi, AQ_PEARL, AQ_HDMI, AQ_CINNAMON, AQ_CARBON, AQ_VODKA, AQ_THUNDERBIRD, AQ_FIREBIRD, AQ_DRAGON];
+  // Every other Best Buy length of each cable, with the SKU and new-item price on its Best Buy page. A length is listed only where Best Buy shows it as sold by Best Buy;
+  // discontinued lengths (no longer available new) and lengths whose price or seller could not be confirmed are left out.
+  const AQ_PEARL_2 = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 2.5 ft", each: 49.95, sku: "6428727" };
+  const AQ_PEARL_7 = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 7.4 ft", each: 77.95, sku: "6428723" };
+  const AQ_PEARL_9 = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 9.8 ft", each: 95.95, sku: "6428736" };
+  const AQ_PEARL_16 = { brand: "AudioQuest", model: "Pearl 48 in-wall HDMI cable, 16.4 ft", each: 269.95, sku: "6428725" };
+  const AQ_FOREST_2 = { brand: "AudioQuest", model: "Forest 48 in-wall HDMI cable, 2.5 ft", each: 99.95, sku: "6428732" };
+  const AQ_FOREST_9 = { brand: "AudioQuest", model: "Forest 48 in-wall HDMI cable, 9.8 ft", each: 189.95, sku: "6428718" };
+  const AQ_FOREST_16 = { brand: "AudioQuest", model: "Forest 48 in-wall HDMI cable, 16.4 ft", each: 419.95, sku: "6428746" };
+  const AQ_CINNAMON_2 = { brand: "AudioQuest", model: "Cinnamon 48 HDMI cable, 2.5 ft", each: 189.95, sku: "6432648" };
+  const AQ_CINNAMON_7 = { brand: "AudioQuest", model: "Cinnamon 48 HDMI cable, 7.4 ft", each: 269.95, sku: "6428765" };
+  const AQ_CINNAMON_9 = { brand: "AudioQuest", model: "Cinnamon 48 in-wall HDMI cable, 9.8 ft", each: 309.95, sku: "6428748" };
+  const AQ_CINNAMON_16 = { brand: "AudioQuest", model: "Cinnamon 48 HDMI cable, 16.4 ft", each: 599.95, sku: "6428729" };
+  const AQ_CARBON_2 = { brand: "AudioQuest", model: "Carbon 48 HDMI cable, 2.5 ft", each: 329.95, sku: "6428734" };
+  const AQ_CARBON_7 = { brand: "AudioQuest", model: "Carbon 48 HDMI cable, 7.4 ft", each: 469.95, sku: "6428764" };
+  const AQ_VODKA_2 = { brand: "AudioQuest", model: "Vodka 48 HDMI cable, 2.5 ft", each: 630, sku: "6428750" };
+  const AQ_VODKA_7 = { brand: "AudioQuest", model: "Vodka 48 HDMI cable, 7.4 ft", each: 870, sku: "6428762" };
+  const AQ_VODKA_9 = { brand: "AudioQuest", model: "Vodka 48 in-wall HDMI cable, 9.8 ft", each: 990, sku: "6428752" };
+  const AQ_THUNDERBIRD_2 = { brand: "AudioQuest", model: "ThunderBird 48 HDMI cable, 2.5 ft", each: 1000, sku: "6428726" };
+  const AQ_THUNDERBIRD_4 = { brand: "AudioQuest", model: "ThunderBird 48 HDMI cable, 4.9 ft", each: 1250, sku: "6428717" };
+  const AQ_THUNDERBIRD_7 = { brand: "AudioQuest", model: "ThunderBird 48 HDMI cable, 7.4 ft", each: 1500, sku: "6428870" };
+  const AQ_FIREBIRD_7 = { brand: "AudioQuest", model: "FireBird 48 HDMI cable, 7.4 ft", each: 2450, sku: "6428771" };
+  // The cable choices in price order, which is the order the picker lists them.
+  const HDMI_OPTS = [ACC_KIT.value.hdmi, AQ_PEARL_2, AQ_PEARL, AQ_PEARL_7, AQ_PEARL_9, AQ_FOREST_2, AQ_HDMI, AQ_CINNAMON_2, AQ_FOREST_9, AQ_CINNAMON, AQ_CINNAMON_7, AQ_PEARL_16, AQ_CINNAMON_9, AQ_CARBON_2, AQ_CARBON, AQ_FOREST_16, AQ_CARBON_7, AQ_CINNAMON_16, AQ_VODKA_2, AQ_VODKA, AQ_VODKA_7, AQ_VODKA_9, AQ_THUNDERBIRD_2, AQ_THUNDERBIRD_4, AQ_THUNDERBIRD_7, AQ_THUNDERBIRD, AQ_FIREBIRD_7, AQ_FIREBIRD, AQ_DRAGON];
   const SURGE8 = { brand: "Rocketfish", model: "8-outlet surge protector", each: 60 };
   const SURGE6 = { brand: "Rocketfish", model: "6-outlet surge protector", each: 40 };
   const PQ2 = { brand: "PowerQuest", model: "2 6-outlet surge protector", each: 279.95, sku: "6320328" };
